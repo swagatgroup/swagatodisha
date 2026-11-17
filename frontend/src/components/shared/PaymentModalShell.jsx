@@ -9,7 +9,7 @@ const PaymentModalShell = ({ title, subtitle, onClose, footer, children }) => (
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="bg-white dark:bg-[#231A2E] rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col"
+            className="bg-white dark:bg-[#122048] rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col"
         >
             <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
                 <div>
@@ -24,7 +24,7 @@ const PaymentModalShell = ({ title, subtitle, onClose, footer, children }) => (
                     <XMarkIcon className="w-6 h-6" />
                 </button>
             </div>
-            <div className="p-6 overflow-y-auto flex-1 bg-gray-50 dark:bg-[#1A1212]">
+            <div className="p-6 overflow-y-auto flex-1 bg-gray-50 dark:bg-[#0A1430]">
                 {children}
             </div>
             {footer && (

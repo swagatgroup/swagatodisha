@@ -601,7 +601,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#387B95]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#004D98]"></div>
       </div>
     );
   }
@@ -620,11 +620,11 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-[#122048] rounded-lg shadow p-6">
           <div className="flex items-center">
             <div className="p-2 bg-blue-100 rounded-lg">
               <svg
-                className="w-6 h-6 text-[#387B95]"
+                className="w-6 h-6 text-[#004D98]"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -648,7 +648,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
           </div>
         </div>
 
-        <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-[#122048] rounded-lg shadow p-6">
           <div className="flex items-center">
             <div className="p-2 bg-yellow-100 rounded-lg">
               <svg
@@ -674,7 +674,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
           </div>
         </div>
 
-        <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-[#122048] rounded-lg shadow p-6">
           <div className="flex items-center">
             <div className="p-2 bg-green-100 rounded-lg">
               <svg
@@ -700,11 +700,11 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
           </div>
         </div>
 
-        <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-[#122048] rounded-lg shadow p-6">
           <div className="flex items-center">
-            <div className="p-2 bg-[#F0E6FA] rounded-lg">
+            <div className="p-2 bg-[#D0E9FB] rounded-lg">
               <svg
-                className="w-6 h-6 text-[#4A1D7A]"
+                className="w-6 h-6 text-[#0E1A3D]"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -730,7 +730,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
       )}
 
       {/* Filters */}
-      <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6">
+      <div className="bg-white dark:bg-[#122048] rounded-lg shadow p-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -742,7 +742,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
               onChange={(e) =>
                 setFilters((prev) => ({ ...prev, search: e.target.value }))
               }
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#004D98] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               placeholder="Search by name, Aadhaar, or phone..."
             />
           </div>
@@ -755,7 +755,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
               onChange={(e) =>
                 setFilters((prev) => ({ ...prev, status: e.target.value }))
               }
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#004D98] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             >
               <option value="">All Statuses</option>
               {APPLICATION_STATUS_OPTIONS.map(o => (
@@ -772,7 +772,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
               onChange={(e) =>
                 setFilters((prev) => ({ ...prev, course: e.target.value }))
               }
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#004D98] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             >
               <option value="">All Courses</option>
               {availableCourses.map(course => (
@@ -790,7 +790,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
               onChange={(value) =>
                 setFilters((prev) => ({ ...prev, admissionType: value }))
               }
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#004D98] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             />
           </div>
           <div>
@@ -802,7 +802,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
               onChange={(e) =>
                 setFilters((prev) => ({ ...prev, listType: e.target.value }))
               }
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#004D98] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             >
               <option value="combined">Both</option>
               <option value="dashboard">Registered by me</option>
@@ -816,7 +816,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#004D98] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             >
               <option value="latest">Latest First</option>
               <option value="oldest">Oldest First</option>
@@ -830,7 +830,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
                 console.log('🔄 Applying filters:', filters);
                 loadStudents();
               }}
-              className="w-full px-4 py-2 bg-[#387B95] text-white rounded-md hover:bg-[#1D4B5E]"
+              className="w-full px-4 py-2 bg-[#004D98] text-white rounded-md hover:bg-[#003B75]"
             >
               Apply Filters
             </button>
@@ -850,7 +850,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
       </div>
 
       {/* Students List */}
-      <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow">
+      <div className="bg-white dark:bg-[#122048] rounded-lg shadow">
         <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
             {isRecent ? 'Recent Students' : 'Students'} ({filteredStudents.length})
@@ -901,7 +901,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white dark:bg-[#231A2E] divide-y divide-gray-200 dark:divide-gray-700">
+            <tbody className="bg-white dark:bg-[#122048] divide-y divide-gray-200 dark:divide-gray-700">
               {filteredStudents.length === 0 ? (
                 <tr>
                   <td colSpan="12" className="px-6 py-12 text-center">
@@ -932,7 +932,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.05 }}
-                    className="hover:bg-gray-50 dark:bg-[#1A1212]"
+                    className="hover:bg-gray-50 dark:bg-[#0A1430]"
                   >
                   <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
                     {(currentPage - 1) * itemsPerPage + index + 1}
@@ -940,7 +940,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                        <span className="text-[#387B95] font-semibold text-sm">
+                        <span className="text-[#004D98] font-semibold text-sm">
                           {student.personalDetails?.fullName?.charAt(0) || "S"}
                         </span>
                       </div>
@@ -1008,7 +1008,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
                       {/* View Details - Available for all statuses */}
                       <button
                         onClick={() => handleViewDetails(student)}
-                        className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-[#1D4B5E] bg-[#D0E8F0] hover:bg-blue-100 rounded-md transition-colors"
+                        className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-[#003B75] bg-[#D0E9FB] hover:bg-blue-100 rounded-md transition-colors"
                         title="View application details"
                       >
                         <EyeIcon className="h-4 w-4 mr-1" />
@@ -1022,7 +1022,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
                           setFinancialStudent(student);
                           setShowFinancialsModal(true);
                         }}
-                        className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-[#351458] bg-[#F0E6FA] hover:bg-[#F0E6FA] rounded-md transition-colors"
+                        className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-[#0A1430] bg-[#D0E9FB] hover:bg-[#D0E9FB] rounded-md transition-colors"
                         title="View Financials"
                       >
                         <CurrencyRupeeIcon className="h-4 w-4 mr-1" />
@@ -1050,7 +1050,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
                         <button
                           onClick={() => resubmitApplication(student._id)}
                           disabled={resubmitting}
-                          className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-[#351458] bg-[#F0E6FA] hover:bg-[#F0E6FA] rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-[#0A1430] bg-[#D0E9FB] hover:bg-[#D0E9FB] rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                           title="Resubmit application for review"
                         >
                           <ArrowPathIcon className="h-4 w-4 mr-1" />
@@ -1089,7 +1089,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
           }}
         >
           <div 
-            className="bg-white dark:bg-[#231A2E] rounded-lg shadow-xl max-w-4xl w-full flex flex-col relative"
+            className="bg-white dark:bg-[#122048] rounded-lg shadow-xl max-w-4xl w-full flex flex-col relative"
             style={{ zIndex: 10000, maxHeight: '90vh', height: '90vh', display: 'flex', flexDirection: 'column' }}
             onClick={(e) => {
               e.stopPropagation();
@@ -1125,7 +1125,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
             {/* Scrollable Content */}
             <div className="overflow-y-auto flex-1 p-6" style={{ maxHeight: 'calc(90vh - 200px)', overflowX: 'hidden', minHeight: '500px' }}>
               {/* Info about restricted fields */}
-              <div className="mb-4 p-3 bg-[#D0E8F0] border border-blue-200 rounded-md">
+              <div className="mb-4 p-3 bg-[#D0E9FB] border border-blue-200 rounded-md">
                 <p className="text-sm text-blue-800">
                   <strong>Note:</strong> You can edit most fields. However, the following fields can only be changed by admin: 
                   <strong> Aadhaar Number</strong>, <strong>Course Selection</strong>, <strong>Institution</strong>, <strong>Stream</strong>, and <strong>Campus</strong>.
@@ -1146,7 +1146,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
                           ...editData,
                           personalDetails: { ...editData.personalDetails, fullName: e.target.value }
                         })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#004D98]"
                       />
                     </div>
                     <div>
@@ -1158,7 +1158,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
                           ...editData,
                           personalDetails: { ...editData.personalDetails, fathersName: e.target.value }
                         })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#004D98]"
                       />
                     </div>
                     <div>
@@ -1170,7 +1170,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
                           ...editData,
                           personalDetails: { ...editData.personalDetails, mothersName: e.target.value }
                         })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#004D98]"
                       />
                     </div>
                     <div>
@@ -1181,7 +1181,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
                           ...editData,
                           personalDetails: { ...editData.personalDetails, gender: e.target.value }
                         })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#004D98]"
                       >
                         <option value="">Select Gender</option>
                         <option value="Male">Male</option>
@@ -1199,7 +1199,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
                           ...editData,
                           personalDetails: { ...editData.personalDetails, dateOfBirth: e.target.value }
                         })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#004D98]"
                       />
                     </div>
                     <div>
@@ -1210,7 +1210,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
                           ...editData,
                           personalDetails: { ...editData.personalDetails, category: e.target.value }
                         })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#004D98]"
                       >
                         <option value="">Select Category</option>
                         <option value="General">General</option>
@@ -1237,11 +1237,11 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Admission Type</label>
                             <div className="flex items-center gap-6 px-3 py-2 border border-gray-300 rounded-md">
                               <label className="flex items-center gap-2 cursor-pointer">
-                                <input type="radio" name="agentEditAdmissionType" checked={admissionType === 'paid'} onChange={() => setAdmissionType('paid')} className="w-4 h-4 text-[#4A1D7A] border-gray-300 focus:ring-[#4A1D7A]" />
+                                <input type="radio" name="agentEditAdmissionType" checked={admissionType === 'paid'} onChange={() => setAdmissionType('paid')} className="w-4 h-4 text-[#0E1A3D] border-gray-300 focus:ring-[#0E1A3D]" />
                                 <span className="text-sm font-medium text-gray-700 dark:text-gray-200">Paid</span>
                               </label>
                               <label className={`flex items-center gap-2 ${freeAllowed ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'}`}>
-                                <input type="radio" name="agentEditAdmissionType" checked={admissionType === 'free'} disabled={!freeAllowed} onChange={() => setAdmissionType('free')} className="w-4 h-4 text-[#4A1D7A] border-gray-300 focus:ring-[#4A1D7A]" />
+                                <input type="radio" name="agentEditAdmissionType" checked={admissionType === 'free'} disabled={!freeAllowed} onChange={() => setAdmissionType('free')} className="w-4 h-4 text-[#0E1A3D] border-gray-300 focus:ring-[#0E1A3D]" />
                                 <span className="text-sm font-medium text-gray-700 dark:text-gray-200">{['SC', 'ST'].includes(cat) ? 'Free' : 'Free (Kisan)'}</span>
                               </label>
                             </div>
@@ -1258,7 +1258,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
                                   ...prev,
                                   personalDetails: { ...prev.personalDetails, [field]: e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 20) }
                                 }))}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#004D98]"
                                 placeholder="e.g. UP89G70308900G"
                                 maxLength="20"
                               />
@@ -1281,7 +1281,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
                             aadharNumber: e.target.value
                           }
                         })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#004D98]"
                       />
                     </div>
                     <div>
@@ -1297,7 +1297,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
                             })}
                             maxLength="20"
                             placeholder="Not Available"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#004D98]"
                         />
                     </div>
                     <div>
@@ -1313,7 +1313,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
                             })}
                             maxLength="12"
                             placeholder="Not Available"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#004D98]"
                         />
                     </div>
                   </div>
@@ -1336,7 +1336,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
                           });
                         }}
                         maxLength="10"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#004D98]"
                       />
                     </div>
                     <div>
@@ -1352,7 +1352,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
                           });
                         }}
                         maxLength="10"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#004D98]"
                       />
                     </div>
                     <div>
@@ -1364,7 +1364,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
                           ...editData,
                           contactDetails: { ...editData.contactDetails, email: e.target.value }
                         })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#004D98]"
                       />
                     </div>
                   </div>
@@ -1388,7 +1388,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
                             }
                           })}
                           rows={2}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#004D98]"
                       />
                     </div>
                     <div>
@@ -1406,7 +1406,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
                               }
                             }
                           })}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#004D98]"
                         />
                       </div>
                       <div>
@@ -1424,7 +1424,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
                               }
                             }
                           })}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#004D98]"
                         />
                       </div>
                       <div>
@@ -1442,7 +1442,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
                               }
                             }
                           })}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#004D98]"
                         />
                       </div>
                       <div>
@@ -1464,7 +1464,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
                             });
                           }}
                           maxLength="6"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#004D98]"
                         />
                       </div>
                       <div>
@@ -1482,7 +1482,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
                               }
                             }
                           })}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#004D98]"
                         />
                       </div>
                     </div>
@@ -1507,7 +1507,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
                             }
                         })}
                           rows={2}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#004D98]"
                       />
                     </div>
                     <div>
@@ -1525,7 +1525,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
                               }
                             }
                         })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#004D98]"
                       />
                     </div>
                     <div>
@@ -1543,7 +1543,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
                               }
                             }
                         })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#004D98]"
                       />
                     </div>
                     <div>
@@ -1565,7 +1565,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
                             });
                           }}
                           maxLength="6"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#004D98]"
                       />
                       </div>
                     </div>
@@ -1747,7 +1747,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
                           ...editData,
                           guardianDetails: { ...editData.guardianDetails, guardianName: e.target.value }
                         })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#004D98]"
                       />
                     </div>
                     <div>
@@ -1763,7 +1763,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
                           });
                         }}
                         maxLength="10"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#004D98]"
                       />
                     </div>
                     <div>
@@ -1775,7 +1775,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
                           ...editData,
                           guardianDetails: { ...editData.guardianDetails, guardianEmail: e.target.value }
                         })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#004D98]"
                       />
                     </div>
                     <div>
@@ -1786,7 +1786,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
                           ...editData,
                           guardianDetails: { ...editData.guardianDetails, relationship: e.target.value }
                         })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#004D98]"
                       >
                         <option value="">Select Relationship</option>
                         <option value="Father">Father</option>
@@ -1804,14 +1804,14 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
                 </div>
 
                 {/* Document Upload Instructions */}
-                <div className="bg-[#D0E8F0] dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                <div className="bg-[#D0E9FB] dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
                   <h4 className="text-md font-semibold text-blue-800 dark:text-blue-200 mb-2 flex items-center">
                     📎 Document Management
                   </h4>
-                  <p className="text-sm text-[#1D4B5E] dark:text-blue-300 mb-2">
+                  <p className="text-sm text-[#003B75] dark:text-blue-300 mb-2">
                     To upload or update documents for this student:
                   </p>
-                  <ol className="text-sm text-[#1D4B5E] dark:text-blue-300 list-decimal list-inside space-y-1">
+                  <ol className="text-sm text-[#003B75] dark:text-blue-300 list-decimal list-inside space-y-1">
                     <li>Click "Save Changes" below to update the student information</li>
                     <li>Go to the <strong>"Documents"</strong> tab in the main dashboard</li>
                     <li>Find this student and upload/update their documents</li>
@@ -1822,7 +1822,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
               </div>
 
             {/* Footer with Actions */}
-            <div className="p-6 border-t border-gray-200 bg-gray-50 dark:bg-[#1A1212] flex-shrink-0">
+            <div className="p-6 border-t border-gray-200 bg-gray-50 dark:bg-[#0A1430] flex-shrink-0">
               <div className="flex justify-end space-x-3">
                 <button
                   onClick={() => {
@@ -1830,13 +1830,13 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
                     setSelectedStudent(null);
                     setEditData({});
                   }}
-                  className="px-4 py-2 text-gray-600 dark:text-gray-300 border border-gray-300 rounded-md hover:bg-gray-50 dark:bg-[#1A1212]"
+                  className="px-4 py-2 text-gray-600 dark:text-gray-300 border border-gray-300 rounded-md hover:bg-gray-50 dark:bg-[#0A1430]"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleSaveEdit}
-                  className="px-4 py-2 bg-[#387B95] text-white rounded-md hover:bg-[#1D4B5E]"
+                  className="px-4 py-2 bg-[#004D98] text-white rounded-md hover:bg-[#003B75]"
                 >
                   Save Changes
                 </button>
@@ -1850,7 +1850,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
       {/* Rejection Details Modal */}
       {showRejectionModal && rejectionDetails && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-white dark:bg-[#122048] rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6">
               <div className="flex justify-between items-center mb-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
@@ -1900,7 +1900,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
                     </h4>
                     <div className="space-y-4">
                       {rejectionDetails.rejectionDetails.map((detail, index) => (
-                        <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-[#231A2E]">
+                        <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-[#122048]">
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Issue: </span>
@@ -1939,7 +1939,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
                     <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100 mb-4">Additional Notes</h4>
                     <div className="space-y-2">
                       {rejectionDetails.adminNotes.map((note, index) => (
-                        <div key={index} className="border-l-4 border-gray-400 pl-4 py-2 bg-gray-50 dark:bg-[#231A2E]">
+                        <div key={index} className="border-l-4 border-gray-400 pl-4 py-2 bg-gray-50 dark:bg-[#122048]">
                           <p className="text-sm text-gray-900 dark:text-gray-100">{note.note || note}</p>
                           {note.addedAt && (
                             <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">{new Date(note.addedAt).toLocaleString()}</p>
@@ -1951,7 +1951,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
                 )}
 
                 {/* Action Instructions */}
-                <div className="bg-[#D0E8F0] dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                <div className="bg-[#D0E9FB] dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
                   <h4 className="text-md font-semibold text-blue-800 dark:text-blue-200 mb-2">
                     Next Steps
                   </h4>
@@ -1969,7 +1969,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
               <div className="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-200">
                 <button
                   onClick={() => setShowRejectionModal(false)}
-                  className="px-4 py-2 text-gray-600 dark:text-gray-300 border border-gray-300 rounded-md hover:bg-gray-50 dark:bg-[#1A1212]"
+                  className="px-4 py-2 text-gray-600 dark:text-gray-300 border border-gray-300 rounded-md hover:bg-gray-50 dark:bg-[#0A1430]"
                 >
                   Close
                 </button>
@@ -1980,7 +1980,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
                         setShowRejectionModal(false);
                         handleEditStudent(selectedStudent);
                       }}
-                      className="px-4 py-2 bg-[#387B95] text-white rounded-md hover:bg-[#1D4B5E]"
+                      className="px-4 py-2 bg-[#004D98] text-white rounded-md hover:bg-[#003B75]"
                     >
                       Edit Application
                     </button>

@@ -33,7 +33,7 @@ const TablePagination = ({ currentPage, totalPages, itemsPerPage, totalItems, on
                                 key={pageNum}
                                 onClick={() => onPageChange(pageNum)}
                                 className={`px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md text-sm ${currentPage === pageNum
-                                    ? 'bg-[#4A1D7A] text-white border-[#4A1D7A]'
+                                    ? 'bg-[#0E1A3D] text-white border-[#0E1A3D]'
                                     : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'
                                     }`}
                             >

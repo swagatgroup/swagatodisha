@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom'
 import { MotionConfig } from 'framer-motion'
 import Header from '../Header'
 import Footer from '../Footer'
+import RouteSeo from './RouteSeo'
 
 // Root for every public (non-dashboard) route: scopes the redesign
 // base styles (`.site` in styles/site.css) and makes framer-motion
@@ -10,6 +11,7 @@ import Footer from '../Footer'
 const SiteRoot = ({ chrome = false }) => (
     <MotionConfig reducedMotion="user">
         <div className="site">
+            <RouteSeo />
             {chrome && (
                 <a
                     href="#main"

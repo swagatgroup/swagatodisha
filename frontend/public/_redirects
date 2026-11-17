@@ -1,2 +1,2 @@
-# Redirect all routes to index.html for SPA routing
-/*    /index.html   200
+# Prerendered public pages are served as files; everything else (dashboards, sign-in) gets the app shell
+/*    /app.html   200

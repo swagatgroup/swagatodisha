@@ -2,8 +2,28 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { resolve } from 'path'
 
+// Image/asset names are shared by the browser build and the prerender (SSR) build,
+// so prerendered HTML points at the same files
+const assetFileNames = (assetInfo) => {
+  const info = assetInfo.name.split('.');
+  const ext = info[info.length - 1];
+  if (ext === 'jsx') {
+    // Force JSX files to have .js extension
+    return `js/[name]-[hash].js`;
+  }
+  if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(ext)) {
+    // Keep images at root level for easier referencing
+    return `[name][extname]`;
+  }
+  if (/css/i.test(ext)) {
+    return `[name]-[hash][extname]`;
+  }
+  return `assets/[name]-[hash][extname]`;
+};
+
 // https://vite.dev/config/
-export default defineConfig({
+// `isSsrBuild` is the build-time prerender (scripts/prerender.mjs): no chunk splitting or minifying there
+export default defineConfig(({ isSsrBuild }) => ({
   plugins: [react()],
 
   // Base path for production builds
@@ -16,7 +36,7 @@ export default defineConfig({
 
     // Optimize chunk size
     rollupOptions: {
-      output: {
+      output: isSsrBuild ? { assetFileNames } : {
         // Manual chunk splitting for better caching
         manualChunks: {
           // Vendor chunks
@@ -24,11 +44,9 @@ export default defineConfig({
           'framer-motion': ['framer-motion'],
           'react-icons': ['react-icons'],
           'sweetalert': ['sweetalert2'],
-          'emailjs': ['@emailjs/browser'],
 
           // Separate utilities
           'utils': [
-            './src/utils/helpers.js',
             './src/utils/constants.js'
           ]
         },
@@ -39,27 +57,12 @@ export default defineConfig({
           return `js/${facadeModuleId}-[hash].js`;
         },
         entryFileNames: 'js/[name]-[hash].js',
-        assetFileNames: (assetInfo) => {
-          const info = assetInfo.name.split('.');
-          const ext = info[info.length - 1];
-          if (ext === 'jsx') {
-            // Force JSX files to have .js extension
-            return `js/[name]-[hash].js`;
-          }
-          if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(ext)) {
-            // Keep images at root level for easier referencing
-            return `[name][extname]`;
-          }
-          if (/css/i.test(ext)) {
-            return `[name]-[hash][extname]`;
-          }
-          return `assets/[name]-[hash][extname]`;
-        }
+        assetFileNames
       }
     },
 
     // Optimize bundle size
-    minify: 'terser',
+    minify: isSsrBuild ? false : 'terser',
     terserOptions: {
       compress: {
         drop_console: true,
@@ -135,4 +138,4 @@ export default defineConfig({
     __DEV__: JSON.stringify(process.env.NODE_ENV === 'development'),
     __PROD__: JSON.stringify(process.env.NODE_ENV === 'production')
   }
-})
+}))

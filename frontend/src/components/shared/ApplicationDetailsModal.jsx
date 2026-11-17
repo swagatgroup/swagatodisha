@@ -30,9 +30,9 @@ const getStatusColor = (status) => {
         case 'SUBMITTED': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-[#60A5FA]';
         case 'UNDER_REVIEW': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400';
         case 'REJECTED': return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400';
-        case 'DRAFT': return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-300';
-        case 'COMPLETE': return 'bg-[#F0E6FA] text-purple-800 dark:bg-[#231A2E]/20 dark:text-[#9B6FCC]';
-        default: return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-300';
+        case 'DRAFT': return 'bg-gray-100 text-gray-800 dark:bg-[#0A1430]/20 dark:text-gray-300';
+        case 'COMPLETE': return 'bg-[#D0E9FB] text-purple-800 dark:bg-[#122048]/20 dark:text-[#BEC6F5]';
+        default: return 'bg-gray-100 text-gray-800 dark:bg-[#0A1430]/20 dark:text-gray-300';
     }
 };
 
@@ -44,7 +44,7 @@ const Field = ({ label, value, className = '' }) => (
 );
 
 const Section = ({ icon, title, children, headerRight = null }) => (
-    <div className="bg-gray-50 dark:bg-[#1A1212] rounded-lg p-4">
+    <div className="bg-gray-50 dark:bg-[#0A1430] rounded-lg p-4">
         <h4 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-4 flex items-center justify-between">
             <span className="flex items-center">
                 <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -150,7 +150,7 @@ const ApplicationDetailsModal = ({
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow-xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="bg-white dark:bg-[#122048] rounded-lg shadow-xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
                 <div className="p-6">
                     {/* Header */}
                     <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
@@ -169,7 +169,7 @@ const ApplicationDetailsModal = ({
                                     disabled={!canEdit}
                                     title={canEdit ? 'Edit application' : 'Editing is locked once the application is under review'}
                                     className={`inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-md shadow-sm ${canEdit
-                                        ? 'text-white bg-[#4A1D7A] hover:bg-[#351458]'
+                                        ? 'text-white bg-[#0E1A3D] hover:bg-[#0A1430]'
                                         : 'text-gray-500 bg-gray-200 dark:bg-gray-700 dark:text-gray-400 cursor-not-allowed'}`}
                                 >
                                     {canEdit ? (
@@ -277,15 +277,15 @@ const ApplicationDetailsModal = ({
                         <Section icon={ICONS.money} title="Financial Information" headerRight={financialHeaderActions}>
                             {financialForm}
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div className="bg-white dark:bg-[#231A2E] p-3 rounded border border-gray-200 dark:border-gray-700">
+                                <div className="bg-white dark:bg-[#122048] p-3 rounded border border-gray-200 dark:border-gray-700">
                                     <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Total Course Fee</label>
                                     <p className="text-lg font-bold text-gray-900 dark:text-gray-100">₹{fin.totalFees || 0}</p>
                                 </div>
-                                <div className="bg-white dark:bg-[#231A2E] p-3 rounded border border-gray-200 dark:border-gray-700">
+                                <div className="bg-white dark:bg-[#122048] p-3 rounded border border-gray-200 dark:border-gray-700">
                                     <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Total Paid</label>
                                     <p className="text-lg font-bold text-green-600">₹{fin.paidAmount || 0}</p>
                                 </div>
-                                <div className="bg-white dark:bg-[#231A2E] p-3 rounded border border-gray-200 dark:border-gray-700">
+                                <div className="bg-white dark:bg-[#122048] p-3 rounded border border-gray-200 dark:border-gray-700">
                                     <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Due Amount</label>
                                     <p className="text-lg font-bold text-red-600">₹{fin.dueAmount || 0}</p>
                                 </div>
@@ -302,7 +302,7 @@ const ApplicationDetailsModal = ({
                             ) : (
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                     {documents.map((doc, index) => (
-                                        <div key={doc.documentType || index} className="border border-gray-200 dark:border-gray-700 rounded-lg p-3 bg-white dark:bg-[#231A2E]">
+                                        <div key={doc.documentType || index} className="border border-gray-200 dark:border-gray-700 rounded-lg p-3 bg-white dark:bg-[#122048]">
                                             <div className="flex items-start justify-between gap-2">
                                                 <div className="flex-1 min-w-0">
                                                     <p className="text-sm font-medium text-gray-900 dark:text-gray-100 break-words">{doc.documentType || doc.fileName}</p>
@@ -320,7 +320,7 @@ const ApplicationDetailsModal = ({
                                                         <StaffDocumentUploader applicationId={app._id} replaceType={doc.documentType} onUploaded={handleUploaded} />
                                                     )}
                                                     {doc.filePath && (
-                                                        <button type="button" onClick={() => setPreviewDoc({ url: doc.filePath, title: doc.documentType || doc.fileName, mimeType: doc.mimeType })} className="text-[#387B95] hover:text-blue-800 dark:text-[#60A5FA]" title="View document">
+                                                        <button type="button" onClick={() => setPreviewDoc({ url: doc.filePath, title: doc.documentType || doc.fileName, mimeType: doc.mimeType })} className="text-[#004D98] hover:text-blue-800 dark:text-[#60A5FA]" title="View document">
                                                             <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
@@ -348,10 +348,10 @@ const ApplicationDetailsModal = ({
 
                         {/* Bank Information (student's own payout details); agents don't see it */}
                         {role !== 'agent' && bank?.bankAccountNumber && (
-                            <div className="bg-gray-50 dark:bg-[#1A1212] rounded-lg p-4">
+                            <div className="bg-gray-50 dark:bg-[#0A1430] rounded-lg p-4">
                                 <div className="flex justify-between items-start mb-4">
                                     <h4 className="font-semibold text-lg text-gray-900 dark:text-gray-100 flex items-center">
-                                        <i className="fa-solid fa-building-columns text-[#387B95] mr-2"></i>
+                                        <i className="fa-solid fa-building-columns text-[#004D98] mr-2"></i>
                                         Bank Information (For Payouts)
                                     </h4>
                                     <div>
@@ -418,7 +418,7 @@ const ApplicationDetailsModal = ({
                                             <label className="text-xs font-medium text-red-700 dark:text-red-300">Specific Issues</label>
                                             <ul className="mt-2 space-y-2">
                                                 {app.reviewInfo.rejectionDetails.map((detail, idx) => (
-                                                    <li key={idx} className="text-sm text-red-900 dark:text-red-100 bg-white dark:bg-[#231A2E] rounded p-2">
+                                                    <li key={idx} className="text-sm text-red-900 dark:text-red-100 bg-white dark:bg-[#122048] rounded p-2">
                                                         <strong>{detail.documentType || detail.issue}:</strong> {detail.specificFeedback || detail.actionRequired}
                                                     </li>
                                                 ))}

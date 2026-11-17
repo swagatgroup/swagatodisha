@@ -24,7 +24,7 @@ const DocumentPreviewModal = ({ doc, onClose }) => {
     return (
         <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-[60] p-4" onClick={onClose}>
             <div
-                className="bg-white dark:bg-[#231A2E] rounded-lg shadow-xl w-full max-w-5xl h-[90vh] flex flex-col overflow-hidden"
+                className="bg-white dark:bg-[#122048] rounded-lg shadow-xl w-full max-w-5xl h-[90vh] flex flex-col overflow-hidden"
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="flex justify-between items-center gap-3 px-4 py-3 border-b border-gray-200 dark:border-gray-700">
@@ -35,7 +35,7 @@ const DocumentPreviewModal = ({ doc, onClose }) => {
                         </svg>
                     </button>
                 </div>
-                <div className="flex-1 min-h-0 bg-gray-100 dark:bg-[#1A1212] flex items-center justify-center">
+                <div className="flex-1 min-h-0 bg-gray-100 dark:bg-[#0A1430] flex items-center justify-center">
                     {kind === 'image' && (
                         <img src={doc.url} alt={doc.title || 'Document'} className="max-w-full max-h-full object-contain" />
                     )}
@@ -45,7 +45,7 @@ const DocumentPreviewModal = ({ doc, onClose }) => {
                     {kind === 'other' && (
                         <div className="text-center p-6">
                             <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">This file type can't be previewed here.</p>
-                            <a href={doc.url} download className="px-4 py-2 rounded-md text-white bg-[#4A1D7A] hover:bg-[#351458] text-sm font-medium">
+                            <a href={doc.url} download className="px-4 py-2 rounded-md text-white bg-[#0E1A3D] hover:bg-[#0A1430] text-sm font-medium">
                                 Download File
                             </a>
                         </div>

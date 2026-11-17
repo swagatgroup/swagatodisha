@@ -17,7 +17,7 @@ const formatTime = (value) => new Date(value).toLocaleString('en-IN', {
     day: '2-digit', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit',
 });
 
-const selectClass = 'px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]';
+const selectClass = 'px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#0E1A3D]';
 const pagerClass = 'px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-md text-sm text-gray-700 dark:text-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700';
 
 // The owner's record of changes made across the website: the full page, or (compact) the latest few on the dashboard
@@ -68,11 +68,11 @@ const RecentActivity = ({ compact = false, onViewAll }) => {
     }, [load]);
 
     return (
-        <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
+        <div className="bg-white dark:bg-[#122048] rounded-lg shadow border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
             <div className="flex items-center justify-between gap-3">
                 <div className="min-w-0">
                     <h3 className="flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
-                        <ClockIcon className="h-5 w-5 shrink-0 text-[#4A1D7A] dark:text-[#9B6FCC]" aria-hidden="true" />
+                        <ClockIcon className="h-5 w-5 shrink-0 text-[#0E1A3D] dark:text-[#BEC6F5]" aria-hidden="true" />
                         Recent Activity
                     </h3>
                     <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
@@ -80,7 +80,7 @@ const RecentActivity = ({ compact = false, onViewAll }) => {
                     </p>
                 </div>
                 {compact ? (
-                    <button type="button" onClick={onViewAll} className="shrink-0 px-3 py-2 bg-[#4A1D7A] text-white text-sm rounded-md hover:bg-[#351458] transition-colors">
+                    <button type="button" onClick={onViewAll} className="shrink-0 px-3 py-2 bg-[#0E1A3D] text-white text-sm rounded-md hover:bg-[#0A1430] transition-colors">
                         View all
                     </button>
                 ) : (

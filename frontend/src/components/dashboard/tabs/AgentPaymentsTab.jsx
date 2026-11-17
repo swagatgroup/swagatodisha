@@ -64,7 +64,7 @@ const AgentPaymentsTab = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center bg-white dark:bg-[#231A2E] p-6 rounded-lg shadow-sm">
+      <div className="flex justify-between items-center bg-white dark:bg-[#122048] p-6 rounded-lg shadow-sm">
         <div>
           <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Student Payments</h2>
           <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">Manage fee installments and upload payment slips for your students.</p>
@@ -75,16 +75,16 @@ const AgentPaymentsTab = () => {
             placeholder="Search student..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-10 pr-4 py-2 border rounded-md focus:ring-[#4A1D7A] focus:border-[#4A1D7A] w-64"
+            className="pl-10 pr-4 py-2 border rounded-md focus:ring-[#0E1A3D] focus:border-[#0E1A3D] w-64"
           />
           <MagnifyingGlassIcon className="absolute left-3 top-2.5 h-5 w-5 text-gray-400 dark:text-gray-300" />
         </div>
       </div>
 
-      <div className="bg-white dark:bg-[#231A2E] shadow-sm rounded-lg overflow-hidden border border-gray-200">
+      <div className="bg-white dark:bg-[#122048] shadow-sm rounded-lg overflow-hidden border border-gray-200">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50 dark:bg-[#1A1212]">
+            <thead className="bg-gray-50 dark:bg-[#0A1430]">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Student Details</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Course</th>
@@ -94,18 +94,18 @@ const AgentPaymentsTab = () => {
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Action</th>
               </tr>
             </thead>
-            <tbody className="bg-white dark:bg-[#231A2E] divide-y divide-gray-200">
+            <tbody className="bg-white dark:bg-[#122048] divide-y divide-gray-200">
               {loading ? (
                 <tr>
                   <td colSpan="6" className="px-6 py-12 text-center">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#4A1D7A] mx-auto"></div>
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#0E1A3D] mx-auto"></div>
                   </td>
                 </tr>
               ) : students.length > 0 ? (
                 students.map((student) => {
                   const fin = student.financialStatus || {};
                   return (
-                    <tr key={student._id} className="hover:bg-gray-50 dark:bg-[#1A1212] transition-colors">
+                    <tr key={student._id} className="hover:bg-gray-50 dark:bg-[#0A1430] transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="font-medium text-gray-900 dark:text-gray-100">{student.personalDetails?.fullName || "N/A"}</div>
                         <div className="text-sm text-gray-500 dark:text-gray-300">{student.contactDetails?.primaryPhone || "No Phone"}</div>
@@ -135,7 +135,7 @@ const AgentPaymentsTab = () => {
                             setFinancialStudent(student);
                             setShowFinancialsModal(true);
                           }}
-                          className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-white bg-[#4A1D7A] hover:bg-[#351458] rounded-md transition-colors shadow-sm"
+                          className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-white bg-[#0E1A3D] hover:bg-[#0A1430] rounded-md transition-colors shadow-sm"
                         >
                           <CurrencyRupeeIcon className="h-4 w-4 mr-1" />
                           Manage Slips

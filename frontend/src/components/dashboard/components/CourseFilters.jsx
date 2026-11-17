@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useSession } from '../../../contexts/SessionContext';
 import api from '../../../utils/api';
 
-const selectClass = 'form-select block py-1.5 pl-3 pr-8 text-sm border-gray-300 dark:border-gray-600 dark:bg-[#231A2E] dark:text-white focus:outline-none focus:ring-[#4A1D7A] focus:border-[#4A1D7A] rounded-md';
+const selectClass = 'form-select block py-1.5 pl-3 pr-8 text-sm border-gray-300 dark:border-gray-600 dark:bg-[#122048] dark:text-white focus:outline-none focus:ring-[#0E1A3D] focus:border-[#0E1A3D] rounded-md';
 
 // Category / Session (BOARD) / Semester (UNIVERSITY) filters shown next to the year Session filter.
 // Session and semester options come from the courses set up under Website Management.
@@ -59,7 +59,7 @@ const CourseFilters = () => {
                 <button
                     type="button"
                     onClick={clearCourseFilters}
-                    className="text-sm font-medium text-[#4A1D7A] dark:text-[#C084FC] hover:underline whitespace-nowrap"
+                    className="text-sm font-medium text-[#0E1A3D] dark:text-[#C084FC] hover:underline whitespace-nowrap"
                 >
                     CLEAR FILTERS
                 </button>

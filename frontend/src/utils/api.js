@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { requestFinished, requestStarted, shouldTrackRequest } from './bookLoader';
 import { API_BASE_URL, API_TIMEOUT, IS_DEVELOPMENT } from '../config/environment';
 
 // Log API configuration (both dev and prod for debugging)
@@ -41,6 +42,12 @@ api.interceptors.request.use(
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
+
+        // Book loading overlay for slow requests (pass { silent: true } for background polling)
+        if (shouldTrackRequest(config)) {
+            config._swLoader = true;
+            requestStarted();
+        }
         return config;
     },
     (error) => {
@@ -51,9 +58,12 @@ api.interceptors.request.use(
 // Response interceptor for error handling
 api.interceptors.response.use(
     (response) => {
+        if (response.config?._swLoader) requestFinished();
         return response;
     },
     (error) => {
+        if (error.config?._swLoader) requestFinished();
+
         // Handle network errors (common in production)
         if (error.code === 'ERR_NETWORK' || error.message === 'Network Error' || !error.response) {
             console.error('🌐 Network Error:', error.config?.url);

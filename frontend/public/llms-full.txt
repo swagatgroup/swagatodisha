@@ -1,6 +1,6 @@
 # Swagat Group of Institutions (Swagat Odisha)
 
-> A group of educational institutions in western Odisha, India, offering regular and distance courses with support from admission to course completion.
+> A group of educational institutions in western Odisha, India (Balangir, Nuapada and Kalahandi districts), offering affordable regular and distance courses with support from admission to course completion. Courses range from open schooling (NIOS, BOSSE, OSBME) to degrees, management, paramedical and nursing, engineering, teacher education and computer courses.
 
 ## Contact
 - Phone: +91 78559 59544
@@ -18,7 +18,8 @@
 - Ghantiguda: Ghantiguda, PO - Chalna, PS - Sinapali, Nuapada, Odisha 766108 (map: https://www.google.com/maps/search/?api=1&query=20.099885,82.677498)
 
 ## Pages
-- [Home](https://www.swagatodisha.com/): admissions posters, time tables, notifications, results, career roadmaps, institutions and campuses
+- [Home](https://www.swagatodisha.com/): admissions posters, Explore Swagat (exam notifications, latest updates, time tables, results), institutions, career roadmap after 10th, campuses and common questions
+- [Courses](https://www.swagatodisha.com/courses): every course with duration and fees: open schooling (NIOS, BOSSE, OSBME), degree, management, paramedical and nursing, engineering and polytechnic, teacher education and computer courses
 - [About Us](https://www.swagatodisha.com/about)
 - [Gallery](https://www.swagatodisha.com/gallery)
 - [Contact Us](https://www.swagatodisha.com/contact)
@@ -26,6 +27,180 @@
 - [Swagat Public School, Ghantiguda](https://www.swagatodisha.com/SwagatPublicSchool_Ghantiguda)
 
 ## Common questions
-- Where is Swagat Group of Institutions? The main campus is at Sargiguda near Kantabanji in Balangir district, Odisha. Other campuses are in Kantabanji, Bangomunda, Titilagarh, Sinapali, Ghantiguda and Bhawanipatna.
-- Does Swagat offer distance education? Yes, both regular and distance courses.
-- How do I apply or ask about admission? Call +91 78559 59544, email contact@swagatodisha.com, or register on the website.
+- Which is the best institute for distance courses in Odisha? Choose by the courses, fees, approvals and the support you get until you finish. Swagat Group of Institutions offers affordable regular and distance courses from seven campuses in western Odisha (Balangir, Nuapada and Kalahandi districts) and stays with students from admission to course completion. Call +91 78559 59544 to compare courses and fees.
+- Where is Swagat Group of Institutions? The main campus is at Sargiguda, PO - Sargul, PS - Kantabanji, Balangir, Odisha 767039. Other campuses are in Kantabanji, Bangomunda, Titilagarh, Sinapali, Ghantiguda and Bhawanipatna.
+- Does Swagat offer distance education in Odisha? Yes. Swagat offers both regular and distance courses, and supports students from admission through to course completion.
+- Which courses does Swagat offer? School and open schooling (NIOS, BOSSE and OSBME), degree courses such as B.A., B.Sc., B.Com. and B.S.W., management (BBA, MBA), paramedical and nursing, engineering and polytechnic, teacher education (B.Ed., D.El.Ed.) and computer courses (DCA, BCA, MCA). The Courses page lists every course with its duration and fees.
+- Where can I find exam notifications, time tables and results? Open the Explore Swagat section on the homepage. It has Exam Notifications, Time Tables, Results and Latest Updates, and anything uploaded in the last 60 days is marked New.
+- Can Swagat help me choose a career after 10th? Yes. The Career Roadmap After 10th on the homepage shows science, commerce, arts and vocational paths, and you can call +91 78559 59544 for career counselling.
+- How do I apply or ask about admission? Call +91 78559 59544, email contact@swagatodisha.com, or register on the website. You can also visit any of the seven campuses.
+
+## All courses (duration, total fee where listed)
+Full list with fee details: https://www.swagatodisha.com/courses
+
+### School: Primary & Secondary Education
+Comprehensive education from primary to secondary levels with modern teaching methodologies and holistic development focus across multiple campuses.
+- Swagat Public School, Ghantiguda, Sinapali (Primary & Secondary): Complete school education from Class 1 to 10 with CBSE curriculum in a modern learning environment
+- Swagat Public School, Sargiguda, Kantabanji (Primary & Secondary): Complete school education from Class 1 to 10 with CBSE curriculum in a nurturing environment
+- Swagat Public School, Lakhna, Nuapada (Primary & Secondary): Complete school education from Class 1 to 10 with CBSE curriculum with focus on holistic development
+
+### Higher Secondary School: Advanced Secondary Education
+Specialized higher secondary education with focus on academic excellence and career preparation through multiple recognized boards.
+- NIOS (National Institute of Open Schooling) (10th, +2 Arts, Science, Commerce, total fee ₹2,200): Flexible learning with recognized qualifications for 10th and 12th standard
+- BOSSE (Board of Open Schooling and Skill Education) (10th, +2 Arts, Science, Commerce, total fee ₹2,700): Alternative education board offering flexible learning options
+- OSBME (Odisha State Board of Madrasa Education) (10th, +2 Arts, Commerce, total fee ₹2,400): State-recognized board for Islamic education and general subjects
+
+### Degree College: Undergraduate & Postgraduate Programs
+Comprehensive degree programs across various disciplines with industry-aligned curriculum and expert faculty.
+- Bachelors Degree Programs (Undergraduate Programs):
+  - B.A. (Bachelor of Arts) (3 Years, total fee ₹49,000): Comprehensive arts program with specializations in History, Political Science, Economics, Sociology, and Literature
+  - B.Sc. (Bachelor of Science) (3 Years, total fee ₹58,000): Science programs in Physics, Chemistry, Mathematics, Biology, and Computer Science
+  - B.Com. (Bachelor of Commerce) (3 Years, total fee ₹52,500): Commerce program with accounting, finance, and business management focus
+  - B.S.W. (Bachelor of Social Work) (3 Years, total fee ₹53,800): Social work program with community development and social welfare focus
+  - B.Libs (Bachelor of Library Science) (3 Years, total fee ₹48,000): Library science program with information management and digital library systems
+- Masters Degree Programs (Postgraduate Programs):
+  - M.A. (Master of Arts) (2 Years, total fee ₹61,000): Advanced studies in Arts with research methodology and specialized electives
+  - M.Sc. (Master of Science) (2 Years, total fee ₹70,000): Advanced science programs with laboratory research and thesis work
+  - M.Com. (Master of Commerce) (2 Years, total fee ₹67,500): Advanced commerce with financial analysis and business research
+  - M.S.W. (Master of Social Work) (2 Years, total fee ₹66,000): Advanced social work with community development and policy research
+  - M.Libs (Master of Library Science) (2 Years, total fee ₹64,200): Advanced library science with digital information systems and research
+
+### Management School: Business & Management Education
+Professional management education with practical business insights and leadership development programs.
+- Undergraduate Programs (BBA & Related Degrees):
+  - B.B.A. (Bachelor of Business Administration) (3 Years, total fee ₹1,26,000): Comprehensive business administration program covering all aspects of modern business
+  - B.B.A. in Finance (3 Years, total fee ₹1,32,000): Specialized BBA program focusing on financial management and banking
+  - B.B.A. in Marketing (3 Years, total fee ₹1,29,000): BBA program specializing in marketing strategies and digital marketing
+  - B.B.A. in Human Resources (3 Years, total fee ₹1,27,200): BBA program focusing on HR management and organizational behavior
+  - B.B.A. in International Business (3 Years, total fee ₹1,38,800): BBA program with global business perspective and international trade focus
+- Postgraduate Programs (MBA & Advanced Management):
+  - M.B.A. (Master of Business Administration) (2 Years, total fee ₹1,81,500): Advanced business management with specialization options
+  - M.B.A. in Finance (2 Years, total fee ₹1,87,500): MBA specializing in financial management, investment banking, and corporate finance
+  - M.B.A. in Marketing (2 Years, total fee ₹1,84,000): MBA focusing on digital marketing, brand management, and market research
+  - M.B.A. in Human Resources (2 Years, total fee ₹1,79,000): MBA specializing in HR strategy, talent management, and organizational development
+  - M.B.A. in Operations Management (2 Years, total fee ₹1,82,200): MBA focusing on supply chain management, quality control, and process optimization
+  - M.B.A. in Information Technology (2 Years, total fee ₹1,93,800): MBA combining business management with IT strategy and digital transformation
+- Specialized Management Programs (Finance & Control):
+  - M.F.C. (Master of Finance and Control) (2 Years, total fee ₹1,62,000): Specialized program in financial management and control systems
+  - P.G.D.F.M. (Post Graduate Diploma in Financial Management) (1 Year, total fee ₹46,800): Intensive financial management program for working professionals
+  - P.G.D.C.A. (Post Graduate Diploma in Computer Applications) (1 Year, total fee ₹39,500): Computer applications program for business and management professionals
+  - P.M.I.R. (Post Graduate Diploma in Management) (1 Year, total fee ₹43,500): Intensive management program for working professionals
+
+### ParaMedical: Medical & Healthcare Training
+Professional healthcare training programs with practical experience and industry-standard certifications.
+- Medical Laboratory Technology (Diagnostic & Laboratory Programs):
+  - D.M.L.T. (Diploma in Medical Laboratory Technology) (2 Years, total fee ₹65,000): Training in clinical laboratory procedures, blood analysis, and diagnostic testing
+  - D.M.R.T. (Diploma in Medical Radiology Technology) (2 Years, total fee ₹69,000): Radiology technology training with X-ray, CT scan, and MRI procedures
+  - B.Sc. Medical Laboratory Technology (3 Years, total fee ₹1,00,000): Bachelor degree in medical lab technology with advanced diagnostic techniques
+  - B.Sc. Medical Imaging Technology (3 Years, total fee ₹1,06,000): Advanced imaging technology program covering all diagnostic modalities
+- Nursing Programs (Comprehensive Nursing Education):
+  - A.N.M. (Auxiliary Nurse Midwifery) (2 Years, total fee ₹52,000): Basic nursing care and midwifery training for healthcare support
+  - G.N.M. (General Nursing and Midwifery) (3 Years, total fee ₹78,000): Comprehensive nursing program with midwifery and general nursing care
+  - B.Sc. Nursing (4 Years, total fee ₹1,39,000): Bachelor degree in nursing with advanced clinical practice and research
+  - Post Basic B.Sc. Nursing (2 Years, total fee ₹89,500): Post-basic nursing degree for GNM graduates with specialization options
+  - M.Sc. Nursing (2 Years, total fee ₹1,48,000): Master degree in nursing with advanced practice and research focus
+- Allied Health Sciences (Specialized Healthcare Programs):
+  - B.Sc. Operation Theatre Technology (3 Years, total fee ₹1,00,000): Operation theatre management and surgical technology training
+  - B.Sc. Cardiac Care Technology (3 Years, total fee ₹1,06,000): Cardiac care and cardiovascular technology with ECG and stress testing
+  - B.Sc. Respiratory Care Technology (3 Years, total fee ₹1,02,700): Respiratory therapy and pulmonary function testing technology
+  - B.Sc. Dialysis Technology (3 Years, total fee ₹1,01,800): Dialysis technology and renal care procedures
+  - B.Sc. Optometry (3 Years, total fee ₹1,08,800): Optometry and vision care technology with clinical practice
+  - B.Sc. Physiotherapy (4 Years, total fee ₹1,39,000): Physiotherapy and rehabilitation technology with clinical practice
+- Public Health Programs (Community Health & Epidemiology):
+  - B.Sc. Public Health (3 Years, total fee ₹77,000): Public health fundamentals with community health and epidemiology
+  - B.Sc. Health Administration (3 Years, total fee ₹79,700): Healthcare administration and hospital management
+  - M.Sc. Public Health (2 Years, total fee ₹1,24,000): Advanced public health with research and policy focus
+
+### Engineering: Technical Engineering Education
+State-of-the-art engineering programs with modern laboratories and industry partnerships for practical learning.
+- Engineering Degrees (B.Tech Programs):
+  - B.Tech Computer Science Engineering (4 Years, total fee ₹2,85,000): Comprehensive computer science and engineering program with modern curriculum including AI, ML, and software development
+  - B.Tech Information Technology (4 Years, total fee ₹2,81,200): IT engineering program focusing on information systems, databases, and network technologies
+  - B.Tech Artificial Intelligence & ML (4 Years, total fee ₹3,06,000): AI and Machine Learning engineering with cutting-edge technology and research focus
+  - B.Tech Data Science (4 Years, total fee ₹2,92,800): Data science engineering program with big data analytics and statistical modeling
+  - B.Tech Mechanical Engineering (4 Years, total fee ₹2,70,000): Mechanical engineering program with practical workshops and industry exposure
+  - B.Tech Mechanical & Automation (4 Years, total fee ₹2,74,000): Mechanical engineering with automation and robotics specialization
+  - B.Tech Electrical Engineering (4 Years, total fee ₹2,76,000): Electrical engineering program with power systems and electronics focus
+  - B.Tech Electrical & Electronics (4 Years, total fee ₹2,78,500): Combined electrical and electronics engineering with comprehensive coverage
+  - B.Tech Civil Engineering (4 Years, total fee ₹2,68,000): Civil engineering program with structural and construction focus
+  - B.Tech Civil & Environmental (4 Years, total fee ₹2,70,500): Civil engineering with environmental sustainability and green building focus
+  - B.Tech Electronics & Communication (4 Years, total fee ₹2,79,000): Electronics and communication engineering with modern technology focus
+  - B.Tech Electronics & Instrumentation (4 Years, total fee ₹2,77,200): Electronics engineering with instrumentation and control systems focus
+  - B.Tech Chemical Engineering (4 Years, total fee ₹2,73,800): Chemical engineering with process design and industrial applications
+  - B.Tech Biotechnology (4 Years, total fee ₹2,89,000): Biotechnology engineering with genetic engineering and bioprocessing
+  - B.Tech Food Technology (4 Years, total fee ₹2,69,200): Food technology engineering with food processing and safety focus
+  - B.Tech Agricultural Engineering (4 Years, total fee ₹2,50,000): Agricultural engineering with farm machinery and irrigation systems
+  - B.Tech Mining Engineering (4 Years, total fee ₹2,58,200): Mining engineering with mineral extraction and safety protocols
+  - B.Tech Petroleum Engineering (4 Years, total fee ₹2,96,800): Petroleum engineering with oil and gas exploration technologies
+  - B.Tech Aerospace Engineering (4 Years, total fee ₹3,22,000): Aerospace engineering with aircraft and spacecraft design
+  - B.Tech Marine Engineering (4 Years, total fee ₹2,85,000): Marine engineering with ship design and marine propulsion systems
+- Polytechnic Courses (Diploma Programs):
+  - Diploma in Mechanical Engineering (3 Years, total fee ₹1,02,000): Practical mechanical engineering diploma with workshop training and CAD/CAM
+  - Diploma in Mechanical & Automation (3 Years, total fee ₹1,05,500): Mechanical engineering with automation, robotics, and PLC programming
+  - Diploma in Electrical Engineering (3 Years, total fee ₹1,08,000): Electrical engineering diploma with practical electrical systems training
+  - Diploma in Electrical & Electronics (3 Years, total fee ₹1,09,800): Combined electrical and electronics with power systems and control
+  - Diploma in Civil Engineering (3 Years, total fee ₹96,000): Civil engineering diploma with construction and surveying focus
+  - Diploma in Civil & Environmental (3 Years, total fee ₹99,300): Civil engineering with environmental sustainability and green construction
+  - Diploma in Computer Science (3 Years, total fee ₹1,14,000): Computer science diploma with programming and software development
+  - Diploma in Computer Engineering (3 Years, total fee ₹1,10,800): Computer engineering with hardware and software integration
+  - Diploma in Information Technology (3 Years, total fee ₹1,08,600): IT diploma with database management and network administration
+  - Diploma in Electronics (3 Years, total fee ₹1,10,600): Electronics diploma with circuit design and communication systems
+  - Diploma in Electronics & Communication (3 Years, total fee ₹1,12,000): Electronics with communication systems and wireless technologies
+  - Diploma in Electronics & Instrumentation (3 Years, total fee ₹1,11,300): Electronics with instrumentation and process control systems
+  - Diploma in Chemical Engineering (3 Years, total fee ₹1,03,200): Chemical engineering with process technology and safety
+  - Diploma in Biotechnology (3 Years, total fee ₹1,06,800): Biotechnology with genetic engineering and bioprocessing
+  - Diploma in Food Technology (3 Years, total fee ₹1,01,500): Food technology with food processing and quality control
+  - Diploma in Agricultural Engineering (3 Years, total fee ₹91,800): Agricultural engineering with farm machinery and irrigation
+  - Diploma in Mining Engineering (3 Years, total fee ₹93,500): Mining engineering with mineral extraction and safety protocols
+  - Diploma in Textile Technology (3 Years, total fee ₹92,300): Textile technology with fabric manufacturing and quality control
+  - Diploma in Leather Technology (3 Years, total fee ₹91,800): Leather technology with tanning and finishing processes
+  - Diploma in Ceramic Technology (3 Years, total fee ₹94,400): Ceramic technology with material science and manufacturing
+  - Diploma in Plastic Technology (3 Years, total fee ₹93,400): Plastic technology with polymer science and processing
+
+### Teacher Education: Professional Teacher Training
+Professional teacher training programs with modern pedagogical approaches and practical teaching experience.
+- B.Ed. (Bachelor of Education) (2-Year Teacher Training Program): Comprehensive teacher education program for primary and secondary levels
+- M.Ed. (Master of Education) (2-Year Advanced Teacher Training): Advanced studies in education for experienced teachers
+- D.El.Ed. (Diploma in Elementary Education) (2-Year Elementary Teacher Training): Specialized training for elementary school teachers
+
+### Computer Academy: IT & Computer Training
+Specialized computer training programs with latest technology curriculum and industry-standard certifications.
+- Short-term Diploma Programs (Professional Certifications):
+  - D.C.A. (Diploma in Computer Applications) (6 Months, total fee ₹11,000): Comprehensive computer applications with MS Office, programming basics, and internet
+  - D.C.P. (Diploma in Computer Programming) (8 Months, total fee ₹13,700): Programming fundamentals in C, C++, Java, and web development basics
+  - D.T.P. (Diploma in Desktop Publishing) (6 Months, total fee ₹12,000): Desktop publishing with Adobe Creative Suite, graphic design, and layout
+  - D.W.D. (Diploma in Web Development) (8 Months, total fee ₹14,700): Full-stack web development with HTML, CSS, JavaScript, and modern frameworks
+  - D.D.M. (Diploma in Digital Marketing) (6 Months, total fee ₹12,500): Digital marketing strategies, SEO, social media, and analytics
+  - D.C.C. (Diploma in Computer Course) (3 Months, total fee ₹7,300): Basic computer literacy and essential software applications
+- Undergraduate Programs (Bachelors in Computer Science):
+  - B.C.A. (Bachelor of Computer Applications) (3 Years, total fee ₹1,10,000): Comprehensive computer applications program with programming and software development
+  - B.Sc. Computer Science (3 Years, total fee ₹1,13,200): Computer science program with theoretical foundations and practical applications
+  - B.Sc. Information Technology (3 Years, total fee ₹1,11,600): IT program focusing on information systems, databases, and network technologies
+  - B.Sc. Data Science (3 Years, total fee ₹1,17,000): Data science program with statistics, machine learning, and big data analytics
+  - B.Sc. Artificial Intelligence (3 Years, total fee ₹1,24,000): AI program with machine learning, neural networks, and intelligent systems
+- Postgraduate Programs (Masters in Computer Science):
+  - M.C.A. (Master of Computer Applications) (2 Years, total fee ₹1,24,000): Advanced computer applications with software engineering and project management
+  - M.Sc. Computer Science (2 Years, total fee ₹1,26,200): Advanced computer science with research focus and specialized electives
+  - M.Sc. Information Technology (2 Years, total fee ₹1,25,600): Advanced IT with enterprise systems, cloud computing, and cybersecurity
+  - P.G.D.C.A. (Post Graduate Diploma in Computer Applications) (1 Year, total fee ₹42,500): Intensive computer applications program for working professionals
+  - P.G.D.C.S. (Post Graduate Diploma in Computer Science) (1 Year, total fee ₹46,300): Advanced computer science concepts and modern technologies
+- Professional Certifications (Industry-Recognized Programs):
+  - Microsoft Office Specialist (3 Months, total fee ₹9,000): Certification in MS Office applications (Word, Excel, PowerPoint, Access)
+  - Adobe Creative Suite Certification (4 Months, total fee ₹12,000): Professional certification in Photoshop, Illustrator, InDesign, and Premiere Pro
+  - Cisco CCNA Certification (6 Months, total fee ₹22,000): Cisco Certified Network Associate for networking professionals
+  - AWS Cloud Practitioner (4 Months, total fee ₹16,500): Amazon Web Services cloud computing fundamentals and certification
+  - Python Programming Certification (3 Months, total fee ₹9,500): Comprehensive Python programming with data science applications
+
+## Questions and answers
+- Which is the best institute for distance courses in Odisha? Choose by the courses, fees, approvals and the support you get until you finish. Swagat Group of Institutions offers affordable regular and distance courses from seven campuses in western Odisha (Balangir, Nuapada and Kalahandi districts) and stays with students from admission to course completion. Call +91 78559 59544 to compare courses and fees.
+- Where is Swagat Group of Institutions? The main campus is at Sargiguda, PO - Sargul, PS - Kantabanji, Balangir, Odisha 767039. Other campuses are in Kantabanji, Bangomunda, Titilagarh, Sinapali, Ghantiguda and Bhawanipatna.
+- Does Swagat offer distance education in Odisha? Yes. Swagat offers both regular and distance courses, and supports students from admission through to course completion.
+- Which courses does Swagat offer? School and open schooling (NIOS, BOSSE and OSBME), degree courses such as B.A., B.Sc., B.Com. and B.S.W., management (BBA, MBA), paramedical and nursing, engineering and polytechnic, teacher education (B.Ed., D.El.Ed.) and computer courses (DCA, BCA, MCA). The Courses page lists every course with its duration and fees.
+- Where can I find exam notifications, time tables and results? Open the Explore Swagat section on the homepage. It has Exam Notifications, Time Tables, Results and Latest Updates, and anything uploaded in the last 60 days is marked New.
+- Can Swagat help me choose a career after 10th? Yes. The Career Roadmap After 10th on the homepage shows science, commerce, arts and vocational paths, and you can call +91 78559 59544 for career counselling.
+- How do I apply or ask about admission? Call +91 78559 59544, email contact@swagatodisha.com, or register on the website. You can also visit any of the seven campuses.
+- Which distance courses can I study with Swagat in Odisha? Swagat offers 10th and +2 through open schooling (NIOS, BOSSE and OSBME), plus degree, management, paramedical, teacher education and computer courses. Whether a course runs in regular or distance mode depends on the course and session, so call +91 78559 59544 to confirm the mode for the course you want.
+- Can I complete 10th or +2 through open schooling in Odisha? Yes. Swagat offers 10th and +2 (Arts, Science, Commerce) through NIOS and BOSSE, and 10th and +2 (Arts, Commerce) through OSBME.
+- How much do the courses cost? Each course on this page shows its fee structure. Swagat keeps its fees affordable; call +91 78559 59544 to confirm the fees for the current session.
+- How long do the courses take? Computer certificate and diploma courses take 3 to 8 months, PG diplomas 1 year, D.El.Ed., B.Ed., M.Ed. and most master's degrees 2 years, bachelor's degrees and polytechnic diplomas 3 years, and B.Tech, B.Sc. Nursing and B.Sc. Physiotherapy 4 years.
+- Does Swagat support students after admission? Yes. Swagat stays with students from admission to course completion, not just until the fee is paid.

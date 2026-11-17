@@ -56,7 +56,7 @@ const PaymentPieChart = ({ paymentStats, onSectionClick, title = "Payment Status
   ];
 
   return (
-    <div className="bg-white dark:bg-[#231A2E] p-6 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 mt-6 flex flex-col justify-center items-center h-80">
+    <div className="bg-white dark:bg-[#122048] p-6 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 mt-6 flex flex-col justify-center items-center h-80">
       {total === 0 ? (
         <div className="flex flex-col items-center justify-center text-gray-400 text-sm h-full">
           <p className="font-semibold text-gray-700 dark:text-gray-300 mb-2">{title}</p>

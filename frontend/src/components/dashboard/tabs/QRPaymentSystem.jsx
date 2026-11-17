@@ -15,30 +15,30 @@ const QRPaymentSystem = ({ qrCodeImage, amount }) => {
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6"
+                className="bg-white dark:bg-[#122048] rounded-lg shadow p-6"
             >
                 <div className="text-center">
                     <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Scan & Pay</h3>
                     <p className="text-gray-600 dark:text-gray-300 mb-6">Scan the QR code below using any UPI app to make your payment.</p>
 
-                    <div className="bg-gray-50 dark:bg-[#1A1212] rounded-lg p-8 mb-6 flex flex-col items-center">
+                    <div className="bg-gray-50 dark:bg-[#0A1430] rounded-lg p-8 mb-6 flex flex-col items-center">
                         {qrCodeImage ? (
                             <img 
                                 src={qrCodeImage} 
                                 alt="Payment QR Code" 
-                                className="w-64 h-64 object-contain border border-gray-300 rounded-lg bg-white dark:bg-[#231A2E] shadow-sm"
+                                className="w-64 h-64 object-contain border border-gray-300 rounded-lg bg-white dark:bg-[#122048] shadow-sm"
                             />
                         ) : (
                             <img 
                                 src={defaultQrCode} 
                                 alt="Default Payment QR Code" 
-                                className="w-64 h-64 object-contain border border-gray-300 rounded-lg bg-white dark:bg-[#231A2E] shadow-sm opacity-80"
+                                className="w-64 h-64 object-contain border border-gray-300 rounded-lg bg-white dark:bg-[#122048] shadow-sm opacity-80"
                             />
                         )}
                         
                         {amount > 0 ? (
-                            <div className="mt-6 p-4 bg-[#F0E6FA] text-purple-900 rounded-lg w-full max-w-sm border border-purple-100">
-                                <p className="text-sm text-[#351458] font-medium">Due Amount</p>
+                            <div className="mt-6 p-4 bg-[#D0E9FB] text-purple-900 rounded-lg w-full max-w-sm border border-purple-100">
+                                <p className="text-sm text-[#0A1430] font-medium">Due Amount</p>
                                 <p className="text-2xl font-bold">{formatAmount(amount)}</p>
                             </div>
                         ) : (
@@ -48,7 +48,7 @@ const QRPaymentSystem = ({ qrCodeImage, amount }) => {
                         )}
                     </div>
 
-                    <div className="text-left bg-[#D0E8F0] text-blue-800 p-4 rounded-lg text-sm border border-blue-100">
+                    <div className="text-left bg-[#D0E9FB] text-blue-800 p-4 rounded-lg text-sm border border-blue-100">
                         <p className="font-semibold mb-2 flex items-center">
                             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                             Instructions

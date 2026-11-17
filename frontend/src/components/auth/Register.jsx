@@ -3,6 +3,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import PasswordInput from './PasswordInput';
 import Swal from 'sweetalert2';
+import { setManualLoading } from '../../utils/bookLoader';
 import api from '../../utils/api';
 import { LuArrowLeft, LuCheck, LuCircleAlert, LuCircleCheck, LuLoaderCircle, LuUserPlus } from 'react-icons/lu';
 import AuthShell from '../site/AuthShell';
@@ -198,17 +199,8 @@ const Register = () => {
             return;
         }
 
-        // Show loading alert
-        Swal.fire({
-            title: 'Creating Account...',
-            text: 'Please wait while we create your account',
-            allowOutsideClick: false,
-            allowEscapeKey: false,
-            showConfirmButton: false,
-            didOpen: () => {
-                Swal.showLoading();
-            }
-        });
+        // Book loading overlay while the server responds (it can take up to a minute to wake up)
+        setManualLoading(true);
 
         try {
             setLoading(true);
@@ -267,6 +259,7 @@ const Register = () => {
                 confirmButtonText: 'Try Again'
             });
         } finally {
+            setManualLoading(false);
             setLoading(false);
         }
     };

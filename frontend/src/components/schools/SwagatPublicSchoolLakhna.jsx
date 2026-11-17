@@ -157,19 +157,20 @@ const SwagatPublicSchoolLakhna = () => {
         ],
 
         seoData: {
-            title: "Swagat Public School Lakhna Nuapada - Leading CBSE School in Odisha | Admissions 2024",
-            description: "Swagat Public School Lakhna offers comprehensive CBSE education in Nuapada with modern facilities, experienced faculty, and focus on holistic development. Admissions open for 2024-25.",
-            keywords: "Swagat Public School Lakhna, CBSE school Nuapada, school admissions 2024, best school Nuapada, education Lakhna, CBSE curriculum, holistic development",
-            url: "https://swagatodisha.com/SwagatPublicSchool_Lakhna",
-            image: "https://swagatodisha.com/Swagat_Logo.png",
+            title: "Swagat Public School Lakhna Nuapada - Leading CBSE School in Odisha",
+            description: "Swagat Public School Lakhna offers comprehensive CBSE education in Nuapada with modern facilities, experienced faculty, and focus on holistic development.",
+            keywords: "Swagat Public School Lakhna, CBSE school Nuapada, school admissions, best school Nuapada, education Lakhna, CBSE curriculum, holistic development",
+            url: "https://www.swagatodisha.com/SwagatPublicSchool_Lakhna",
+            image: "https://www.swagatodisha.com/Swagat_Logo.png",
             structuredData: {
                 "@context": "https://schema.org",
-                "@type": "EducationalOrganization",
+                "@type": "School",
+                "parentOrganization": { "@id": "https://www.swagatodisha.com/#organization" },
                 "name": "Swagat Public School",
                 "alternateName": "Swagat Public School Lakhna",
                 "description": "A premier CBSE educational institution in Lakhna, Nuapada, Odisha, providing comprehensive education with focus on holistic development and modern facilities.",
-                "url": "https://swagatodisha.com/SwagatPublicSchool_Lakhna",
-                "logo": "https://swagatodisha.com/Swagat_Logo.png",
+                "url": "https://www.swagatodisha.com/SwagatPublicSchool_Lakhna",
+                "logo": "https://www.swagatodisha.com/Swagat_Logo.png",
                 "address": {
                     "@type": "PostalAddress",
                     "streetAddress": "Swagat Public School",
@@ -207,7 +208,7 @@ const SwagatPublicSchoolLakhna = () => {
                     ]
                 },
                 "sameAs": [
-                    "https://swagatodisha.com"
+                    "https://www.swagatodisha.com"
                 ]
             }
         }

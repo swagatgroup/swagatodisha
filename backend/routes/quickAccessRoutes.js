@@ -16,10 +16,10 @@ router.get('/public', asyncHandler(async (req, res) => {
     const QuickAccess = require('../models/QuickAccess');
     const Notification = require('../models/Notification');
 
-    // Get active QuickAccess documents (exclude 'notification' type since we get those from Notification collection)
+    // Get active QuickAccess documents (exam notifications uploaded here are merged with the
+    // Notification collection below; duplicates are removed by file URL)
     const quickAccessDocs = await QuickAccess.find({ 
-        isActive: true,
-        type: { $ne: 'notification' } // Exclude notification type - we get those from Notification collection
+        isActive: true
     })
         .sort({ type: 1, order: 1, createdAt: -1 })
         .select('-createdBy -updatedBy'); // Exclude populated fields for public access

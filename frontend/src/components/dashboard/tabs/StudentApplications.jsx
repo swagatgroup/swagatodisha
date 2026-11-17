@@ -450,7 +450,7 @@ const StudentApplications = ({ onEditApplication }) => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4A1D7A]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0E1A3D]"></div>
       </div>
     );
   }
@@ -469,7 +469,7 @@ const StudentApplications = ({ onEditApplication }) => {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6"
+        className="bg-white dark:bg-[#122048] rounded-lg shadow p-6"
       >
         <div className="flex items-center justify-between">
           <div>
@@ -515,7 +515,7 @@ const StudentApplications = ({ onEditApplication }) => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6"
+          className="bg-white dark:bg-[#122048] rounded-lg shadow p-6"
         >
           <div className="flex space-x-1">
             {tabs.map((tab) => (
@@ -523,7 +523,7 @@ const StudentApplications = ({ onEditApplication }) => {
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${activeTab === tab.id
-                  ? 'bg-[#F0E6FA] dark:bg-[#351458]/80 text-[#351458] border-2 border-purple-300'
+                  ? 'bg-[#D0E9FB] dark:bg-[#0A1430]/80 text-[#0A1430] border-2 border-purple-300'
                   : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                   }`}
               >
@@ -540,7 +540,7 @@ const StudentApplications = ({ onEditApplication }) => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-white dark:bg-[#231A2E] rounded-lg shadow"
+          className="bg-white dark:bg-[#122048] rounded-lg shadow"
         >
           {applications.length > 0 ? (
             // For students, show single application (not a list)
@@ -553,7 +553,7 @@ const StudentApplications = ({ onEditApplication }) => {
                     animate={{ opacity: 1, x: 0 }}
                     className="p-6"
                   >
-                    <div className="bg-gradient-to-r from-purple-50 to-blue-50 dark:from-[#351458]/40 dark:to-[#1D4B5E]/40 rounded-lg p-6 mb-6">
+                    <div className="bg-gradient-to-r from-purple-50 to-blue-50 dark:from-[#0A1430]/40 dark:to-[#003B75]/40 rounded-lg p-6 mb-6">
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center space-x-3">
                           <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">
@@ -588,26 +588,26 @@ const StudentApplications = ({ onEditApplication }) => {
                           )}
                           <button
                             onClick={() => setViewingApplication(application)}
-                            className="px-4 py-2 text-sm text-[#4A1D7A] dark:text-purple-100 border border-[#4A1D7A] hover:bg-[#F0E6FA] dark:hover:bg-[#351458]/60 rounded-lg font-medium"
+                            className="px-4 py-2 text-sm text-[#0E1A3D] dark:text-purple-100 border border-[#0E1A3D] hover:bg-[#D0E9FB] dark:hover:bg-[#0A1430]/60 rounded-lg font-medium"
                           >
                             View Application
                           </button>
                           <button
                             onClick={() => openApplicationPdf(application._id)}
-                            className="px-4 py-2 text-sm text-white bg-[#4A1D7A] hover:bg-[#351458] rounded-lg"
+                            className="px-4 py-2 text-sm text-white bg-[#0E1A3D] hover:bg-[#0A1430] rounded-lg"
                           >
                             View PDF
                           </button>
                           <button
                             onClick={() => printInvoice(application)}
-                            className="px-4 py-2 text-sm text-[#351458] dark:text-purple-100 bg-[#F0E6FA] dark:bg-[#351458]/80 dark:bg-[#351458]/80 border border-purple-200 hover:bg-purple-200 rounded-lg font-medium shadow-sm flex items-center"
+                            className="px-4 py-2 text-sm text-[#0A1430] dark:text-purple-100 bg-[#D0E9FB] dark:bg-[#0A1430]/80 dark:bg-[#0A1430]/80 border border-purple-200 hover:bg-purple-200 rounded-lg font-medium shadow-sm flex items-center"
                           >
                             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-3a2 2 0 00-2-2H9a2 2 0 00-2 2v3a2 2 0 002 2zm5-17V7a4 4 0 00-8 0v4h8z" /></svg>
                             Invoice
                           </button>
                           <button
                             onClick={() => openInstallmentsModal(application)}
-                            className="px-4 py-2 text-sm text-[#1D4B5E] bg-blue-100 dark:bg-blue-900/40 border border-blue-200 hover:bg-blue-200 rounded-lg font-medium shadow-sm flex items-center"
+                            className="px-4 py-2 text-sm text-[#003B75] bg-blue-100 dark:bg-blue-900/40 border border-blue-200 hover:bg-blue-200 rounded-lg font-medium shadow-sm flex items-center"
                           >
                             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
                             Upload Slip
@@ -688,7 +688,7 @@ const StudentApplications = ({ onEditApplication }) => {
                         <div className="flex items-center space-x-3 mt-4">
                           <button
                             onClick={() => handleResubmit(application)}
-                            className="px-5 py-2.5 text-sm font-medium text-white bg-[#4A1D7A] hover:bg-[#351458] rounded-lg shadow-sm transition-colors"
+                            className="px-5 py-2.5 text-sm font-medium text-white bg-[#0E1A3D] hover:bg-[#0A1430] rounded-lg shadow-sm transition-colors"
                           >
                             <span className="flex items-center">
                               <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -704,7 +704,7 @@ const StudentApplications = ({ onEditApplication }) => {
                     {/* Application Details */}
                     <div className="space-y-4">
                       {application.reviewNotes && (
-                        <div className="p-4 bg-[#D0E8F0] rounded-lg border border-blue-200">
+                        <div className="p-4 bg-[#D0E9FB] rounded-lg border border-blue-200">
                           <p className="text-sm font-medium text-blue-900 mb-2">
                             Review Notes:
                           </p>
@@ -715,7 +715,7 @@ const StudentApplications = ({ onEditApplication }) => {
                       )}
 
                       {application.notes && (
-                        <div className="p-4 bg-gray-50 dark:bg-[#1A1212] rounded-lg border border-gray-200">
+                        <div className="p-4 bg-gray-50 dark:bg-[#0A1430] rounded-lg border border-gray-200">
                           <p className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">
                             Notes:
                           </p>
@@ -737,7 +737,7 @@ const StudentApplications = ({ onEditApplication }) => {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    className="p-6 hover:bg-gray-50 dark:bg-[#1A1212]"
+                    className="p-6 hover:bg-gray-50 dark:bg-[#0A1430]"
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
@@ -794,7 +794,7 @@ const StudentApplications = ({ onEditApplication }) => {
                           </p>
                         )}
                         {application.reviewNotes && (
-                          <div className="mt-3 p-3 bg-[#D0E8F0] rounded-lg">
+                          <div className="mt-3 p-3 bg-[#D0E9FB] rounded-lg">
                             <p className="text-sm font-medium text-blue-900">
                               Review Notes:
                             </p>
@@ -817,7 +817,7 @@ const StudentApplications = ({ onEditApplication }) => {
                         )}
                         <button
                           onClick={() => setViewingApplication(application)}
-                          className="px-3 py-1 text-sm text-[#4A1D7A] hover:bg-[#F0E6FA] rounded-lg font-medium"
+                          className="px-3 py-1 text-sm text-[#0E1A3D] hover:bg-[#D0E9FB] rounded-lg font-medium"
                         >
                           View Application
                         </button>
@@ -829,13 +829,13 @@ const StudentApplications = ({ onEditApplication }) => {
                         </button>
                         <button
                           onClick={() => printInvoice(application)}
-                          className="px-3 py-1 text-sm text-[#4A1D7A] hover:text-purple-800 hover:bg-[#F0E6FA] dark:bg-[#351458]/80 rounded-lg font-medium"
+                          className="px-3 py-1 text-sm text-[#0E1A3D] hover:text-purple-800 hover:bg-[#D0E9FB] dark:bg-[#0A1430]/80 rounded-lg font-medium"
                         >
                           Invoice
                         </button>
                         <button
                           onClick={() => openInstallmentsModal(application)}
-                          className="px-3 py-1 text-sm text-[#387B95] hover:text-blue-800 dark:text-blue-200 hover:bg-[#D0E8F0] rounded-lg font-medium"
+                          className="px-3 py-1 text-sm text-[#004D98] hover:text-blue-800 dark:text-blue-200 hover:bg-[#D0E9FB] rounded-lg font-medium"
                         >
                           Upload Slip
                         </button>
@@ -847,9 +847,9 @@ const StudentApplications = ({ onEditApplication }) => {
             )
           ) : (
             <div className="text-center py-12">
-              <div className="mx-auto h-12 w-12 bg-[#F0E6FA] dark:bg-[#351458]/80 rounded-full flex items-center justify-center mb-4">
+              <div className="mx-auto h-12 w-12 bg-[#D0E9FB] dark:bg-[#0A1430]/80 rounded-full flex items-center justify-center mb-4">
                 <svg
-                  className="h-6 w-6 text-[#4A1D7A]"
+                  className="h-6 w-6 text-[#0E1A3D]"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -873,7 +873,7 @@ const StudentApplications = ({ onEditApplication }) => {
               {userRole !== 'student' && (
                 <button
                   onClick={() => setShowNewApplicationModal(true)}
-                  className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-[#4A1D7A] hover:bg-[#351458]"
+                  className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-[#0E1A3D] hover:bg-[#0A1430]"
                 >
                   <svg
                     className="h-4 w-4 mr-2"
@@ -933,7 +933,7 @@ const StudentApplications = ({ onEditApplication }) => {
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white dark:bg-[#231A2E] rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col"
+            className="bg-white dark:bg-[#122048] rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col"
           >
             <div className="p-4 border-b flex items-center justify-between">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
@@ -942,7 +942,7 @@ const StudentApplications = ({ onEditApplication }) => {
               <div className="flex items-center gap-2">
                 <button
                   onClick={downloadApplicationPdf}
-                  className="px-3 py-1.5 bg-[#4A1D7A] text-white rounded-md text-sm hover:bg-[#351458]"
+                  className="px-3 py-1.5 bg-[#0E1A3D] text-white rounded-md text-sm hover:bg-[#0A1430]"
                 >
                   Download
                 </button>
@@ -963,7 +963,7 @@ const StudentApplications = ({ onEditApplication }) => {
             <div className="flex-1 overflow-auto">
               {generatingPdf && selectedApplicationForPdf && (
                 <div className="flex flex-col items-center justify-center h-[70vh]">
-                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4A1D7A] mb-4"></div>
+                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0E1A3D] mb-4"></div>
                    <p className="text-gray-600 dark:text-gray-300">Generating your Application PDF...</p>
                    {/* Hidden generator */}
                    <div className="hidden">
@@ -1022,15 +1022,15 @@ const StudentApplications = ({ onEditApplication }) => {
           footer={
             <button
               onClick={() => setShowInstallmentsModal(false)}
-              className="px-4 py-2 bg-white dark:bg-[#231A2E] border border-gray-300 rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50"
+              className="px-4 py-2 bg-white dark:bg-[#122048] border border-gray-300 rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50"
             >
               Close
             </button>
           }
         >
-                <div className="bg-white dark:bg-[#231A2E] rounded-lg border border-gray-200 overflow-hidden">
+                <div className="bg-white dark:bg-[#122048] rounded-lg border border-gray-200 overflow-hidden">
                     <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50 dark:bg-[#1A1212]">
+                        <thead className="bg-gray-50 dark:bg-[#0A1430]">
                             <tr>
                                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Inst #</th>
                                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Date</th>
@@ -1040,7 +1040,7 @@ const StudentApplications = ({ onEditApplication }) => {
                                 <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Action</th>
                             </tr>
                         </thead>
-                        <tbody className="bg-white dark:bg-[#231A2E] divide-y divide-gray-200">
+                        <tbody className="bg-white dark:bg-[#122048] divide-y divide-gray-200">
                             {(selectedAppForInstallments.financialStatus?.installments || []).map((inst) => (
                                 <tr key={inst._id || inst.installmentNumber}>
                                     <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
@@ -1063,7 +1063,7 @@ const StudentApplications = ({ onEditApplication }) => {
                                     </td>
                                     <td className="px-4 py-4 whitespace-nowrap text-sm">
                                         {inst.receiptUrl ? (
-                                            <a href={inst.receiptUrl} target="_blank" rel="noopener noreferrer" className="text-[#387B95] hover:text-blue-800 dark:text-blue-200 hover:underline">
+                                            <a href={inst.receiptUrl} target="_blank" rel="noopener noreferrer" className="text-[#004D98] hover:text-blue-800 dark:text-blue-200 hover:underline">
                                                 View Slip
                                             </a>
                                         ) : (
@@ -1074,7 +1074,7 @@ const StudentApplications = ({ onEditApplication }) => {
                                         {inst.status !== 'VERIFIED' && (
                                             <button
                                                 onClick={() => setTargetInstallmentNum(inst.installmentNumber)}
-                                                className="text-[#4A1D7A] hover:text-indigo-900 bg-[#F0E6FA] dark:bg-[#351458]/80 px-3 py-1 rounded-md"
+                                                className="text-[#0E1A3D] hover:text-indigo-900 bg-[#D0E9FB] dark:bg-[#0A1430]/80 px-3 py-1 rounded-md"
                                             >
                                                 Upload New Slip
                                             </button>
@@ -1097,7 +1097,7 @@ const StudentApplications = ({ onEditApplication }) => {
                     <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="mt-6 bg-white dark:bg-[#231A2E] p-5 rounded-lg border border-indigo-200 shadow-sm"
+                        className="mt-6 bg-white dark:bg-[#122048] p-5 rounded-lg border border-indigo-200 shadow-sm"
                     >
                         <h4 className="text-md font-medium text-gray-900 dark:text-gray-100 mb-4">Upload Receipt for Installment #{targetInstallmentNum}</h4>
                         <div className="flex items-center space-x-4">
@@ -1105,13 +1105,13 @@ const StudentApplications = ({ onEditApplication }) => {
                                 type="file"
                                 accept=".pdf,image/*"
                                 onChange={(e) => setReceiptFile(e.target.files[0])}
-                                className="block w-full text-sm text-gray-500 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#F0E6FA] dark:bg-[#351458]/80 file:text-[#351458] hover:file:bg-indigo-100"
+                                className="block w-full text-sm text-gray-500 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#D0E9FB] dark:bg-[#0A1430]/80 file:text-[#0A1430] hover:file:bg-indigo-100"
                             />
                             <button
                                 onClick={handleReceiptUpload}
                                 disabled={!receiptFile || uploadingReceipt}
                                 className={`px-4 py-2 rounded-md text-white font-medium whitespace-nowrap ${
-                                    !receiptFile || uploadingReceipt ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#4A1D7A] hover:bg-[#351458]'
+                                    !receiptFile || uploadingReceipt ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#0E1A3D] hover:bg-[#0A1430]'
                                 }`}
                             >
                                 {uploadingReceipt ? 'Uploading...' : 'Submit Receipt'}

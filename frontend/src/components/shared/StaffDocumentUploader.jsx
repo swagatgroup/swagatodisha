@@ -47,7 +47,7 @@ const StaffDocumentUploader = ({ applicationId, existingTypes = [], allowedTypes
 
     if (replaceType) {
         return (
-            <label className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ${uploading ? 'bg-gray-200 text-gray-500 pointer-events-none' : 'bg-[#F0E6FA] text-[#351458] hover:bg-purple-200 cursor-pointer'}`}>
+            <label className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ${uploading ? 'bg-gray-200 text-gray-500 pointer-events-none' : 'bg-[#D0E9FB] text-[#0A1430] hover:bg-purple-200 cursor-pointer'}`}>
                 <i className="fa-solid fa-arrow-up-from-bracket mr-1" aria-hidden="true"></i>
                 {uploading ? 'Uploading...' : 'Replace'}
                 <input
@@ -77,7 +77,7 @@ const StaffDocumentUploader = ({ applicationId, existingTypes = [], allowedTypes
                 ))}
             </select>
             <label
-                className={`flex items-center px-3 py-2 rounded-lg text-sm text-white ${documentType && !uploading ? 'bg-[#4A1D7A] hover:bg-[#351458] cursor-pointer' : 'bg-gray-400 pointer-events-none'}`}
+                className={`flex items-center px-3 py-2 rounded-lg text-sm text-white ${documentType && !uploading ? 'bg-[#0E1A3D] hover:bg-[#0A1430] cursor-pointer' : 'bg-gray-400 pointer-events-none'}`}
             >
                 <i className="fa-solid fa-upload mr-2" aria-hidden="true"></i>
                 {uploading ? 'Uploading...' : 'Choose File'}

@@ -25,7 +25,7 @@ const InteractivePieChart = ({ data, title, onSegmentClick, colors = ['#8B5CF6',
         if (active && payload && payload.length) {
             const data = payload[0].payload;
             return (
-                <div className="bg-white dark:bg-[#231A2E] p-3 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
+                <div className="bg-white dark:bg-[#122048] p-3 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
                     <p className="font-medium text-gray-900 dark:text-gray-100">{data.name}</p>
                     <p className="text-sm text-gray-600 dark:text-gray-300">
                         Value: <span className="font-medium dark:text-white">{data.value}</span>
@@ -63,7 +63,7 @@ const InteractivePieChart = ({ data, title, onSegmentClick, colors = ['#8B5CF6',
     };
 
     return (
-        <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-[#122048] rounded-lg shadow p-6">
             <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{title}</h3>
                 <div className="text-sm text-gray-500 dark:text-gray-300">
@@ -111,7 +111,7 @@ const InteractivePieChart = ({ data, title, onSegmentClick, colors = ['#8B5CF6',
                 {data.map((item, index) => (
                     <motion.div
                         key={item.name}
-                        className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition-colors ${selectedSegment === item ? 'bg-gray-100 dark:bg-gray-700' : 'hover:bg-gray-50 dark:hover:bg-[#1A1212]'
+                        className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition-colors ${selectedSegment === item ? 'bg-gray-100 dark:bg-gray-700' : 'hover:bg-gray-50 dark:hover:bg-[#0A1430]'
                             }`}
                         onClick={() => handleSegmentClick(item, index)}
                         whileHover={{ scale: 1.02 }}

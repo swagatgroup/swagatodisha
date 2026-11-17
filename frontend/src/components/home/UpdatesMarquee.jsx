@@ -5,7 +5,7 @@ import Icon from '../site/Icon'
 
 // Same window as the bell badges on the Explore tiles
 const RECENT_DAYS = 60
-const TYPE_LABELS = { timetable: 'Time Table', notification: 'Notification', result: 'Result' }
+const TYPE_LABELS = { timetable: 'Time Table', notification: 'Exam Notification', update: 'Update', result: 'Result' }
 
 const uploadedAt = (doc) => new Date(doc.publishDate || doc.createdAt).getTime()
 

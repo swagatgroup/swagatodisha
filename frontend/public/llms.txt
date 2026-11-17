@@ -1,6 +1,6 @@
 # Swagat Group of Institutions (Swagat Odisha)
 
-> A group of educational institutions in western Odisha, India, offering regular and distance courses with support from admission to course completion.
+> A group of educational institutions in western Odisha, India (Balangir, Nuapada and Kalahandi districts), offering affordable regular and distance courses with support from admission to course completion. Courses range from open schooling (NIOS, BOSSE, OSBME) to degrees, management, paramedical and nursing, engineering, teacher education and computer courses.
 
 ## Contact
 - Phone: +91 78559 59544
@@ -18,7 +18,8 @@
 - Ghantiguda: Ghantiguda, PO - Chalna, PS - Sinapali, Nuapada, Odisha 766108 (map: https://www.google.com/maps/search/?api=1&query=20.099885,82.677498)
 
 ## Pages
-- [Home](https://www.swagatodisha.com/): admissions posters, time tables, notifications, results, career roadmaps, institutions and campuses
+- [Home](https://www.swagatodisha.com/): admissions posters, Explore Swagat (exam notifications, latest updates, time tables, results), institutions, career roadmap after 10th, campuses and common questions
+- [Courses](https://www.swagatodisha.com/courses): every course with duration and fees: open schooling (NIOS, BOSSE, OSBME), degree, management, paramedical and nursing, engineering and polytechnic, teacher education and computer courses
 - [About Us](https://www.swagatodisha.com/about)
 - [Gallery](https://www.swagatodisha.com/gallery)
 - [Contact Us](https://www.swagatodisha.com/contact)
@@ -26,6 +27,10 @@
 - [Swagat Public School, Ghantiguda](https://www.swagatodisha.com/SwagatPublicSchool_Ghantiguda)
 
 ## Common questions
-- Where is Swagat Group of Institutions? The main campus is at Sargiguda near Kantabanji in Balangir district, Odisha. Other campuses are in Kantabanji, Bangomunda, Titilagarh, Sinapali, Ghantiguda and Bhawanipatna.
-- Does Swagat offer distance education? Yes, both regular and distance courses.
-- How do I apply or ask about admission? Call +91 78559 59544, email contact@swagatodisha.com, or register on the website.
+- Which is the best institute for distance courses in Odisha? Choose by the courses, fees, approvals and the support you get until you finish. Swagat Group of Institutions offers affordable regular and distance courses from seven campuses in western Odisha (Balangir, Nuapada and Kalahandi districts) and stays with students from admission to course completion. Call +91 78559 59544 to compare courses and fees.
+- Where is Swagat Group of Institutions? The main campus is at Sargiguda, PO - Sargul, PS - Kantabanji, Balangir, Odisha 767039. Other campuses are in Kantabanji, Bangomunda, Titilagarh, Sinapali, Ghantiguda and Bhawanipatna.
+- Does Swagat offer distance education in Odisha? Yes. Swagat offers both regular and distance courses, and supports students from admission through to course completion.
+- Which courses does Swagat offer? School and open schooling (NIOS, BOSSE and OSBME), degree courses such as B.A., B.Sc., B.Com. and B.S.W., management (BBA, MBA), paramedical and nursing, engineering and polytechnic, teacher education (B.Ed., D.El.Ed.) and computer courses (DCA, BCA, MCA). The Courses page lists every course with its duration and fees.
+- Where can I find exam notifications, time tables and results? Open the Explore Swagat section on the homepage. It has Exam Notifications, Time Tables, Results and Latest Updates, and anything uploaded in the last 60 days is marked New.
+- Can Swagat help me choose a career after 10th? Yes. The Career Roadmap After 10th on the homepage shows science, commerce, arts and vocational paths, and you can call +91 78559 59544 for career counselling.
+- How do I apply or ask about admission? Call +91 78559 59544, email contact@swagatodisha.com, or register on the website. You can also visit any of the seven campuses.

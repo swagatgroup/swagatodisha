@@ -25,7 +25,7 @@ const CourseCategoryDetails = ({ details = {}, sessionOptions = null, onSessionC
                             <select
                                 value={details.session || ''}
                                 onChange={(e) => onSessionChange(e.target.value)}
-                                className="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                className="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#0E1A3D] focus:border-transparent dark:bg-gray-700 dark:text-white"
                             >
                                 <option value="">SELECT SESSION</option>
                                 {sessionOptions.map(s => <option key={s} value={s}>{s}</option>)}

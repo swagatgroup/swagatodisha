@@ -390,3 +390,26 @@ Files for upload through Super Admin → Sliders: horizontal 1920×820 and verti
 - Page title: "Swagat Group of Institutions" → "Swagat Group of Institutions | Regular & Distance Courses in Kantabanji, Balangir, Odisha"
 - Meta description: "Swagat Odisha the best Institute for education, Education, Innovation, Revolution" → "Swagat Group of Institutions offers affordable regular and distance courses in Odisha, with campuses at Sargiguda (Kantabanji), Bangomunda, Titilagarh, Sinapali, Ghantiguda and Bhawanipatna. Call +91 78559 59544."
 - `llms.txt` / `llms-full.txt` (new): organisation summary, campus addresses, contact details and three factual questions and answers.
+
+## Copy changed on 2026-11-17
+
+- Explore tile: "Career Roadmaps" / "Explore career paths and opportunities" → "Latest Updates" / "News and announcements from Swagat" (panel: "Latest Updates" / "News and announcements from Swagat")
+- Explore tile: "Notifications" / "Stay updated with latest news" → "Exam Notifications" / "Exam dates, forms and notices"
+- Notifications panel: "Important Notifications" / "Latest updates and announcements" → "Exam Notifications" / "Exam dates, forms and notices from the universities"
+- Updates strip tags: "Notification" → "Exam Notification"; new tag "Update"
+- Career roadmap section (new, homepage, after Our Institutions): title "Career Roadmap After 10th"; subtitle "Not sure which stream to choose? See where science, commerce, arts and vocational courses can take you, then talk to our counsellors for free guidance."; buttons "Explore the Full Roadmap" and "Call for Career Counselling". Stream cards reuse the existing roadmap data.
+- FAQ section (new, homepage, before Contact): title "Questions Students Ask Us"; subtitle "Quick answers about our campuses, courses and admissions across western Odisha."; five questions and answers built only from existing site facts (also in FAQPage JSON-LD and llms.txt).
+- Opening loader (new): "Swagat" / "Group of Institutions" / "Education • Innovation • Revolution" (the existing logo text).
+- Admin, Quick Access Documents: "Manage Time Tables, Career Roadmaps, and Results documents" → "Upload Time Tables, Exam Notifications, Latest Updates and Results for the homepage Explore tiles"
+- `llms.txt` home line: "time tables, notifications, results, career roadmaps" → "Explore Swagat (exam notifications, latest updates, time tables, results), institutions, career roadmap after 10th, campuses and common questions"
+- Opening loader: shown only when the homepage is the first page of a visit (once per browser session), and only until the page has loaded (at least 1.5 s, at most 8 s).
+- Loading overlays (new, no visible text): blurred page with the turning-book animation; screen-reader label "Loading…". Replaces the "Signing In..." / "Creating Account..." and generic "Loading..." SweetAlert popups.
+- Dashboards: colours remapped from the purple/teal/marigold palette to the site's navy, accent blue and garnet; fonts switched from Baloo 2 / Lato to the site's Montserrat / Inter. No wording changed.
+
+## Copy added on 2026-11-17 (SEO pass)
+
+- New page `/courses`: badge "{count} courses · 7 campuses in western Odisha"; title "Regular & Distance Courses in Odisha"; intro "From open schooling to degrees, management, nursing and computer courses: affordable fees, and Swagat beside you from admission to the day you complete."; course cards reuse the existing institution/course data unchanged (names, durations, details, total fees); CTA "Not sure which course is right for you?" / "Talk to our team about courses, fees and whether regular or distance mode suits you. Fees on this page are a guide; we confirm the current session's fees when you call." / buttons "Call +91 78559 59544", "Register for Admission"; FAQ "Course Questions, Answered" / "What students across Odisha ask before choosing a regular or distance course." with seven questions (src/data/faqs.js).
+- Homepage FAQ: added "Which is the best institute for distance courses in Odisha?" and "Which courses does Swagat offer?"; "How do I apply…" answer now also mentions visiting any of the seven campuses.
+- Our Institutions: new button "View All Courses & Fees". Footer: "Programs" → "All Courses & Fees" (links to /courses).
+- Page titles and descriptions per page (src/seo/routes.js). Homepage title: "Swagat Group of Institutions | Regular & Distance Courses in Kantabanji, Balangir, Odisha" → "Swagat Group of Institutions | Regular & Distance Courses in Odisha – Kantabanji, Balangir".
+- School pages: removed the out-of-date "Admissions 2024" / "Admissions open for 2024-25" from titles, descriptions and keywords.

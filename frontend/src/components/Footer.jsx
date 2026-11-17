@@ -13,7 +13,7 @@ const Footer = () => {
     const footerData = {
         quickLinks: [
             { name: "About Us", url: "/about" },
-            { name: "Programs", url: "/#institutions" },
+            { name: "All Courses & Fees", url: "/courses" },
             { name: "Admissions", url: "/register" },
             { name: "Gallery", url: "/gallery" },
             { name: "Contact", url: "/contact" }
@@ -29,7 +29,7 @@ const Footer = () => {
         support: [
             { name: "Student Portal", url: "/login/student" },
             { name: "Parent Portal", url: "/login-portal" },
-            { name: "Career Guidance", url: "/?explore=career#explore" }
+            { name: "Career Guidance", url: "/?explore=career#career-roadmap" }
         ]
     }
 

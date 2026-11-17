@@ -183,7 +183,7 @@ const StudentPayments = () => {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4A1D7A]"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0E1A3D]"></div>
             </div>
         );
     }
@@ -196,7 +196,7 @@ const StudentPayments = () => {
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6"
+                className="bg-white dark:bg-[#122048] rounded-lg shadow p-6"
             >
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
@@ -204,11 +204,11 @@ const StudentPayments = () => {
                         <p className="text-gray-600 dark:text-gray-300">Track and manage your fee installments</p>
                     </div>
                     <div className="flex gap-3">
-                        <button onClick={() => setShowPaymentModal(true)} className="px-4 py-2 bg-[#4A1D7A] text-white rounded-lg hover:bg-[#351458] flex items-center space-x-2">
+                        <button onClick={() => setShowPaymentModal(true)} className="px-4 py-2 bg-[#0E1A3D] text-white rounded-lg hover:bg-[#0A1430] flex items-center space-x-2">
                             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
                             <span>QR Payment</span>
                         </button>
-                        <button onClick={() => setShowUploadModal(true)} className="px-4 py-2 bg-[#387B95] text-white rounded-lg hover:bg-[#1D4B5E] flex items-center space-x-2">
+                        <button onClick={() => setShowUploadModal(true)} className="px-4 py-2 bg-[#004D98] text-white rounded-lg hover:bg-[#003B75] flex items-center space-x-2">
                             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
                             <span>Upload Slip</span>
                         </button>
@@ -223,7 +223,7 @@ const StudentPayments = () => {
                 transition={{ delay: 0.1 }}
                 className="grid grid-cols-1 md:grid-cols-3 gap-6"
             >
-                <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6">
+                <div className="bg-white dark:bg-[#122048] rounded-lg shadow p-6">
                     <div className="flex items-center">
                         <div className="p-3 bg-gray-100 rounded-full">
                             <svg className="h-6 w-6 text-gray-600 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -237,7 +237,7 @@ const StudentPayments = () => {
                     </div>
                 </div>
 
-                <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6">
+                <div className="bg-white dark:bg-[#122048] rounded-lg shadow p-6">
                     <div className="flex items-center">
                         <div className="p-3 bg-green-100 rounded-full">
                             <svg className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -251,7 +251,7 @@ const StudentPayments = () => {
                     </div>
                 </div>
 
-                <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6">
+                <div className="bg-white dark:bg-[#122048] rounded-lg shadow p-6">
                     <div className="flex items-center">
                         <div className="p-3 bg-red-100 rounded-full">
                             <svg className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -271,7 +271,7 @@ const StudentPayments = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="bg-white dark:bg-[#231A2E] rounded-lg shadow"
+                className="bg-white dark:bg-[#122048] rounded-lg shadow"
             >
                 <div className="px-6 py-4 border-b border-gray-200">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Installments History</h3>
@@ -284,7 +284,7 @@ const StudentPayments = () => {
                                 initial={{ opacity: 0, x: -20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: index * 0.1 }}
-                                className="p-6 hover:bg-gray-50 dark:bg-[#1A1212]"
+                                className="p-6 hover:bg-gray-50 dark:bg-[#0A1430]"
                             >
                                 <div className="flex items-center justify-between">
                                     <div className="flex-1">
@@ -323,7 +323,7 @@ const StudentPayments = () => {
                                                     setReceiptFile(null);
                                                     setShowUpdateModal(true);
                                                 }}
-                                                className="px-4 py-2 bg-[#F0E6FA] text-[#351458] hover:bg-indigo-100 rounded-lg text-sm font-medium transition-colors"
+                                                className="px-4 py-2 bg-[#D0E9FB] text-[#0A1430] hover:bg-indigo-100 rounded-lg text-sm font-medium transition-colors"
                                             >
                                                 Update
                                             </button>
@@ -334,8 +334,8 @@ const StudentPayments = () => {
                         ))
                     ) : (
                         <div className="text-center py-12">
-                            <div className="mx-auto h-12 w-12 bg-[#F0E6FA] rounded-full flex items-center justify-center mb-4">
-                                <svg className="h-6 w-6 text-[#4A1D7A]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <div className="mx-auto h-12 w-12 bg-[#D0E9FB] rounded-full flex items-center justify-center mb-4">
+                                <svg className="h-6 w-6 text-[#0E1A3D]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                                 </svg>
                             </div>
@@ -349,7 +349,7 @@ const StudentPayments = () => {
             {/* Update Slip Modal */}
             {showUpdateModal && selectedInstallment && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60] p-4">
-                    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white dark:bg-[#231A2E] rounded-lg shadow-xl w-full max-w-md">
+                    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white dark:bg-[#122048] rounded-lg shadow-xl w-full max-w-md">
                         <div className="p-4 border-b flex items-center justify-between">
                             <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Update Payment Slip</h3>
                             <button onClick={() => setShowUpdateModal(false)} className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:text-gray-300">
@@ -365,7 +365,7 @@ const StudentPayments = () => {
                                     min="1"
                                     value={updateData.amount}
                                     onChange={(e) => setUpdateData({ ...updateData, amount: e.target.value })}
-                                    className="w-full px-3 py-2 border rounded-md focus:ring-[#4A1D7A] focus:border-[#4A1D7A]"
+                                    className="w-full px-3 py-2 border rounded-md focus:ring-[#0E1A3D] focus:border-[#0E1A3D]"
                                     placeholder="Enter amount"
                                 />
                             </div>
@@ -374,7 +374,7 @@ const StudentPayments = () => {
                                 <select
                                     value={updateData.paymentMethod}
                                     onChange={(e) => setUpdateData({ ...updateData, paymentMethod: e.target.value })}
-                                    className="w-full px-3 py-2 border rounded-md focus:ring-[#4A1D7A] focus:border-[#4A1D7A]"
+                                    className="w-full px-3 py-2 border rounded-md focus:ring-[#0E1A3D] focus:border-[#0E1A3D]"
                                 >
                                     <option value="Bank Transfer">Bank Transfer / NEFT / RTGS</option>
                                     <option value="UPI">UPI</option>
@@ -388,7 +388,7 @@ const StudentPayments = () => {
                                     type="file"
                                     accept="image/*,.pdf"
                                     onChange={handleFileChange}
-                                    className="w-full text-sm text-gray-500 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#F0E6FA] file:text-[#351458] hover:file:bg-[#F0E6FA]"
+                                    className="w-full text-sm text-gray-500 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#D0E9FB] file:text-[#0A1430] hover:file:bg-[#D0E9FB]"
                                 />
                                 <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">Leave blank to keep existing receipt.</p>
                             </div>
@@ -397,7 +397,7 @@ const StudentPayments = () => {
                                 <textarea
                                     value={updateData.remarks}
                                     onChange={(e) => setUpdateData({ ...updateData, remarks: e.target.value })}
-                                    className="w-full px-3 py-2 border rounded-md focus:ring-[#4A1D7A] focus:border-[#4A1D7A]"
+                                    className="w-full px-3 py-2 border rounded-md focus:ring-[#0E1A3D] focus:border-[#0E1A3D]"
                                     placeholder="Any transaction IDs or notes..."
                                     rows="2"
                                 ></textarea>
@@ -413,7 +413,7 @@ const StudentPayments = () => {
                                 <button
                                     type="submit"
                                     disabled={uploading}
-                                    className="px-4 py-2 bg-[#4A1D7A] text-white rounded-lg hover:bg-[#351458] disabled:opacity-50 flex items-center"
+                                    className="px-4 py-2 bg-[#0E1A3D] text-white rounded-lg hover:bg-[#0A1430] disabled:opacity-50 flex items-center"
                                 >
                                     {uploading ? (
                                         <>
@@ -434,7 +434,7 @@ const StudentPayments = () => {
             {/* Upload Slip Modal */}
             {showUploadModal && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white dark:bg-[#231A2E] rounded-lg shadow-xl w-full max-w-md">
+                    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white dark:bg-[#122048] rounded-lg shadow-xl w-full max-w-md">
                         <div className="p-4 border-b flex items-center justify-between">
                             <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Upload Payment Slip</h3>
                             <button onClick={() => setShowUploadModal(false)} className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:text-gray-300">
@@ -450,7 +450,7 @@ const StudentPayments = () => {
                                     min="1"
                                     value={uploadData.amount}
                                     onChange={(e) => setUploadData({ ...uploadData, amount: e.target.value })}
-                                    className="w-full px-3 py-2 border rounded-md focus:ring-[#4A1D7A] focus:border-[#4A1D7A]"
+                                    className="w-full px-3 py-2 border rounded-md focus:ring-[#0E1A3D] focus:border-[#0E1A3D]"
                                     placeholder="Enter amount"
                                 />
                             </div>
@@ -459,7 +459,7 @@ const StudentPayments = () => {
                                 <select
                                     value={uploadData.paymentMethod}
                                     onChange={(e) => setUploadData({ ...uploadData, paymentMethod: e.target.value })}
-                                    className="w-full px-3 py-2 border rounded-md focus:ring-[#4A1D7A] focus:border-[#4A1D7A]"
+                                    className="w-full px-3 py-2 border rounded-md focus:ring-[#0E1A3D] focus:border-[#0E1A3D]"
                                 >
                                     <option value="Bank Transfer">Bank Transfer / NEFT / RTGS</option>
                                     <option value="UPI">UPI</option>
@@ -474,7 +474,7 @@ const StudentPayments = () => {
                                     required
                                     accept="image/*,.pdf"
                                     onChange={handleFileChange}
-                                    className="w-full text-sm text-gray-500 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#F0E6FA] file:text-[#351458] hover:file:bg-[#F0E6FA]"
+                                    className="w-full text-sm text-gray-500 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#D0E9FB] file:text-[#0A1430] hover:file:bg-[#D0E9FB]"
                                 />
                             </div>
                             <div>
@@ -482,7 +482,7 @@ const StudentPayments = () => {
                                 <textarea
                                     value={uploadData.remarks}
                                     onChange={(e) => setUploadData({ ...uploadData, remarks: e.target.value })}
-                                    className="w-full px-3 py-2 border rounded-md focus:ring-[#4A1D7A] focus:border-[#4A1D7A]"
+                                    className="w-full px-3 py-2 border rounded-md focus:ring-[#0E1A3D] focus:border-[#0E1A3D]"
                                     placeholder="Any transaction IDs or notes..."
                                     rows="2"
                                 ></textarea>
@@ -498,7 +498,7 @@ const StudentPayments = () => {
                                 <button
                                     type="submit"
                                     disabled={uploading}
-                                    className="px-4 py-2 bg-[#387B95] text-white rounded-lg hover:bg-[#1D4B5E] disabled:opacity-50 flex items-center"
+                                    className="px-4 py-2 bg-[#004D98] text-white rounded-lg hover:bg-[#003B75] disabled:opacity-50 flex items-center"
                                 >
                                     {uploading ? (
                                         <>

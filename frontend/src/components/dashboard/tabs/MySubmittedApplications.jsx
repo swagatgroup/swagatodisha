@@ -120,7 +120,7 @@ const MySubmittedApplications = () => {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4A1D7A]"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0E1A3D]"></div>
             </div>
         );
     }
@@ -131,7 +131,7 @@ const MySubmittedApplications = () => {
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6"
+                className="bg-white dark:bg-[#122048] rounded-lg shadow p-6"
             >
                 <div className="flex items-center justify-between">
                     <div>
@@ -153,7 +153,7 @@ const MySubmittedApplications = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6"
+                className="bg-white dark:bg-[#122048] rounded-lg shadow p-6"
             >
                 <div className="flex flex-wrap gap-2">
                     {statusOptions.map((option) => (
@@ -176,7 +176,7 @@ const MySubmittedApplications = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="bg-white dark:bg-[#231A2E] rounded-lg shadow"
+                className="bg-white dark:bg-[#122048] rounded-lg shadow"
             >
                 {applications.length > 0 ? (
                     <div className="divide-y divide-gray-200">
@@ -186,7 +186,7 @@ const MySubmittedApplications = () => {
                                 initial={{ opacity: 0, x: -20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: index * 0.1 }}
-                                className="p-6 hover:bg-gray-50 dark:bg-[#1A1212]"
+                                className="p-6 hover:bg-gray-50 dark:bg-[#0A1430]"
                             >
                                 <div className="flex items-center justify-between">
                                     <div className="flex-1">
@@ -243,7 +243,7 @@ const MySubmittedApplications = () => {
                                         </div>
 
                                         {application.reviewInfo?.remarks && (
-                                            <div className="mt-3 p-3 bg-[#D0E8F0] rounded-lg">
+                                            <div className="mt-3 p-3 bg-[#D0E9FB] rounded-lg">
                                                 <p className="text-sm font-medium text-blue-900">
                                                     Review Notes:
                                                 </p>
@@ -259,9 +259,9 @@ const MySubmittedApplications = () => {
                     </div>
                 ) : (
                     <div className="text-center py-12">
-                        <div className="mx-auto h-12 w-12 bg-[#F0E6FA] rounded-full flex items-center justify-center mb-4">
+                        <div className="mx-auto h-12 w-12 bg-[#D0E9FB] rounded-full flex items-center justify-center mb-4">
                             <svg
-                                className="h-6 w-6 text-[#4A1D7A]"
+                                className="h-6 w-6 text-[#0E1A3D]"
                                 fill="none"
                                 viewBox="0 0 24 24"
                                 stroke="currentColor"
@@ -290,7 +290,7 @@ const MySubmittedApplications = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3 }}
-                    className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6"
+                    className="bg-white dark:bg-[#122048] rounded-lg shadow p-6"
                 >
                     <div className="flex items-center justify-between">
                         <div className="text-sm text-gray-700 dark:text-gray-200">
@@ -300,14 +300,14 @@ const MySubmittedApplications = () => {
                             <button
                                 onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                                 disabled={currentPage === 1}
-                                className="px-3 py-2 text-sm font-medium text-gray-500 dark:text-gray-300 bg-white dark:bg-[#231A2E] border border-gray-300 rounded-md hover:bg-gray-50 dark:bg-[#1A1212] disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="px-3 py-2 text-sm font-medium text-gray-500 dark:text-gray-300 bg-white dark:bg-[#122048] border border-gray-300 rounded-md hover:bg-gray-50 dark:bg-[#0A1430] disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 Previous
                             </button>
                             <button
                                 onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                                 disabled={currentPage === totalPages}
-                                className="px-3 py-2 text-sm font-medium text-gray-500 dark:text-gray-300 bg-white dark:bg-[#231A2E] border border-gray-300 rounded-md hover:bg-gray-50 dark:bg-[#1A1212] disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="px-3 py-2 text-sm font-medium text-gray-500 dark:text-gray-300 bg-white dark:bg-[#122048] border border-gray-300 rounded-md hover:bg-gray-50 dark:bg-[#0A1430] disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 Next
                             </button>

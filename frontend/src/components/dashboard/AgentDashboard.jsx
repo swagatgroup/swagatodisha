@@ -172,7 +172,7 @@ const EnhancedAgentDashboard = () => {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-[#4A1D7A] rounded-2xl p-6 text-white shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
+              className="bg-[#0E1A3D] rounded-2xl p-6 text-white shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
             >
               <div>
                 <h2 className="text-2xl font-bold mb-1">
@@ -184,7 +184,7 @@ const EnhancedAgentDashboard = () => {
               </div>
               <button
                 onClick={() => setActiveTab('new-registration')}
-                className="px-4 py-2 bg-white text-[#4A1D7A] rounded-xl font-semibold text-sm hover:bg-purple-50 transition-colors shadow-sm flex items-center gap-2"
+                className="px-4 py-2 bg-white text-[#0E1A3D] rounded-xl font-semibold text-sm hover:bg-purple-50 transition-colors shadow-sm flex items-center gap-2"
               >
                 <UserPlusIcon className="w-5 h-5" />
                 Register Student
@@ -197,7 +197,7 @@ const EnhancedAgentDashboard = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="bg-white dark:bg-[#231A2E] rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 flex items-center justify-between"
+                className="bg-white dark:bg-[#122048] rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 flex items-center justify-between"
               >
                 <div>
                   <h3 className="text-xs font-semibold uppercase tracking-wider text-purple-600 dark:text-purple-400 mb-1">Your Assigned Manager</h3>
@@ -208,7 +208,7 @@ const EnhancedAgentDashboard = () => {
                     {user.assignedStaff.department ? user.assignedStaff.department + ' • ' : ''}{user.assignedStaff.email || ''}{user.assignedStaff.phone ? ' • ' + user.assignedStaff.phone : ''}
                   </p>
                 </div>
-                <div className="h-12 w-12 bg-purple-50 dark:bg-purple-900/20 rounded-full flex items-center justify-center text-[#4A1D7A] dark:text-[#9B6FCC]">
+                <div className="h-12 w-12 bg-purple-50 dark:bg-purple-900/20 rounded-full flex items-center justify-center text-[#0E1A3D] dark:text-[#BEC6F5]">
                   <UsersIcon className="w-6 h-6" />
                 </div>
               </motion.div>
@@ -228,7 +228,7 @@ const EnhancedAgentDashboard = () => {
                     onClick={() => setAgentView(key)}
                     className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
                       agentView === key
-                        ? 'bg-white dark:bg-[#231A2E] text-[#387B95] dark:text-[#60A5FA] shadow-md'
+                        ? 'bg-white dark:bg-[#122048] text-[#004D98] dark:text-[#60A5FA] shadow-md'
                         : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100'
                     }`}
                   >
@@ -253,7 +253,7 @@ const EnhancedAgentDashboard = () => {
               {/* 2-Column Charts Grid: Application Progress + Payment Status Overview */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                 {/* Left: Application Progress 3D Pie Chart */}
-                <div className="bg-white dark:bg-[#231A2E] rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col items-center justify-center">
+                <div className="bg-white dark:bg-[#122048] rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col items-center justify-center">
                   <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 w-full text-center">Application Progress</h3>
                   <div className="w-full max-w-sm">
                     <ProgressPieChart
@@ -330,7 +330,7 @@ const EnhancedAgentDashboard = () => {
             <p>Section not found. Returning to dashboard...</p>
             <button
               onClick={() => setActiveTab('dashboard')}
-              className="mt-3 px-4 py-2 bg-[#4A1D7A] text-white rounded-xl text-sm"
+              className="mt-3 px-4 py-2 bg-[#0E1A3D] text-white rounded-xl text-sm"
             >
               Go to Dashboard
             </button>
@@ -349,7 +349,7 @@ const EnhancedAgentDashboard = () => {
         onItemClick={setActiveTab}
       >
         <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4A1D7A]"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0E1A3D]"></div>
         </div>
       </DashboardLayout>
     );

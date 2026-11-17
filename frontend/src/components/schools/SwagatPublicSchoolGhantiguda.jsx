@@ -157,19 +157,20 @@ const SwagatPublicSchoolGhantiguda = () => {
         ],
 
         seoData: {
-            title: "Swagat Public School Ghantiguda Sinapali - Best CBSE School in Rural Odisha | Admissions Open 2024",
-            description: "Swagat Public School Ghantiguda offers quality CBSE education in rural Odisha with modern facilities, experienced faculty, and community focus. Admissions open for 2024-25 session.",
-            keywords: "Swagat Public School Ghantiguda, CBSE school Sinapali, rural school Odisha, school admissions 2024, best school Nuapada, education Ghantiguda, CBSE curriculum",
-            url: "https://swagatodisha.com/SwagatPublicSchool_Ghantiguda",
-            image: "https://swagatodisha.com/Swagat_Logo.png",
+            title: "Swagat Public School Ghantiguda Sinapali - Best CBSE School in Rural Odisha",
+            description: "Swagat Public School Ghantiguda offers quality CBSE education in rural Odisha with modern facilities, experienced faculty, and community focus.",
+            keywords: "Swagat Public School Ghantiguda, CBSE school Sinapali, rural school Odisha, school admissions, best school Nuapada, education Ghantiguda, CBSE curriculum",
+            url: "https://www.swagatodisha.com/SwagatPublicSchool_Ghantiguda",
+            image: "https://www.swagatodisha.com/Swagat_Logo.png",
             structuredData: {
                 "@context": "https://schema.org",
-                "@type": "EducationalOrganization",
+                "@type": "School",
+                "parentOrganization": { "@id": "https://www.swagatodisha.com/#organization" },
                 "name": "Swagat Public School",
                 "alternateName": "Swagat Public School Ghantiguda",
                 "description": "A premier CBSE educational institution in Ghantiguda, Sinapali, Odisha, providing quality education in rural areas with modern facilities and community focus.",
-                "url": "https://swagatodisha.com/SwagatPublicSchool_Ghantiguda",
-                "logo": "https://swagatodisha.com/Swagat_Logo.png",
+                "url": "https://www.swagatodisha.com/SwagatPublicSchool_Ghantiguda",
+                "logo": "https://www.swagatodisha.com/Swagat_Logo.png",
                 "address": {
                     "@type": "PostalAddress",
                     "streetAddress": "Swagat Public School",
@@ -207,7 +208,7 @@ const SwagatPublicSchoolGhantiguda = () => {
                     ]
                 },
                 "sameAs": [
-                    "https://swagatodisha.com"
+                    "https://www.swagatodisha.com"
                 ]
             }
         }

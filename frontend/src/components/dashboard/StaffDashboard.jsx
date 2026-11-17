@@ -192,7 +192,7 @@ const EnhancedStaffDashboard = () => {
             case 'UNDER_REVIEW': return 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-400';
             case 'REJECTED':     return 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-400';
             case 'DRAFT':        return 'bg-gray-100 dark:bg-gray-800/60 text-gray-800 dark:text-gray-300';
-            case 'COMPLETE':     return 'bg-[#F0E6FA] text-purple-800 dark:bg-[#231A2E]/20 dark:text-[#9B6FCC]';
+            case 'COMPLETE':     return 'bg-[#D0E9FB] text-purple-800 dark:bg-[#122048]/20 dark:text-[#BEC6F5]';
             default:             return 'bg-gray-100 dark:bg-gray-800/60 text-gray-800 dark:text-gray-300';
         }
     };
@@ -380,10 +380,10 @@ const EnhancedStaffDashboard = () => {
 
                         {/* Stats Cards - No "Total Staff" card for staff role */}
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div onClick={() => setActiveSidebarItem('students')} className="bg-white dark:bg-[#231A2E] p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-white/5 cursor-pointer hover:shadow-md transition-all duration-300">
+                            <div onClick={() => setActiveSidebarItem('students')} className="bg-white dark:bg-[#122048] p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-white/5 cursor-pointer hover:shadow-md transition-all duration-300">
                                 <div className="flex items-center space-x-4">
                                     <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-xl">
-                                        <svg className="h-6 w-6 text-[#4A1D7A] dark:text-[#9B6FCC]" fill="currentColor" viewBox="0 0 24 24">
+                                        <svg className="h-6 w-6 text-[#0E1A3D] dark:text-[#BEC6F5]" fill="currentColor" viewBox="0 0 24 24">
                                             <path fillRule="evenodd" d="M11.54 22.351l.07.04.028.016a.76.76 0 00.723 0l.028-.015.071-.041a16.975 16.975 0 001.144-.742 19.58 19.58 0 002.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 00-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 002.682 2.282 16.975 16.975 0 001.145.742zM12 13.5a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
                                         </svg>
                                     </div>
@@ -394,10 +394,10 @@ const EnhancedStaffDashboard = () => {
                                 </div>
                             </div>
 
-                            <div onClick={() => setActiveSidebarItem('agents')} className="bg-white dark:bg-[#231A2E] p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-white/5 cursor-pointer hover:shadow-md transition-all duration-300">
+                            <div onClick={() => setActiveSidebarItem('agents')} className="bg-white dark:bg-[#122048] p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-white/5 cursor-pointer hover:shadow-md transition-all duration-300">
                                 <div className="flex items-center space-x-4">
                                     <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-xl">
-                                        <svg className="h-6 w-6 text-[#4A1D7A] dark:text-[#9B6FCC]" fill="currentColor" viewBox="0 0 24 24">
+                                        <svg className="h-6 w-6 text-[#0E1A3D] dark:text-[#BEC6F5]" fill="currentColor" viewBox="0 0 24 24">
                                             <path fillRule="evenodd" d="M8.25 6.75a3.75 3.75 0 117.5 0 3.75 3.75 0 01-7.5 0zM15.75 9.75a3 3 0 116 0 3 3 0 01-6 0zM2.25 9.75a3 3 0 116 0 3 3 0 01-6 0zM6.31 15.117A6.745 6.745 0 0112 12a6.745 6.745 0 016.709 7.498.75.75 0 01-.372.568A12.696 12.696 0 0112 21.75c-2.305 0-4.47-.612-6.337-1.684a.75.75 0 01-.372-.568 6.787 6.787 0 011.019-4.38z" clipRule="evenodd" />
                                             <path d="M5.082 14.254a8.287 8.287 0 00-1.308 5.135 9.687 9.687 0 01-1.764-.44l-.115-.04a.563.563 0 01-.373-.487l-.01-.121a3.75 3.75 0 016.576-3.036c.32.32.61.666.868 1.042l-3.874-2.052z" />
                                             <path d="M18.918 14.254a8.287 8.287 0 011.308 5.135 9.687 9.687 0 001.764-.44l.115-.04a.563.563 0 00.373-.487l.01-.121a3.75 3.75 0 00-6.576-3.036c-.32.32-.61.666-.868 1.042l3.874-2.052z" />
@@ -411,7 +411,7 @@ const EnhancedStaffDashboard = () => {
                                 </div>
                             </div>
 
-                            <div onClick={() => { setActiveSidebarItem('students'); setStudentView('our'); }} className="bg-white dark:bg-[#231A2E] p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-white/5 cursor-pointer hover:shadow-md transition-all duration-300">
+                            <div onClick={() => { setActiveSidebarItem('students'); setStudentView('our'); }} className="bg-white dark:bg-[#122048] p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-white/5 cursor-pointer hover:shadow-md transition-all duration-300">
                                 <div className="flex items-center space-x-4">
                                     <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-xl">
                                         <svg className="h-6 w-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -438,7 +438,7 @@ const EnhancedStaffDashboard = () => {
                                     const key = item[0];
                                     const label = item[1];
                                     return (
-                                        <button key={key} onClick={() => setStudentView(key)} className={'px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ' + (studentView === key ? 'bg-white dark:bg-[#231A2E] text-[#387B95] dark:text-[#60A5FA] shadow-md' : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100')}>
+                                        <button key={key} onClick={() => setStudentView(key)} className={'px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ' + (studentView === key ? 'bg-white dark:bg-[#122048] text-[#004D98] dark:text-[#60A5FA] shadow-md' : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100')}>
                                             {label}
                                         </button>
                                     );
@@ -454,7 +454,7 @@ const EnhancedStaffDashboard = () => {
 
                             {/* Charts */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                                <div className="bg-white dark:bg-[#231A2E] rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col items-center justify-center">
+                                <div className="bg-white dark:bg-[#122048] rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col items-center justify-center">
                                     <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 w-full text-center">Application Progress</h3>
                                     <div className="w-full max-w-sm">
                                         <ProgressPieChart
@@ -478,23 +478,23 @@ const EnhancedStaffDashboard = () => {
                             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="mt-4 mb-4">
                                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Registration &amp; Referral Tracking</h3>
                                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                                    <div className={'bg-white dark:bg-[#231A2E] p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700 flex flex-col justify-center items-center cursor-pointer hover:shadow-lg transition-shadow ' + (filterReferralType === 'self' ? 'ring-2 ring-orange-500' : '')} onClick={() => { setFilterReferralType(filterReferralType === 'self' ? 'all' : 'self'); setCurrentPage(1); }}>
+                                    <div className={'bg-white dark:bg-[#122048] p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700 flex flex-col justify-center items-center cursor-pointer hover:shadow-lg transition-shadow ' + (filterReferralType === 'self' ? 'ring-2 ring-orange-500' : '')} onClick={() => { setFilterReferralType(filterReferralType === 'self' ? 'all' : 'self'); setCurrentPage(1); }}>
                                         <p className="text-sm text-gray-500 dark:text-gray-300 font-medium text-center leading-tight">Direct/Self<br/>Registered</p>
                                         <p className="text-2xl font-bold text-orange-600 dark:text-orange-400 mt-1">{(stats.referralStats && stats.referralStats.selfRegistered) || 0}</p>
                                     </div>
-                                    <div className={'bg-white dark:bg-[#231A2E] p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700 flex flex-col justify-center items-center cursor-pointer hover:shadow-lg transition-shadow ' + (filterReferralType === 'student' ? 'ring-2 ring-green-500' : '')} onClick={() => { setFilterReferralType(filterReferralType === 'student' ? 'all' : 'student'); setCurrentPage(1); }}>
+                                    <div className={'bg-white dark:bg-[#122048] p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700 flex flex-col justify-center items-center cursor-pointer hover:shadow-lg transition-shadow ' + (filterReferralType === 'student' ? 'ring-2 ring-green-500' : '')} onClick={() => { setFilterReferralType(filterReferralType === 'student' ? 'all' : 'student'); setCurrentPage(1); }}>
                                         <p className="text-sm text-gray-500 dark:text-gray-300 font-medium text-center">Student</p>
                                         <p className="text-2xl font-bold text-green-600 dark:text-green-400 mt-1">{(stats.referralStats && stats.referralStats.studentReferred) || 0}</p>
                                     </div>
-                                    <div className={'bg-white dark:bg-[#231A2E] p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700 flex flex-col justify-center items-center cursor-pointer hover:shadow-lg transition-shadow ' + (filterReferralType === 'agent' ? 'ring-2 ring-blue-500' : '')} onClick={() => { setFilterReferralType(filterReferralType === 'agent' ? 'all' : 'agent'); setCurrentPage(1); }}>
+                                    <div className={'bg-white dark:bg-[#122048] p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700 flex flex-col justify-center items-center cursor-pointer hover:shadow-lg transition-shadow ' + (filterReferralType === 'agent' ? 'ring-2 ring-blue-500' : '')} onClick={() => { setFilterReferralType(filterReferralType === 'agent' ? 'all' : 'agent'); setCurrentPage(1); }}>
                                         <p className="text-sm text-gray-500 dark:text-gray-300 font-medium text-center">Agent</p>
-                                        <p className="text-2xl font-bold text-[#387B95] dark:text-[#60A5FA] mt-1">{(stats.referralStats && stats.referralStats.agentReferred) || 0}</p>
+                                        <p className="text-2xl font-bold text-[#004D98] dark:text-[#60A5FA] mt-1">{(stats.referralStats && stats.referralStats.agentReferred) || 0}</p>
                                     </div>
-                                    <div className={'bg-white dark:bg-[#231A2E] p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700 flex flex-col justify-center items-center cursor-pointer hover:shadow-lg transition-shadow ' + (filterReferralType === 'staff' ? 'ring-2 ring-[#4A1D7A]' : '')} onClick={() => { setFilterReferralType(filterReferralType === 'staff' ? 'all' : 'staff'); setCurrentPage(1); }}>
+                                    <div className={'bg-white dark:bg-[#122048] p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700 flex flex-col justify-center items-center cursor-pointer hover:shadow-lg transition-shadow ' + (filterReferralType === 'staff' ? 'ring-2 ring-[#0E1A3D]' : '')} onClick={() => { setFilterReferralType(filterReferralType === 'staff' ? 'all' : 'staff'); setCurrentPage(1); }}>
                                         <p className="text-sm text-gray-500 dark:text-gray-300 font-medium text-center">Staff</p>
-                                        <p className="text-2xl font-bold text-[#4A1D7A] dark:text-[#9B6FCC] mt-1">{(stats.referralStats && stats.referralStats.staffReferred) || 0}</p>
+                                        <p className="text-2xl font-bold text-[#0E1A3D] dark:text-[#BEC6F5] mt-1">{(stats.referralStats && stats.referralStats.staffReferred) || 0}</p>
                                     </div>
-                                    <div className={'bg-white dark:bg-[#231A2E] p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700 flex flex-col justify-center items-center cursor-pointer hover:shadow-lg transition-shadow ' + (filterReferralType === 'super_admin' ? 'ring-2 ring-gray-900' : '')} onClick={() => { setFilterReferralType(filterReferralType === 'super_admin' ? 'all' : 'super_admin'); setCurrentPage(1); }}>
+                                    <div className={'bg-white dark:bg-[#122048] p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700 flex flex-col justify-center items-center cursor-pointer hover:shadow-lg transition-shadow ' + (filterReferralType === 'super_admin' ? 'ring-2 ring-gray-900' : '')} onClick={() => { setFilterReferralType(filterReferralType === 'super_admin' ? 'all' : 'super_admin'); setCurrentPage(1); }}>
                                         <p className="text-sm text-gray-500 dark:text-gray-300 font-medium text-center">Super Admin</p>
                                         <p className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">{(stats.referralStats && stats.referralStats.superAdminReferred) || 0}</p>
                                     </div>
@@ -518,7 +518,7 @@ const EnhancedStaffDashboard = () => {
                                                         setStudentView('our');
                                                         setActiveSidebarItem('students');
                                                     }}
-                                                    className={'flex-1 min-w-[140px] px-4 py-4 rounded-xl text-sm font-medium transition-all shadow-sm border ' + (isActive ? 'bg-[#387B95] text-white border-[#387B95] shadow-md' : 'bg-white dark:bg-[#231A2E] text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-gray-800 hover:border-blue-300')}
+                                                    className={'flex-1 min-w-[140px] px-4 py-4 rounded-xl text-sm font-medium transition-all shadow-sm border ' + (isActive ? 'bg-[#004D98] text-white border-[#004D98] shadow-md' : 'bg-white dark:bg-[#122048] text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-gray-800 hover:border-blue-300')}
                                                 >
                                                     <div className="flex flex-col items-center gap-2">
                                                         <div className={'w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold ' + (isActive ? 'bg-white/20 text-white' : 'bg-blue-100 dark:bg-blue-900/30 text-blue-600')}>
@@ -612,7 +612,7 @@ const EnhancedStaffDashboard = () => {
         return (
             <DashboardLayout title="Staff Dashboard" sidebarItems={sidebarItems} activeItem={activeSidebarItem} onItemClick={setActiveSidebarItem}>
                 <div className="flex items-center justify-center h-64">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4A1D7A]"></div>
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0E1A3D]"></div>
                 </div>
             </DashboardLayout>
         );
@@ -628,24 +628,24 @@ const EnhancedStaffDashboard = () => {
                     <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
                         <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={function() { setStatModalOpen(false); }}></div>
                         <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-                        <div className="inline-block align-bottom bg-white dark:bg-[#231A2E] rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                            <div className="bg-white dark:bg-[#231A2E] px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                        <div className="inline-block align-bottom bg-white dark:bg-[#122048] rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                            <div className="bg-white dark:bg-[#122048] px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                                 <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-white mb-4">
                                     Select Category for {selectedStatKey === 'all' ? 'Total Students' : selectedStatKey.replace('_', ' ')}
                                 </h3>
                                 <div className="grid grid-cols-2 gap-4">
-                                    <button onClick={function() { setStudentView('our'); setFilterStatus(selectedStatKey); setStudentTableFilter(selectedStatKey); setCurrentPage(1); setActiveSidebarItem('students'); setStatModalOpen(false); }} className="flex flex-col items-center p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-[#D0E8F0] dark:hover:bg-gray-700 transition-colors">
-                                        <span className="text-2xl font-bold text-[#387B95] dark:text-[#60A5FA]">{selectedStatKey === 'all' ? (stats.ourStudents && stats.ourStudents.total || 0) : (stats.ourStudents && stats.ourStudents[selectedStatKey === 'UNDER_REVIEW' ? 'underReview' : selectedStatKey.toLowerCase()] || 0)}</span>
+                                    <button onClick={function() { setStudentView('our'); setFilterStatus(selectedStatKey); setStudentTableFilter(selectedStatKey); setCurrentPage(1); setActiveSidebarItem('students'); setStatModalOpen(false); }} className="flex flex-col items-center p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-[#D0E9FB] dark:hover:bg-gray-700 transition-colors">
+                                        <span className="text-2xl font-bold text-[#004D98] dark:text-[#60A5FA]">{selectedStatKey === 'all' ? (stats.ourStudents && stats.ourStudents.total || 0) : (stats.ourStudents && stats.ourStudents[selectedStatKey === 'UNDER_REVIEW' ? 'underReview' : selectedStatKey.toLowerCase()] || 0)}</span>
                                         <span className="text-sm font-medium text-gray-600 dark:text-gray-300 mt-1">Our Students</span>
                                     </button>
-                                    <button onClick={function() { setStudentView('direct'); setFilterStatus(selectedStatKey); setStudentTableFilter(selectedStatKey); setCurrentPage(1); setActiveSidebarItem('direct-students'); setStatModalOpen(false); }} className="flex flex-col items-center p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-[#F0E6FA] dark:hover:bg-gray-700 transition-colors">
-                                        <span className="text-2xl font-bold text-[#4A1D7A] dark:text-[#9B6FCC]">{selectedStatKey === 'all' ? (stats.directStudents && stats.directStudents.total || 0) : (stats.directStudents && stats.directStudents[selectedStatKey === 'UNDER_REVIEW' ? 'underReview' : selectedStatKey.toLowerCase()] || 0)}</span>
+                                    <button onClick={function() { setStudentView('direct'); setFilterStatus(selectedStatKey); setStudentTableFilter(selectedStatKey); setCurrentPage(1); setActiveSidebarItem('direct-students'); setStatModalOpen(false); }} className="flex flex-col items-center p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-[#D0E9FB] dark:hover:bg-gray-700 transition-colors">
+                                        <span className="text-2xl font-bold text-[#0E1A3D] dark:text-[#BEC6F5]">{selectedStatKey === 'all' ? (stats.directStudents && stats.directStudents.total || 0) : (stats.directStudents && stats.directStudents[selectedStatKey === 'UNDER_REVIEW' ? 'underReview' : selectedStatKey.toLowerCase()] || 0)}</span>
                                         <span className="text-sm font-medium text-gray-600 dark:text-gray-300 mt-1">Direct Students</span>
                                     </button>
                                 </div>
                             </div>
                             <div className="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                                <button type="button" onClick={function() { setStatModalOpen(false); }} className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white dark:bg-[#231A2E] text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 sm:mt-0 sm:w-auto sm:text-sm">Cancel</button>
+                                <button type="button" onClick={function() { setStatModalOpen(false); }} className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white dark:bg-[#122048] text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 sm:mt-0 sm:w-auto sm:text-sm">Cancel</button>
                             </div>
                         </div>
                     </div>
@@ -657,7 +657,7 @@ const EnhancedStaffDashboard = () => {
                 <div className="fixed inset-0 z-50 overflow-y-auto" onClick={function() { setShowDetailsModal(false); }}>
                     <div className="flex items-center justify-center min-h-screen px-4">
                         <div className="fixed inset-0 bg-gray-500 bg-opacity-75"></div>
-                        <div className="relative bg-white dark:bg-[#231A2E] rounded-lg shadow-xl max-w-2xl w-full p-6 z-10" onClick={function(e) { e.stopPropagation(); }}>
+                        <div className="relative bg-white dark:bg-[#122048] rounded-lg shadow-xl max-w-2xl w-full p-6 z-10" onClick={function(e) { e.stopPropagation(); }}>
                             <div className="flex justify-between items-center mb-4">
                                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Student Details</h3>
                                 <button onClick={function() { setShowDetailsModal(false); }} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"><svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg></button>
@@ -746,7 +746,7 @@ const EnhancedStaffDashboard = () => {
                                         Update Status...
                                     </button>
                                 </div>
-                                <button onClick={function() { setShowDetailsModal(false); }} className="px-4 py-2 bg-[#4A1D7A] text-white rounded-md hover:bg-[#351458]">Close</button>
+                                <button onClick={function() { setShowDetailsModal(false); }} className="px-4 py-2 bg-[#0E1A3D] text-white rounded-md hover:bg-[#0A1430]">Close</button>
                             </div>
                         </div>
                     </div>
@@ -766,7 +766,7 @@ const EnhancedStaffDashboard = () => {
                         rejectionDetails: []
                     });
                 }}>
-                    <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+                    <div className="bg-white dark:bg-[#122048] rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
                         <div className="p-6">
                             <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                                 Update Status - {selectedStudent.fullName || (selectedStudent.personalDetails && selectedStudent.personalDetails.fullName)}
@@ -975,7 +975,7 @@ const EnhancedStaffDashboard = () => {
                                 </button>
                                 <button
                                     onClick={handleUpdateStatus}
-                                    className="px-4 py-2 bg-[#4A1D7A] text-white rounded-md hover:bg-[#351458]"
+                                    className="px-4 py-2 bg-[#0E1A3D] text-white rounded-md hover:bg-[#0A1430]"
                                 >
                                     Update Status
                                 </button>
@@ -990,7 +990,7 @@ const EnhancedStaffDashboard = () => {
                 <div className="fixed inset-0 z-50 overflow-y-auto" onClick={function() { setShowEditModal(false); }}>
                     <div className="flex items-center justify-center min-h-screen px-4">
                         <div className="fixed inset-0 bg-gray-500 bg-opacity-75"></div>
-                        <div className="relative bg-white dark:bg-[#231A2E] rounded-lg shadow-xl max-w-2xl w-full p-6 z-10 max-h-[90vh] overflow-y-auto" onClick={function(e) { e.stopPropagation(); }}>
+                        <div className="relative bg-white dark:bg-[#122048] rounded-lg shadow-xl max-w-2xl w-full p-6 z-10 max-h-[90vh] overflow-y-auto" onClick={function(e) { e.stopPropagation(); }}>
                             <div className="flex justify-between items-center mb-4">
                                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Edit Student</h3>
                                 <button onClick={function() { setShowEditModal(false); }} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"><svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg></button>
@@ -1004,7 +1004,7 @@ const EnhancedStaffDashboard = () => {
                                             return (
                                                 <div key={field}>
                                                     <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{label}</label>
-                                                    <input type="text" value={(editData.personalDetails && editData.personalDetails[field]) || ''} onChange={function(e) { var val = e.target.value; setEditData(function(prev) { return Object.assign({}, prev, { personalDetails: Object.assign({}, prev.personalDetails, { [field]: val }) }); }); }} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]" />
+                                                    <input type="text" value={(editData.personalDetails && editData.personalDetails[field]) || ''} onChange={function(e) { var val = e.target.value; setEditData(function(prev) { return Object.assign({}, prev, { personalDetails: Object.assign({}, prev.personalDetails, { [field]: val }) }); }); }} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-[#0E1A3D]" />
                                                 </div>
                                             );
                                         })}
@@ -1018,7 +1018,7 @@ const EnhancedStaffDashboard = () => {
                                             return (
                                                 <div key={field}>
                                                     <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{label}</label>
-                                                    <input type="text" value={(editData.contactDetails && editData.contactDetails[field]) || ''} onChange={function(e) { var val = e.target.value; setEditData(function(prev) { return Object.assign({}, prev, { contactDetails: Object.assign({}, prev.contactDetails, { [field]: val }) }); }); }} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]" />
+                                                    <input type="text" value={(editData.contactDetails && editData.contactDetails[field]) || ''} onChange={function(e) { var val = e.target.value; setEditData(function(prev) { return Object.assign({}, prev, { contactDetails: Object.assign({}, prev.contactDetails, { [field]: val }) }); }); }} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-[#0E1A3D]" />
                                                 </div>
                                             );
                                         })}
@@ -1027,7 +1027,7 @@ const EnhancedStaffDashboard = () => {
                             </div>
                             <div className="mt-6 flex justify-end space-x-3">
                                 <button onClick={function() { setShowEditModal(false); }} className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700">Cancel</button>
-                                <button onClick={handleEdit} className="px-4 py-2 bg-[#4A1D7A] text-white rounded-md hover:bg-[#351458]">Save Changes</button>
+                                <button onClick={handleEdit} className="px-4 py-2 bg-[#0E1A3D] text-white rounded-md hover:bg-[#0A1430]">Save Changes</button>
                             </div>
                         </div>
                     </div>

@@ -68,10 +68,10 @@ const createQuickAccessDoc = asyncHandler(async (req, res) => {
     const { type, title, description, publishDate, order, isActive } = req.body;
 
     // Validate type
-    if (!['timetable', 'career', 'notification', 'result'].includes(type)) {
+    if (!['timetable', 'career', 'notification', 'update', 'result'].includes(type)) {
         return res.status(400).json({
             success: false,
-            message: 'Invalid document type. Must be timetable, career, notification, or result'
+            message: 'Invalid document type. Must be timetable, career, notification, update, or result'
         });
     }
 

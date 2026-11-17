@@ -4,7 +4,7 @@ const quickAccessSchema = new mongoose.Schema({
     type: {
         type: String,
         required: true,
-        enum: ['timetable', 'career', 'notification', 'result'],
+        enum: ['timetable', 'career', 'notification', 'update', 'result'],
         index: true
     },
     title: {

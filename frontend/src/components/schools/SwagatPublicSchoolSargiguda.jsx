@@ -157,19 +157,20 @@ const SwagatPublicSchoolSargiguda = () => {
         ],
 
         seoData: {
-            title: "Swagat Public School Sargiguda Kantabanji - Premier CBSE School in Balangir | Admissions 2024",
-            description: "Swagat Public School Sargiguda offers quality CBSE education in Kantabanji, Balangir with community focus, modern facilities, and experienced faculty. Admissions open for 2024-25.",
-            keywords: "Swagat Public School Sargiguda, CBSE school Kantabanji, school Balangir, education Sargiguda, school admissions 2024, best school Balangir, CBSE curriculum",
-            url: "https://swagatodisha.com/SwagatPublicSchool_Sargiguda",
-            image: "https://swagatodisha.com/Swagat_Logo.png",
+            title: "Swagat Public School Sargiguda Kantabanji - Premier CBSE School in Balangir",
+            description: "Swagat Public School Sargiguda offers quality CBSE education in Kantabanji, Balangir with community focus, modern facilities, and experienced faculty.",
+            keywords: "Swagat Public School Sargiguda, CBSE school Kantabanji, school Balangir, education Sargiguda, school admissions, best school Balangir, CBSE curriculum",
+            url: "https://www.swagatodisha.com/SwagatPublicSchool_Sargiguda",
+            image: "https://www.swagatodisha.com/Swagat_Logo.png",
             structuredData: {
                 "@context": "https://schema.org",
-                "@type": "EducationalOrganization",
+                "@type": "School",
+                "parentOrganization": { "@id": "https://www.swagatodisha.com/#organization" },
                 "name": "Swagat Public School",
                 "alternateName": "Swagat Public School Sargiguda",
                 "description": "A premier CBSE educational institution in Sargiguda, Kantabanji, Odisha, providing quality education with community focus and modern facilities.",
-                "url": "https://swagatodisha.com/SwagatPublicSchool_Sargiguda",
-                "logo": "https://swagatodisha.com/Swagat_Logo.png",
+                "url": "https://www.swagatodisha.com/SwagatPublicSchool_Sargiguda",
+                "logo": "https://www.swagatodisha.com/Swagat_Logo.png",
                 "address": {
                     "@type": "PostalAddress",
                     "streetAddress": "Swagat Public School",
@@ -207,7 +208,7 @@ const SwagatPublicSchoolSargiguda = () => {
                     ]
                 },
                 "sameAs": [
-                    "https://swagatodisha.com"
+                    "https://www.swagatodisha.com"
                 ]
             }
         }

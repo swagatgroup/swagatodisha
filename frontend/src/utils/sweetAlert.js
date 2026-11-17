@@ -1,4 +1,5 @@
 import Swal from 'sweetalert2';
+import { setManualLoading } from './bookLoader';
 
 // Custom SweetAlert configurations
 const defaultConfig = {
@@ -23,10 +24,10 @@ const defaultConfig = {
     width: 'auto',
     padding: '2rem',
     customClass: {
-        popup: 'rounded-lg shadow-xl bg-white dark:bg-[#231A2E] border border-gray-200 dark:border-gray-700',
+        popup: 'rounded-lg shadow-xl bg-white dark:bg-[#122048] border border-gray-200 dark:border-gray-700',
         title: 'text-xl font-semibold text-gray-900 dark:text-gray-100',
         content: 'text-gray-700 dark:text-gray-300',
-        confirmButton: 'px-6 py-2 rounded-md font-medium transition-colors duration-200 bg-[#4A1D7A] hover:bg-[#351458] text-white',
+        confirmButton: 'px-6 py-2 rounded-md font-medium transition-colors duration-200 bg-[#0E1A3D] hover:bg-[#0A1430] text-white',
         cancelButton: 'px-6 py-2 rounded-md font-medium transition-colors duration-200 bg-gray-500 hover:bg-gray-600 text-white',
         denyButton: 'px-6 py-2 rounded-md font-medium transition-colors duration-200 bg-gray-500 hover:bg-gray-600 text-white',
         closeButton: 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200'
@@ -89,26 +90,18 @@ export const showQuestion = (title, text = '', options = {}) => {
 };
 
 // Loading alerts
+// Shows the book loading overlay (blurred page + turning pages) until closeLoading() or the next alert.
+// Arguments are kept so existing callers don't change; the title is announced to screen readers.
+// eslint-disable-next-line no-unused-vars
 export const showLoading = (title = 'Loading...', text = 'Please wait', options = {}) => {
-    return Swal.fire({
-        ...defaultConfig,
-        title,
-        text,
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-        showConfirmButton: false,
-        showCancelButton: false,
-        showDenyButton: false,
-        showCloseButton: false,
-        didOpen: () => {
-            Swal.showLoading();
-        },
-        ...options
-    });
+    if (Swal.isVisible()) Swal.close();
+    setManualLoading(true);
+    return Promise.resolve({ isConfirmed: false, isDismissed: false });
 };
 
 // Close loading
 export const closeLoading = () => {
+    setManualLoading(false);
     Swal.close();
 };
 
@@ -293,7 +286,7 @@ export const showProgress = (title, text = '') => {
         showCloseButton: false,
         html: `
             <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5 mb-4">
-                <div id="progress-bar" class="bg-[#4A1D7A] h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+                <div id="progress-bar" class="bg-[#0E1A3D] h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
             </div>
             <div id="progress-text" class="text-sm text-gray-600 dark:text-gray-300">0%</div>
         `,

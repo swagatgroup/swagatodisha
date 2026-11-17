@@ -1,6 +1,6 @@
 import { useEffect, lazy, Suspense } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom'
-import { HelmetProvider } from 'react-helmet-async'
+import { Helmet, HelmetProvider } from 'react-helmet-async'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { SessionProvider } from './contexts/SessionContext'
 import { DarkModeProvider } from './contexts/DarkModeContextSimple'
@@ -9,6 +9,9 @@ import PosterCarousel from './components/home/PosterCarousel'
 import UpdatesMarquee from './components/home/UpdatesMarquee'
 import InstitutionTypes from './components/InstitutionTypes'
 import QuickLinks from './components/QuickLinks'
+import CareerRoadmap from './components/home/CareerRoadmap'
+import BookLoader, { GlobalBookLoader } from './components/site/BookLoader'
+import HomeFaq from './components/home/HomeFaq'
 import Location from './components/Location'
 import ContactUs from './components/ContactUs'
 import FloatingContact from './components/FloatingContact'
@@ -17,6 +20,7 @@ import LoginPortal from './components/auth/LoginPortal'
 import Register from './components/auth/Register'
 import ResetPassword from './components/auth/ResetPassword'
 import AboutUsPage from './components/AboutUsPage'
+import CoursesPage from './components/CoursesPage'
 import ApprovalsRecognitions from './components/ApprovalsRecognitions'
 import Gallery from './components/Gallery'
 import ContactPage from './components/ContactPage'
@@ -34,11 +38,7 @@ const AgentDashboard = lazy(() => import('./components/dashboard/AgentDashboard'
 const StaffDashboard = lazy(() => import('./components/dashboard/StaffDashboard'))
 const SuperAdminDashboard = lazy(() => import('./components/dashboard/SuperAdminDashboard'))
 
-const DashboardLoading = () => (
-    <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4A1D7A]"></div>
-    </div>
-)
+const DashboardLoading = () => <BookLoader />
 
 // Design-system preview: dev server only, never part of a production build
 const DesignPreview = import.meta.env.DEV ? lazy(() => import('./components/site/DesignPreview')) : null
@@ -49,9 +49,7 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4A1D7A]"></div>
-            </div>
+            <BookLoader />
         );
     }
 
@@ -63,7 +61,16 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
         return <Navigate to="/" replace />;
     }
 
-    return children;
+    return (
+        <>
+            {/* Dashboards: plain tab title, never indexed */}
+            <Helmet>
+                <title>Dashboard | Swagat Group of Institutions</title>
+                <meta name="robots" content="noindex, nofollow" />
+            </Helmet>
+            {children}
+        </>
+    );
 };
 
 // Dashboard Router - Routes users to their role-specific dashboard
@@ -72,9 +79,7 @@ const DashboardRouter = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4A1D7A]"></div>
-            </div>
+            <BookLoader />
         );
     }
 
@@ -101,6 +106,11 @@ const DashboardRouter = () => {
 // Homepage
 const AppContent = () => {
     const { hash } = useLocation()
+
+    // Tells the opening loader in index.html that the homepage has rendered
+    useEffect(() => {
+        window.dispatchEvent(new Event('sw:app-ready'))
+    }, [])
 
     // Header links to homepage sections from other pages arrive as /#section
     useEffect(() => {
@@ -137,8 +147,18 @@ const AppContent = () => {
                 <InstitutionTypes />
             </section>
 
+            {/* Career roadmap after 10th (moved here from the Explore tiles) */}
+            <section id="career-roadmap" aria-labelledby="career-roadmap-title" className="scroll-mt-sw-header">
+                <CareerRoadmap />
+            </section>
+
             {/* 6. Campuses and why choose us */}
             <Location />
+
+            {/* Common questions (mirrored in the FAQPage JSON-LD in index.html) */}
+            <section id="faq" aria-labelledby="faq-title" className="scroll-mt-sw-header">
+                <HomeFaq />
+            </section>
 
             {/* 7. Contact Form */}
             <section id="contact" aria-label="Contact" className="scroll-mt-sw-header">
@@ -148,11 +168,12 @@ const AppContent = () => {
     )
 }
 
-function App() {
+// Browser by default; scripts/prerender.mjs renders the same tree with a StaticRouter at build time
+function App({ RouterComponent = Router, routerProps = {}, helmetContext }) {
     return (
-        <HelmetProvider>
+        <HelmetProvider context={helmetContext}>
             <AuthProvider>
-                <Router>
+                <RouterComponent {...routerProps}>
                     <DarkModeProvider>
                         <Suspense fallback={<DashboardLoading />}>
                         <Routes>
@@ -160,6 +181,7 @@ function App() {
                             <Route element={<SiteRoot chrome />}>
                                 <Route path="/" element={<AppContent />} />
                                 <Route path="/about" element={<AboutUsPage />} />
+                                <Route path="/courses" element={<CoursesPage />} />
                                 <Route path="/gallery" element={<Gallery />} />
                                 <Route path="/contact" element={<ContactPage />} />
                                 <Route path="/send-message" element={<SendMessage />} />
@@ -236,8 +258,9 @@ function App() {
                         </Routes>
                         </Suspense>
                         <FloatingContact />
+                        <GlobalBookLoader />
                     </DarkModeProvider>
-                </Router>
+                </RouterComponent>
             </AuthProvider>
         </HelmetProvider>
     )

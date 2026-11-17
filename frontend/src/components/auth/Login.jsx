@@ -5,6 +5,7 @@ import { Link, useNavigate, Navigate } from 'react-router-dom';
 import PasswordInput from './PasswordInput';
 import ForgotPassword from './ForgotPassword';
 import Swal from 'sweetalert2';
+import { setManualLoading } from '../../utils/bookLoader';
 import { LuArrowLeft, LuLoaderCircle, LuUserRound } from 'react-icons/lu';
 import AuthShell from '../site/AuthShell';
 import Badge from '../site/Badge';
@@ -101,17 +102,8 @@ const Login = ({ title }) => {
             return;
         }
 
-        // Show loading alert
-        Swal.fire({
-            title: 'Signing In...',
-            text: 'Please wait while we authenticate you',
-            allowOutsideClick: false,
-            allowEscapeKey: false,
-            showConfirmButton: false,
-            didOpen: () => {
-                Swal.showLoading();
-            }
-        });
+        // Book loading overlay while the server responds (it can take up to a minute to wake up)
+        setManualLoading(true);
 
         try {
             setLoading(true);
@@ -176,6 +168,7 @@ const Login = ({ title }) => {
                 confirmButtonText: 'Try Again'
             });
         } finally {
+            setManualLoading(false);
             setLoading(false);
         }
     };

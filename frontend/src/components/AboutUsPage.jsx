@@ -71,7 +71,7 @@ const AboutUsPage = () => {
             title: 'Community',
             description: 'Building strong relationships with students, parents, and the community',
             icon: 'fa-solid fa-users',
-            color: 'from-[#4A1D7A] to-[#6B3F99]'
+            color: 'from-[#0E1A3D] to-[#004D98]'
         }
     ]
 

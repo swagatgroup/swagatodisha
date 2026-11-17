@@ -48,14 +48,14 @@ const AllRecentPaymentsModal = ({ isOpen, onClose }) => {
                     initial={{ opacity: 0, scale: 0.95, y: 20 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                    className="bg-white dark:bg-[#231A2E] rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden border border-gray-100 dark:border-gray-700"
+                    className="bg-white dark:bg-[#122048] rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden border border-gray-100 dark:border-gray-700"
                     onClick={(e) => e.stopPropagation()}
                 >
                     {/* Header */}
-                    <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-[#1A1212]/50 dark:bg-[#231A2E]/50">
+                    <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-[#0A1430]/50 dark:bg-[#122048]/50">
                         <div className="flex items-center space-x-3">
-                            <div className="p-2 bg-[#F0E6FA] dark:bg-[#231A2E]/30 rounded-lg">
-                                <i className="fa-solid fa-money-check-dollar text-[#4A1D7A] dark:text-[#9B6FCC]"></i>
+                            <div className="p-2 bg-[#D0E9FB] dark:bg-[#122048]/30 rounded-lg">
+                                <i className="fa-solid fa-money-check-dollar text-[#0E1A3D] dark:text-[#BEC6F5]"></i>
                             </div>
                             <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">All Recent Payments</h2>
                         </div>
@@ -68,10 +68,10 @@ const AllRecentPaymentsModal = ({ isOpen, onClose }) => {
                     </div>
 
                     {/* Content (Fully Scrollable) */}
-                    <div className="flex-1 overflow-y-auto p-6 bg-white dark:bg-[#231A2E]">
+                    <div className="flex-1 overflow-y-auto p-6 bg-white dark:bg-[#122048]">
                         {loading && payments.length === 0 ? (
                             <div className="flex justify-center items-center py-20">
-                                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#4A1D7A]"></div>
+                                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#0E1A3D]"></div>
                             </div>
                         ) : payments.length === 0 ? (
                             <div className="text-center py-20">
@@ -96,10 +96,10 @@ const AllRecentPaymentsModal = ({ isOpen, onClose }) => {
                                     });
 
                                     return (
-                                        <div key={idx} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl border border-gray-100 dark:border-gray-700 hover:border-[#D0E8F0] dark:hover:border-purple-800 hover:shadow-md transition-all bg-white dark:bg-[#231A2E]/50 group">
+                                        <div key={idx} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl border border-gray-100 dark:border-gray-700 hover:border-[#D0E9FB] dark:hover:border-purple-800 hover:shadow-md transition-all bg-white dark:bg-[#122048]/50 group">
                                             <div className="flex items-start sm:items-center space-x-4">
-                                                <div className="hidden sm:flex h-12 w-12 rounded-full bg-[#F0E6FA] dark:bg-[#231A2E]/20 items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                                                    <span className="text-[#4A1D7A] dark:text-[#9B6FCC] font-bold text-lg">
+                                                <div className="hidden sm:flex h-12 w-12 rounded-full bg-[#D0E9FB] dark:bg-[#122048]/20 items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                                                    <span className="text-[#0E1A3D] dark:text-[#BEC6F5] font-bold text-lg">
                                                         {(item.studentName || 'U').charAt(0).toUpperCase()}
                                                     </span>
                                                 </div>
@@ -135,14 +135,14 @@ const AllRecentPaymentsModal = ({ isOpen, onClose }) => {
                         
                         {loading && payments.length > 0 && (
                             <div className="flex justify-center py-4">
-                                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#4A1D7A]"></div>
+                                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#0E1A3D]"></div>
                             </div>
                         )}
                     </div>
 
                     {/* Pagination Footer */}
                     {totalPages > 1 && (
-                        <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-[#1A1212]/50 dark:bg-[#231A2E]/50 flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-[#0A1430]/50 dark:bg-[#122048]/50 flex flex-col sm:flex-row items-center justify-between gap-4">
                             <div className="text-sm text-gray-500 dark:text-gray-300">
                                 Showing page <span className="font-medium text-gray-900 dark:text-gray-100">{page}</span> of <span className="font-medium text-gray-900 dark:text-gray-100">{totalPages}</span>
                             </div>
@@ -165,7 +165,7 @@ const AllRecentPaymentsModal = ({ isOpen, onClose }) => {
                                         fetchPayments(newPage);
                                     }}
                                     disabled={page === totalPages || loading}
-                                    className="px-4 py-2 bg-[#4A1D7A] text-white rounded-lg text-sm font-medium hover:bg-[#351458] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                    className="px-4 py-2 bg-[#0E1A3D] text-white rounded-lg text-sm font-medium hover:bg-[#0A1430] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                                 >
                                     Next
                                 </button>

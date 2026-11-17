@@ -486,3 +486,11 @@ html:has(.site) body {
     scroll-behavior: auto !important;
   }
 }
+
+/* Book loading overlay (components/site/BookLoader.jsx): sits above dashboard modals (z 9999/10000);
+   SweetAlert results stay above it */
+@keyframes sw-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.swal2-container { z-index: 10100 !important; }
