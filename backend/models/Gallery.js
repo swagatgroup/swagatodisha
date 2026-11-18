@@ -16,6 +16,7 @@ const gallerySchema = new mongoose.Schema({
         required: true
     },
     thumbnailUrl: String,
+    cloudinaryPublicId: String,
     originalFileName: String,
     fileSize: Number,
     mimeType: String,
@@ -28,7 +29,16 @@ const gallerySchema = new mongoose.Schema({
     category: {
         type: String,
         required: true,
-        enum: ['Infrastructure', 'Classroom', 'Laboratory', 'Library', 'Sports', 'Events', 'Students', 'Teachers', 'Achievements', 'General']
+        enum: [
+            'Campus', 'Classroom', 'Activities', 'Celebrations', 'Events', 'Sports', 'Students',
+            'Teachers', 'Achievements', 'Infrastructure', 'Laboratory', 'Library', 'General'
+        ]
+    },
+    // Which campus or school the photo is from (e.g. "Swagat Public School, Sargiguda"); empty = whole group
+    campus: {
+        type: String,
+        trim: true,
+        default: ''
     },
     subcategory: String,
     tags: [String],
@@ -114,6 +124,7 @@ const gallerySchema = new mongoose.Schema({
 // Indexes
 gallerySchema.index({ category: 1, isActive: 1 });
 gallerySchema.index({ institution: 1, isActive: 1 });
+gallerySchema.index({ campus: 1, isActive: 1 });
 gallerySchema.index({ isFeatured: 1, isActive: 1 });
 gallerySchema.index({ displayOrder: 1 });
 gallerySchema.index({ 'album.name': 1 });

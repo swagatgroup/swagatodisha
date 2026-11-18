@@ -1,6 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const { protect, authorize } = require('../middleware/auth');
+const { acceptGalleryImages, processGalleryImages } = require('../middleware/galleryUpload');
+
+// Only staff and super admins manage the website gallery
+const canManageGallery = authorize('super_admin', 'staff');
 const {
     getGalleryItems,
     getGalleryItemById,
@@ -24,10 +28,10 @@ router.get('/:itemId', getGalleryItemById);
 router.post('/:itemId/download', incrementDownloadCount);
 
 // Protected routes (Admin only)
-router.get('/', protect, getGalleryItems);
-router.post('/', protect, createGalleryItem);
-router.put('/:itemId', protect, updateGalleryItem);
-router.delete('/:itemId', protect, deleteGalleryItem);
+router.get('/', protect, canManageGallery, getGalleryItems);
+router.post('/', protect, canManageGallery, acceptGalleryImages, processGalleryImages, createGalleryItem);
+router.put('/:itemId', protect, canManageGallery, acceptGalleryImages, processGalleryImages, updateGalleryItem);
+router.delete('/:itemId', protect, canManageGallery, deleteGalleryItem);
 
 
 // Super Admin approval route

@@ -1,6 +1,7 @@
 import React from 'react'
 import { LuApple, LuAward, LuBookOpen, LuBus, LuDrama, LuFlaskConical, LuGlobe, LuGraduationCap, LuHandshake, LuLibrary, LuLightbulb, LuMail, LuMapPin, LuMedal, LuMonitor, LuPersonStanding, LuPhone, LuSchool, LuSprout, LuStar, LuTarget, LuTrendingUp, LuTrophy, LuUsers } from 'react-icons/lu'
 import SchoolPageTemplate from './SchoolPageTemplate'
+import { SCHOOL_CAMPUS } from '../../data/gallery'
 
 const SwagatPublicSchoolLakhna = () => {
     const schoolData = {
@@ -214,7 +215,14 @@ const SwagatPublicSchoolLakhna = () => {
         }
     }
 
-    return <SchoolPageTemplate {...schoolData} />
+    return (
+        <SchoolPageTemplate
+            {...schoolData}
+            galleryCampus={SCHOOL_CAMPUS.lakhna}
+            officialSite="https://www.swagatpublicschoollakhna.in"
+            sameAs={['https://www.instagram.com/swagat_public_school2024/']}
+        />
+    )
 }
 
 export default SwagatPublicSchoolLakhna

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import SliderManagement from './SliderManagement';
+import GalleryManagement from './GalleryManagement';
 import SimpleNotificationManagement from './SimpleNotificationManagement';
 import SimpleQuickAccessManagement from './SimpleQuickAccessManagement';
 import InstituteCourseManagement from './InstituteCourseManagement';
@@ -11,6 +12,7 @@ const WebsiteManagement = () => {
 
     const tabs = [
         { id: 'sliders', name: 'Slider Images', icon: 'fa-solid fa-images' },
+        { id: 'gallery', name: 'Gallery', icon: 'fa-solid fa-photo-film' },
         { id: 'quick-access', name: 'Quick Access Documents', icon: 'fa-solid fa-file-lines' },
         { id: 'notifications', name: 'Notifications', icon: 'fa-solid fa-bell' },
         { id: 'institutes-courses', name: 'Institutes & Courses', icon: 'fa-solid fa-building-columns' },
@@ -22,19 +24,19 @@ const WebsiteManagement = () => {
             <div>
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Website Management</h1>
                 <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">
-                    Manage slider images and notifications for your website
+                    Manage slider images, gallery photos and notifications for your website
                 </p>
             </div>
 
             {/* Tabs */}
             <div className="bg-white dark:bg-[#122048] rounded-lg shadow border border-gray-200 dark:border-gray-700">
                 <div className="border-b border-gray-200 dark:border-gray-700">
-                    <nav className="flex space-x-8 px-6">
+                    <nav className="flex space-x-8 px-6 overflow-x-auto">
                         {tabs.map((tab) => (
                             <button
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
-                                className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${activeTab === tab.id
+                                className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${activeTab === tab.id
                                         ? 'border-[#0E1A3D] text-[#0E1A3D] dark:text-[#BEC6F5]'
                                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-300 dark:hover:text-gray-300'
                                     }`}
@@ -48,6 +50,7 @@ const WebsiteManagement = () => {
 
                 <div className="p-6">
                     {activeTab === 'sliders' && <div data-no-uppercase><SliderManagement /></div>}
+                    {activeTab === 'gallery' && <div data-no-uppercase><GalleryManagement /></div>}
                     {activeTab === 'quick-access' && <div data-no-uppercase><SimpleQuickAccessManagement /></div>}
                     {activeTab === 'notifications' && <div data-no-uppercase><SimpleNotificationManagement /></div>}
                     {activeTab === 'institutes-courses' && <InstituteCourseManagement />}

@@ -1,15 +1,24 @@
 const Gallery = require('../models/Gallery');
 const Institution = require('../models/Institution');
+const CloudinaryService = require('../utils/cloudinary');
+
+// Match "events" / "Events" from the query string to the model's category spelling
+const CATEGORIES = Gallery.schema.path('category').enumValues;
+const normaliseCategory = (value) => CATEGORIES.find((c) => c.toLowerCase() === String(value).toLowerCase());
 
 // Get all gallery items
 const getGalleryItems = async (req, res) => {
     try {
-        const { category, institution, search, page = 1, limit = 20 } = req.query;
+        const { category, institution, campus, search, page = 1, limit = 20 } = req.query;
 
         let query = {};
 
         if (category) {
-            query.category = category;
+            query.category = normaliseCategory(category) || category;
+        }
+
+        if (campus) {
+            query.campus = campus;
         }
 
         if (institution) {
@@ -90,40 +99,101 @@ const getGalleryItemById = async (req, res) => {
     }
 };
 
-// Create new gallery item
+// Fields an admin may set from the form (FormData sends everything as strings)
+const pickGalleryFields = (body = {}) => {
+    const data = {};
+    ['title', 'description', 'alt', 'category', 'campus', 'subcategory'].forEach((key) => {
+        if (typeof body[key] === 'string') data[key] = body[key].trim();
+    });
+    if (data.category) data.category = normaliseCategory(data.category) || data.category;
+    ['isActive', 'isFeatured', 'showOnHomepage'].forEach((key) => {
+        if (body[key] !== undefined) data[key] = body[key] === true || body[key] === 'true';
+    });
+    if (body.displayOrder !== undefined && body.displayOrder !== '') {
+        const order = parseInt(body.displayOrder, 10);
+        if (!Number.isNaN(order)) data.displayOrder = order;
+    }
+    if (body.tags !== undefined) {
+        const tags = Array.isArray(body.tags) ? body.tags : String(body.tags).split(',');
+        data.tags = tags.map((t) => String(t).trim()).filter(Boolean);
+    }
+    return data;
+};
+
+// "annual-day_2025.jpg" -> "Annual day 2025"
+const titleFromFileName = (name = '') => {
+    const base = name.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ').replace(/\s+/g, ' ').trim();
+    return base ? base.charAt(0).toUpperCase() + base.slice(1) : 'Gallery photo';
+};
+
+const removeFromCloudinary = async (publicId) => {
+    if (!publicId) return;
+    try {
+        await CloudinaryService.deleteImage(publicId);
+    } catch (error) {
+        console.error('Gallery Cloudinary delete error:', error.message);
+    }
+};
+
+// Create gallery item(s): one record per uploaded photo, all sharing the form's category, campus and caption
 const createGalleryItem = async (req, res) => {
     try {
-        const galleryData = {
-            ...req.body,
+        const fields = pickGalleryFields(req.body);
+        const uploads = req.galleryUploads || [];
+
+        if (uploads.length === 0 && !req.body.imageUrl) {
+            return res.status(400).json({ success: false, message: 'Please choose at least one photo to upload' });
+        }
+
+        const sources = uploads.length > 0 ? uploads : [{ imageUrl: String(req.body.imageUrl) }];
+        const items = sources.map((source) => ({
+            category: 'General',
+            ...fields,
+            ...source,
+            title: fields.title || titleFromFileName(source.originalFileName),
+            approvalStatus: 'Approved',
+            approvedBy: req.user._id,
+            approvedAt: new Date(),
             uploadedBy: req.user._id,
             lastModified: new Date(),
             modifiedBy: req.user._id
-        };
+        }));
 
-        const galleryItem = new Gallery(galleryData);
-        await galleryItem.save();
+        const created = await Gallery.insertMany(items, { ordered: true });
 
         res.status(201).json({
             success: true,
-            message: 'Gallery item created successfully',
-            data: galleryItem
+            message: created.length === 1 ? 'Photo added to the gallery' : `${created.length} photos added to the gallery`,
+            data: created.length === 1 ? created[0] : created
         });
     } catch (error) {
         console.error('Create gallery item error:', error);
-        res.status(500).json({
+        (req.galleryUploads || []).forEach((u) => removeFromCloudinary(u.cloudinaryPublicId));
+        res.status(error.name === 'ValidationError' ? 400 : 500).json({
             success: false,
-            message: 'Failed to create gallery item',
+            message: error.name === 'ValidationError' ? error.message : 'Failed to create gallery item',
             error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
         });
     }
 };
 
-// Update gallery item
+// Update gallery item (details, and optionally a replacement photo)
 const updateGalleryItem = async (req, res) => {
     try {
         const { itemId } = req.params;
+        const existing = await Gallery.findById(itemId);
+
+        if (!existing) {
+            return res.status(404).json({
+                success: false,
+                message: 'Gallery item not found'
+            });
+        }
+
+        const replacement = (req.galleryUploads || [])[0];
         const updateData = {
-            ...req.body,
+            ...pickGalleryFields(req.body),
+            ...(replacement || {}),
             lastModified: new Date(),
             modifiedBy: req.user._id
         };
@@ -134,11 +204,8 @@ const updateGalleryItem = async (req, res) => {
             { new: true, runValidators: true }
         );
 
-        if (!galleryItem) {
-            return res.status(404).json({
-                success: false,
-                message: 'Gallery item not found'
-            });
+        if (replacement && existing.cloudinaryPublicId) {
+            await removeFromCloudinary(existing.cloudinaryPublicId);
         }
 
         res.status(200).json({
@@ -148,15 +215,15 @@ const updateGalleryItem = async (req, res) => {
         });
     } catch (error) {
         console.error('Update gallery item error:', error);
-        res.status(500).json({
+        res.status(error.name === 'ValidationError' ? 400 : 500).json({
             success: false,
-            message: 'Failed to update gallery item',
+            message: error.name === 'ValidationError' ? error.message : 'Failed to update gallery item',
             error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
         });
     }
 };
 
-// Delete gallery item
+// Delete gallery item (and its Cloudinary file)
 const deleteGalleryItem = async (req, res) => {
     try {
         const { itemId } = req.params;
@@ -169,6 +236,8 @@ const deleteGalleryItem = async (req, res) => {
                 message: 'Gallery item not found'
             });
         }
+
+        await removeFromCloudinary(galleryItem.cloudinaryPublicId);
 
         res.status(200).json({
             success: true,
@@ -187,18 +256,23 @@ const deleteGalleryItem = async (req, res) => {
 // Get public gallery items (for website display)
 const getPublicGalleryItems = async (req, res) => {
     try {
-        const { category, institution, limit = 20, featured } = req.query;
+        const { category, institution, campus, limit = 60, featured } = req.query;
 
         let query = {
-            isActive: true
+            isActive: true,
+            approvalStatus: { $ne: 'Rejected' }
         };
 
         if (category) {
-            query.category = category;
+            query.category = normaliseCategory(category) || category;
         }
 
         if (institution) {
             query.institution = institution;
+        }
+
+        if (campus) {
+            query.campus = campus;
         }
 
         if (featured === 'true') {
@@ -206,9 +280,9 @@ const getPublicGalleryItems = async (req, res) => {
         }
 
         const galleryItems = await Gallery.find(query)
-            .select('title description imageUrl thumbnailUrl category tags views')
-            .sort({ displayOrder: 1, createdAt: -1 })
-            .limit(parseInt(limit));
+            .select('title description alt imageUrl thumbnailUrl category campus dimensions isFeatured tags createdAt')
+            .sort({ isFeatured: -1, displayOrder: 1, createdAt: -1 })
+            .limit(Math.min(parseInt(limit, 10) || 60, 200));
 
         res.status(200).json({
             success: true,
@@ -366,7 +440,7 @@ const approveGalleryItem = async (req, res) => {
             itemId,
             { 
                 approvalStatus: status,
-                approvedBy: req.admin._id,
+                approvedBy: req.user._id,
                 approvedAt: new Date()
             },
             { new: true, runValidators: true }

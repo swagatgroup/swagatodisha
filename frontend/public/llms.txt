@@ -21,10 +21,10 @@
 - [Home](https://www.swagatodisha.com/): admissions posters, Explore Swagat (exam notifications, latest updates, time tables, results), institutions, career roadmap after 10th, campuses and common questions
 - [Courses](https://www.swagatodisha.com/courses): every course with duration and fees: open schooling (NIOS, BOSSE, OSBME), degree, management, paramedical and nursing, engineering and polytechnic, teacher education and computer courses
 - [About Us](https://www.swagatodisha.com/about)
-- [Gallery](https://www.swagatodisha.com/gallery)
+- [Gallery](https://www.swagatodisha.com/gallery): photos of classrooms, celebrations, events and sports from the Swagat schools and campuses, filterable by category and campus
 - [Contact Us](https://www.swagatodisha.com/contact)
-- [Swagat Public School, Sargiguda](https://www.swagatodisha.com/SwagatPublicSchool_Sargiguda)
-- [Swagat Public School, Ghantiguda](https://www.swagatodisha.com/SwagatPublicSchool_Ghantiguda)
+- [Swagat Public School, Sargiguda](https://www.swagatodisha.com/SwagatPublicSchool_Sargiguda): CBSE school in Sargiguda, Kantabanji, Balangir (PIN 767039), Class 1 to 10, with the school's own photos and questions parents ask
+- [Swagat Public School, Ghantiguda](https://www.swagatodisha.com/SwagatPublicSchool_Ghantiguda): CBSE school in Ghantiguda, Sinapali, Nuapada (PIN 766108), Class 1 to 10, with the school's own photos and questions parents ask
 
 ## Common questions
 - Which is the best institute for distance courses in Odisha? Choose by the courses, fees, approvals and the support you get until you finish. Swagat Group of Institutions offers affordable regular and distance courses from seven campuses in western Odisha (Balangir, Nuapada and Kalahandi districts) and stays with students from admission to course completion. Call +91 78559 59544 to compare courses and fees.
@@ -34,3 +34,4 @@
 - Where can I find exam notifications, time tables and results? Open the Explore Swagat section on the homepage. It has Exam Notifications, Time Tables, Results and Latest Updates, and anything uploaded in the last 60 days is marked New.
 - Can Swagat help me choose a career after 10th? Yes. The Career Roadmap After 10th on the homepage shows science, commerce, arts and vocational paths, and you can call +91 78559 59544 for career counselling.
 - How do I apply or ask about admission? Call +91 78559 59544, email contact@swagatodisha.com, or register on the website. You can also visit any of the seven campuses.
+- Does Swagat run schools for children? Yes. Swagat Public School has schools at Sargiguda (Kantabanji, Balangir) and Ghantiguda (Sinapali, Nuapada), teaching the CBSE curriculum from Class 1 to 10. Call +91 78559 59544 to ask about admission or to visit.

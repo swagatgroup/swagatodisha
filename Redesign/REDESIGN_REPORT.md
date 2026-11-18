@@ -413,3 +413,26 @@ Files for upload through Super Admin → Sliders: horizontal 1920×820 and verti
 - Our Institutions: new button "View All Courses & Fees". Footer: "Programs" → "All Courses & Fees" (links to /courses).
 - Page titles and descriptions per page (src/seo/routes.js). Homepage title: "Swagat Group of Institutions | Regular & Distance Courses in Kantabanji, Balangir, Odisha" → "Swagat Group of Institutions | Regular & Distance Courses in Odisha – Kantabanji, Balangir".
 - School pages: removed the out-of-date "Admissions 2024" / "Admissions open for 2024-25" from titles, descriptions and keywords.
+
+## Copy added and changed on 2026-11-18 (gallery upload, gallery page, school pages)
+
+Gallery page (`/gallery`):
+- Hero: "Our Gallery" / "Explore the vibrant life at Swagat Group of Institutions through our comprehensive photo gallery. From campus views to student activities, discover what makes our institution special." → badge "Photo gallery · Swagat Group of Institutions"; title "See life at Swagat, up close."; intro "Classrooms, celebrations, sports days and everyday moments from our schools and campuses across western Odisha."; live counts "{n} photos" and "{n} campuses and schools" (from the uploaded photos).
+- Removed the stats strip "{n}+ Total Photos / 6 Categories / 365 Days of Memories / 100% Quality Content" (made-up numbers).
+- Category tabs (All Photos, Campus Life, Events, Students, Faculty, Infrastructure, most of which could never match an upload) → chips for the categories that actually have photos, with counts, plus a campus filter.
+- Empty state "No Images Found" / "Try selecting a different category or check back later." → "Fresh photos are on their way" / "We are adding pictures from our schools and campuses. Until then, come and visit; we would love to show you around." / button "Plan a visit". Filtered empty: "No photos here yet" / "Try another category or campus." / "Show all photos". Error: "We couldn't load the photos just now" / "Please check your connection and try again." / "Try again". Paging button: "Show more photos ({n} left)".
+- CTA: "Experience Our Campus Life" / "See is believing! Browse through our gallery to get a real feel of the vibrant atmosphere and world-class facilities at Swagat Group of Institutions." / "Schedule a Visit", "Contact Us" → "Like what you see? Come and visit." / "Visit any of our seven campuses in western Odisha. Meet the team, see the classrooms, and ask about admission, fees and the support you get until you complete." / "Plan a campus visit", "Call +91 78559 59544".
+
+School pages (Sargiguda, Ghantiguda, Lakhna); all school data (descriptions, features, programs, facilities, achievements, contact details) unchanged:
+- H1 "Swagat Public School" → "Swagat Public School, {town}". New line under it: "A happy, caring place to learn and grow". Buttons "Explore Programs" / "Contact Us" → "Explore classes" / "Call the school".
+- New facts strip: "CBSE curriculum", the program names, the location, "Part of Swagat Group of Institutions".
+- "Why Choose Swagat Public School?" → kicker "Why families choose us" + "Why choose Swagat Public School, {town}?". "Our Programs" gains the kicker "Classes" (subtitle unchanged). "World-Class Facilities" → kicker "Facilities" + "Facilities your child uses every day". "Our Achievements" gains the kicker "Proud moments".
+- New photo section (only when the school has gallery photos): kicker "Photo gallery", "Moments from {town}", button "See the full gallery".
+- New FAQ "Questions parents ask about Swagat Public School, {town}" / "Quick answers about the school, its classes and admission.": where is it, which classes, is there a good school near {area}, how to get admission, who runs it. Answers are built only from the page's own address, phone, email, programs and facilities (also in FAQPage JSON-LD).
+- "Get In Touch" / "Ready to join our educational community? Contact us today!" → "Come and meet us in {town}" / "Bring your child, see the classrooms and talk to the teachers. We will answer every question about classes, fees and admission." Buttons: "Call {phone}", "Get directions", "Email us", "Visit Main Website"; Lakhna also "The school's own website" (swagatpublicschoollakhna.in).
+- Rotating seal (decorative, hidden from screen readers): "SWAGAT PUBLIC SCHOOL • {TOWN} •".
+
+Admin, Website Management:
+- Subtitle "Manage slider images and notifications for your website" → "Manage slider images, gallery photos and notifications for your website". New "Gallery" tab (upload, caption, category, campus, star, hide, edit, delete) with a "How the gallery works" help box.
+
+`llms.txt`: Gallery and the Sargiguda and Ghantiguda school lines now describe what is on those pages; new question "Does Swagat run schools for children?" (answer from the school pages: CBSE, Class 1 to 10).
