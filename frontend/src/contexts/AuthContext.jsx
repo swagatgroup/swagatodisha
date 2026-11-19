@@ -196,6 +196,11 @@ export const AuthProvider = ({ children }) => {
                 }
             }
 
+            // Password accepted, but this account must also pass Face ID
+            if (response.data.success && response.data.faceRequired) {
+                return { success: false, faceRequired: true, faceToken: response.data.faceToken, message: response.data.message };
+            }
+
             if (response.data.success) {
                 const { token, user } = response.data;
 
@@ -218,6 +223,27 @@ export const AuthProvider = ({ children }) => {
             return { success: false, message: errorInfo.message };
         } finally {
             setLoading(false);
+        }
+    };
+
+    // ─── FACE LOGIN (second step after the password) ───────────────────────────
+    // Returns { ok, user?, message } so the camera window can show the result.
+    const completeFaceLogin = async (faceToken, descriptor) => {
+        try {
+            const response = await api.post('/api/face/verify-login', { faceToken, descriptor });
+            if (!response.data.success) return { ok: false, message: response.data.message };
+            const { token, user } = response.data;
+            localStorage.setItem('token', token);
+            localStorage.setItem('user', JSON.stringify(user));
+            setToken(token);
+            api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+            setUser(user);
+            setIsAuthenticated(true);
+            return { ok: true, user };
+        } catch (error) {
+            const data = error.response?.data || {};
+            const left = typeof data.attemptsLeft === 'number' ? ` (${data.attemptsLeft} tries left)` : '';
+            return { ok: false, message: (data.message || 'Face verification failed') + left, expired: error.response?.status === 429 || /expired/i.test(data.message || '') };
         }
     };
 
@@ -302,6 +328,7 @@ export const AuthProvider = ({ children }) => {
         loading,
         error,
         login,
+        completeFaceLogin,
         register,
         logout,
         updateUser,

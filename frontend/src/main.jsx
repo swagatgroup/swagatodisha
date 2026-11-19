@@ -65,6 +65,21 @@ class ErrorBoundary extends React.Component {
     }
 }
 
+// After a new deploy, an open tab can ask for old code files that no longer
+// exist ("Failed to fetch dynamically imported module"). Reload once to get the
+// new version instead of showing the error screen.
+window.addEventListener('vite:preloadError', (event) => {
+    try {
+        if (sessionStorage.getItem('sw_chunk_reload')) return;
+        sessionStorage.setItem('sw_chunk_reload', '1');
+        event.preventDefault();
+        window.location.reload();
+    } catch { /* storage blocked: fall back to the error screen */ }
+});
+window.addEventListener('load', () => {
+    setTimeout(() => { try { sessionStorage.removeItem('sw_chunk_reload'); } catch { /* ignore */ } }, 10000);
+});
+
 // App component mounting
 const root = ReactDOM.createRoot(document.getElementById('root'));
 

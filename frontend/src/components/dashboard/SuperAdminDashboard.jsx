@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, CartesianGrid } from 'recharts';
 
-import { ClockIcon, Squares2X2Icon, UsersIcon, UserGroupIcon, UserIcon, UserPlusIcon, ClipboardDocumentCheckIcon, GlobeAltIcon, CreditCardIcon, MegaphoneIcon, KeyIcon, DocumentTextIcon, HeartIcon, CurrencyRupeeIcon } from '@heroicons/react/24/outline';
+import { ClockIcon, Squares2X2Icon, UsersIcon, UserGroupIcon, UserIcon, UserPlusIcon, ClipboardDocumentCheckIcon, GlobeAltIcon, CreditCardIcon, MegaphoneIcon, KeyIcon, DocumentTextIcon, HeartIcon, CurrencyRupeeIcon, FingerPrintIcon } from '@heroicons/react/24/outline';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import { useDarkMode } from '../../contexts/DarkModeContextSimple';
@@ -35,6 +35,8 @@ import {
     showErrorToast
 } from '../../utils/sweetAlert';
 import api from '../../utils/api';
+
+const AdminAttendanceTab = lazy(() => import('../attendance/AdminAttendanceTab'));
 
 const SuperAdminDashboard = () => {
     const { user } = useAuth();
@@ -113,7 +115,8 @@ const SuperAdminDashboard = () => {
         { id: 'payment-management', name: 'Payments', icon: <CreditCardIcon className="mr-3 h-5 w-5" /> },
         { id: 'recent-activity', name: 'Recent Activity', icon: <ClockIcon className="mr-3 h-5 w-5" /> },
         { id: 'referrals', name: 'Refer & Earn', icon: <MegaphoneIcon className="mr-3 h-5 w-5" /> },
-        { id: 'student-password-reset', name: 'Student Password Reset', icon: <KeyIcon className="mr-3 h-5 w-5" /> }
+        { id: 'student-password-reset', name: 'Student Password Reset', icon: <KeyIcon className="mr-3 h-5 w-5" /> },
+        { id: 'attendance', name: 'Attendance & Face ID', icon: <FingerPrintIcon className="mr-3 h-5 w-5" /> }
     ];
 
     // Fetch colleges
@@ -983,6 +986,12 @@ const SuperAdminDashboard = () => {
                 return (
                     <ErrorBoundary>
                         <WebsiteManagement />
+                    </ErrorBoundary>
+                );
+            case 'attendance':
+                return (
+                    <ErrorBoundary>
+                        <Suspense fallback={<div className="p-6 text-gray-500">Loading…</div>}><AdminAttendanceTab /></Suspense>
                     </ErrorBoundary>
                 );
             default:

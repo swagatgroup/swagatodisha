@@ -102,6 +102,12 @@ export default defineConfig(({ isSsrBuild }) => ({
         changeOrigin: true,
         secure: false,
         ws: true
+      },
+      // Live chat connection in development
+      '/socket.io': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+        ws: true
       }
     }
   },

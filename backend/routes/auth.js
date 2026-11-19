@@ -7,6 +7,7 @@ const User = require('../models/User');
 const { protect, rateLimit } = require('../middleware/auth');
 const { passwordResetRateLimit } = require('../middleware/security');
 const { sendEmail: sendResendEmail } = require('../utils/resend');
+const { buildLoginResponse, generateFaceChallenge } = require('../utils/loginResponse');
 
 const router = express.Router();
 
@@ -303,76 +304,18 @@ router.post('/login', async (req, res) => {
             });
         }
 
-        // Ensure EVERY user has a referral code
-        if (!user.referralCode) {
-            try {
-                user.referralCode = user.generateReferralCode();
-                if (user.role === 'agent') {
-                    user.isReferralActive = true;
-                }
-            } catch (e) { console.error('Error generating referralCode:', e); }
+        // Password + face: people the super admin has switched to face login
+        // get a short-lived challenge instead of a session token.
+        if (user.requireFaceLogin && user.isFaceRegistered) {
+            return res.json({
+                success: true,
+                faceRequired: true,
+                faceToken: generateFaceChallenge(user._id, userType),
+                message: 'Password accepted. Please verify your face to finish signing in.'
+            });
         }
 
-        // Update last login WITHOUT validation (and persist possible referral code assignment)
-        user.lastLogin = new Date();
-        await user.save({ validateBeforeSave: false });
-
-        // Generate JWT token with 7-day expiration
-        const token = generateToken(user._id, user.role || 'user');
-        const refreshToken = generateRefreshToken(user._id);
-
-        // Get student data if user is a student
-        let studentData = null;
-        if (user.role === 'student') {
-            const Student = require('../models/Student');
-            const student = await Student.findOne({ user: user._id });
-            if (student) {
-                // Update last login in student profile too (without validation)
-                student.lastLogin = new Date();
-                await student.save({ validateBeforeSave: false });
-
-                studentData = {
-                    id: student._id,
-                    studentId: student.studentId,
-                    course: student.course,
-                    isProfileComplete: student.isProfileComplete,
-                    status: student.status
-                };
-            }
-        }
-
-        // Prepare user data for response
-        let userData = {
-            id: user._id,
-            email: user.email,
-            phoneNumber: user.phoneNumber || '',
-            role: user.role || 'user',
-            referralCode: user.referralCode || undefined
-        };
-
-        // Add appropriate name field based on user type
-        if (userType === 'admin') {
-            userData.fullName = user.fullName || `${user.firstName} ${user.lastName}`;
-        } else {
-            userData.fullName = user.fullName;
-            userData.phoneNumber = user.phoneNumber || '';
-        }
-
-        // Add student data if applicable
-        if (studentData) {
-            userData = { ...userData, ...studentData };
-        }
-
-        // Real-time updates removed (Socket.IO removed)
-
-        res.json({
-            success: true,
-            message: 'Login successful',
-            token,
-            refreshToken,
-            user: userData,
-            sessionExpires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days from now
-        });
+        res.json(await buildLoginResponse(user, userType));
 
     } catch (error) {
         res.status(500).json({

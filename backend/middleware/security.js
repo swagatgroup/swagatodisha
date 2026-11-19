@@ -1,4 +1,5 @@
 const rateLimit = require('express-rate-limit');
+const jwt = require('jsonwebtoken');
 const helmet = require('helmet');
 const validator = require('validator');
 const { body, validationResult } = require('express-validator');
@@ -16,6 +17,19 @@ const createRateLimit = (windowMs, max, message, skipSuccessfulRequests = false,
         skipSuccessfulRequests,
         standardHeaders: true,
         legacyHeaders: false,
+        // Count signed-in people separately. Keyed by IP alone, a whole office
+        // sharing one internet connection ran out of requests together.
+        keyGenerator: (req) => {
+            const header = req.headers.authorization || '';
+            if (header.startsWith('Bearer ')) {
+                try {
+                    const decoded = jwt.verify(header.slice(7), process.env.JWT_SECRET || 'swagat_odisha_jwt_secret_key_2024_development');
+                    const id = decoded.userId || decoded.id;
+                    if (id) return `user:${id}`;
+                } catch (e) { /* fall back to IP */ }
+            }
+            return req.ip;
+        },
         handler: (req, res) => {
             res.status(429).json({
                 success: false,

@@ -150,6 +150,17 @@ router.post('/login', [
             await admin.resetLoginAttempts();
         }
 
+        // Face login is enforced here too, so this route can't be used to skip it
+        if (admin.requireFaceLogin && admin.isFaceRegistered) {
+            const { generateFaceChallenge } = require('../utils/loginResponse');
+            return res.json({
+                success: true,
+                faceRequired: true,
+                faceToken: generateFaceChallenge(admin._id, 'admin'),
+                message: 'Password accepted. Please verify your face at /api/face/verify-login.'
+            });
+        }
+
         // Update last login
         admin.lastLogin = new Date();
         await admin.save();

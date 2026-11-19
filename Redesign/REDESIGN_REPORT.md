@@ -436,3 +436,33 @@ Admin, Website Management:
 - Subtitle "Manage slider images and notifications for your website" → "Manage slider images, gallery photos and notifications for your website". New "Gallery" tab (upload, caption, category, campus, star, hide, edit, delete) with a "How the gallery works" help box.
 
 `llms.txt`: Gallery and the Sargiguda and Ghantiguda school lines now describe what is on those pages; new question "Does Swagat run schools for children?" (answer from the school pages: CBSE, Class 1 to 10).
+
+## Copy added on 2026-11-19 (in-app chat, Face ID, staff attendance)
+
+All new; nothing existing was reworded. Shown only inside the dashboards and on the login pages.
+
+Chat (all dashboards, chat button in the top bar):
+- Drawer: "Messages"; status "Connected" / "Connecting… messages still send"; tabs "Chats", "New chat", and for the super admin "Student chats", "Blocked".
+- Empty state: "Talk to your Swagat team here" / "Questions about admission, documents or fees? Message the right person directly, no WhatsApp needed." / button "Start a chat".
+- Students: "Messages disappear from your chat after 24 hours."
+- Thread: "Say hello to {name}.", "No recent messages.", "Load older messages", "{name} is typing…", "View only", "Type a message", "Sending…", "Not sent".
+- Blocked or suspended: "You can't message this person." / "Your chat access has been suspended by the admin."
+- Flood limit: "You are sending messages too quickly. Please wait a minute."
+- Admin: "Block {name}?" with "Stop them messaging me" / "Suspend them from all chat" and "Reason (optional)"; Student chats intro "Full history of every chat with a student, including messages students no longer see."; Blocked empty state "No one is blocked. To block someone, open your chat with them and tap Block."; "Unblock".
+
+Face ID (profile menu for staff, agents and the super admin):
+- "Register your face once so you can mark attendance and, if the admin switches it on, add a face check to your sign-in."
+- "Your face is turned into 128 numbers on this device. The photo itself is not uploaded during registration." / "Only those numbers are stored with your account, and the admin can delete them at any time."
+- Consent: "I agree to Swagat Group of Institutions storing my face data for sign-in and attendance." / button "Start camera".
+- Registered: "Face ID is registered (since {date})." / "To register again, ask the super admin to reset your Face ID."
+- Camera window: "Starting camera…", "Position your face in the frame", "Move a little closer", "Hold steady…", "Checking…", "Face verified!", "Try again", "Face recognition runs on this device. Use good light and remove sunglasses or a mask."
+
+Login (accounts the admin has set to face login):
+- "Verify your face" / "Your password is correct. Look at the camera to finish signing in." / "Face verified! Signing you in…".
+
+Staff dashboard, new "Attendance" tab:
+- "Today's attendance", "Check in with Face ID", "Check out with Face ID", "You're done for today. See you tomorrow!", "A small photo is saved with each check-in and check-out so the admin can confirm attendance.", "My attendance log", "No attendance recorded for this month."
+
+Super admin dashboard, new "Attendance & Face ID" tab:
+- Sections "Attendance" and "Face ID & login"; daily summary "{date}: {n} present · {n} half-day · {n} absent or not checked in, out of {n} staff"; "No record", "(manual)", "Edit"; manual edit dialog with status, check-in, check-out and "Note, e.g. on leave, field visit".
+- "Staff and agents register their own Face ID from the profile menu. Once registered you can make face login required: they then sign in with their password and then their face."; "Reset Face ID for {name}?" / "Their stored face data is deleted and face login is switched off until they register again."

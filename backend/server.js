@@ -17,6 +17,9 @@ const { protect } = require('./middleware/auth');
 const app = express();
 const server = http.createServer(app);
 
+// Real-time chat (Socket.io shares the same HTTP server and port)
+require('./socket').initSocket(server);
+
 // Trust proxy - Required for rate limiting behind reverse proxy (Render, Vercel, etc.)
 // Only trust Render's proxy (more secure than trusting all proxies)
 app.set('trust proxy', 1); // Trust only the first proxy (Render's load balancer)
@@ -985,6 +988,12 @@ app.use('/api/colleges', apiRateLimit, require('./routes/collegeRoutes'));
 app.use('/api/campuses', apiRateLimit, require('./routes/campusRoutes'));
 app.use('/api/public-settings', apiRateLimit, publicSettingsRoutes);
 
+// In-app chat, Face ID and staff attendance
+app.use('/api/chat', apiRateLimit, require('./routes/chat'));
+app.use('/api/face/verify-login', authRateLimit);
+app.use('/api/face', apiRateLimit, require('./routes/face'));
+app.use('/api/attendance', apiRateLimit, require('./routes/attendance'));
+
 // Performance monitoring routes
 app.get('/api/health', async (req, res) => {
     try {
@@ -1031,10 +1040,10 @@ if (process.env.NODE_ENV === 'production') {
         process.exit(1);
     });
 
-    // Handle unhandled promise rejections
+    // Log unhandled promise rejections but keep serving. Exiting here took the
+    // whole API (and every open chat connection) down until Render restarted it.
     process.on('unhandledRejection', (err) => {
         console.error('🚨 Unhandled Rejection:', err);
-        process.exit(1);
     });
 }
 
@@ -1099,13 +1108,9 @@ if (process.env.VERCEL !== '1') {
     startServer();
 }
 
-// Handle unhandled promise rejections
-process.on('unhandledRejection', (err, promise) => {
-    console.log('❌ Unhandled Rejection:', err.message);
-    // Close server & exit process
-    server.close(() => {
-        process.exit(1);
-    });
+// Handle unhandled promise rejections: log only (see the production handler above)
+process.on('unhandledRejection', (err) => {
+    console.log('❌ Unhandled Rejection:', err && err.message);
 });
 
 module.exports = { app, server };

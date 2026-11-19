@@ -188,6 +188,23 @@ const userSchema = new mongoose.Schema({
         default: null
     },
 
+    // Face ID (descriptor computed in the browser; never returned by default)
+    faceDescriptor: {
+        type: [Number],
+        default: [],
+        select: false
+    },
+    isFaceRegistered: {
+        type: Boolean,
+        default: false
+    },
+    requireFaceLogin: {
+        type: Boolean,
+        default: false
+    },
+    faceRegisteredAt: Date,
+    faceConsentAt: Date,
+
     // Security and Timestamps
     passwordChangedAt: Date,
     passwordResetToken: String,

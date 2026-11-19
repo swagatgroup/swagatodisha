@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
-import { Bars3Icon, SunIcon, MoonIcon, BellIcon, ChevronDoubleLeftIcon, ChevronLeftIcon, ArrowRightOnRectangleIcon, UserIcon } from '@heroicons/react/24/outline';
+import { useState, useEffect, useRef, lazy, Suspense } from 'react';
+import { Bars3Icon, SunIcon, MoonIcon, BellIcon, ChevronDoubleLeftIcon, ChevronLeftIcon, ArrowRightOnRectangleIcon, UserIcon, ChatBubbleLeftRightIcon, FaceSmileIcon } from '@heroicons/react/24/outline';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import { clearAuthState } from '../../contexts/AuthContext';
@@ -14,6 +14,11 @@ import api from '../../utils/api';
 import AllRecentPaymentsModal from './AllRecentPaymentsModal';
 import CourseFilters from './components/CourseFilters';
 import { LOGO_COLOR, LOGO_SIZE, LOGO_WHITE } from '../site/siteConfig';
+
+// Chat and Face ID load only when a dashboard is open (kept off the public site)
+const ChatLauncher = lazy(() => import('../chat/ChatLauncher'));
+const FaceIdSetup = lazy(() => import('../face/FaceIdSetup'));
+const FACE_ID_ROLES = ['staff', 'agent', 'super_admin'];
 
 const SEEN_PAYMENTS_KEY = 'sw_seen_payment_ids';
 const RECENT_PAYMENTS_REFRESH_MS = 60000;
@@ -36,6 +41,7 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
     const [recentPayments, setRecentPayments] = useState([]);
     const [seenPaymentIds, setSeenPaymentIds] = useState(readSeenPayments);
     const [showAllPaymentsModal, setShowAllPaymentsModal] = useState(false);
+    const [faceIdOpen, setFaceIdOpen] = useState(false);
 
     // Completely new logout function — decoupled from the cursed dropdown
     const handleLogout = (e) => {
@@ -183,6 +189,13 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                 )}
                             </button>
 
+                            {/* In-app chat (all roles) */}
+                            {user && (
+                                <Suspense fallback={<span className="p-2 text-gray-400" aria-hidden="true"><ChatBubbleLeftRightIcon className="w-5 h-5" /></span>}>
+                                    <ChatLauncher user={user} />
+                                </Suspense>
+                            )}
+
                             {/* Payment Notification Icon */}
                             {user?.role === 'super_admin' && (
                                 <div className="relative" ref={paymentsRef}>
@@ -265,6 +278,15 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                                 {user?.role ? user.role.replace('_', ' ') : 'User'}
                                             </p>
                                         </div>
+                                        {FACE_ID_ROLES.includes(user?.role) && (
+                                            <button
+                                                type="button"
+                                                onClick={() => { setUserMenuOpen(false); setFaceIdOpen(true); }}
+                                                className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-white/10"
+                                            >
+                                                <FaceSmileIcon className="h-5 w-5" /> Face ID
+                                            </button>
+                                        )}
                                         
                                     </div>
                                 )}
@@ -394,6 +416,11 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                     </main>
                 </div>
             </div>
+            {faceIdOpen && (
+                <Suspense fallback={null}>
+                    <FaceIdSetup open={faceIdOpen} onClose={() => setFaceIdOpen(false)} />
+                </Suspense>
+            )}
             {/* All Recent Payments Modal */}
             <AllRecentPaymentsModal 
                 isOpen={showAllPaymentsModal} 

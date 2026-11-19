@@ -14,6 +14,14 @@ import Card from '../site/Card';
 import Icon from '../site/Icon';
 import Modal from '../site/Modal';
 import { Input } from '../site/Field';
+import FaceCameraModal from '../face/FaceCameraModal';
+
+const DASHBOARD_BY_ROLE = {
+    student: '/dashboard/student',
+    agent: '/dashboard/agent',
+    staff: '/dashboard/staff',
+    super_admin: '/dashboard/admin',
+};
 
 const Login = ({ title }) => {
     const [formData, setFormData] = useState({
@@ -23,13 +31,14 @@ const Login = ({ title }) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [showForgotPassword, setShowForgotPassword] = useState(false);
-    const { login, user, loading: authLoading } = useAuth();
+    const [faceToken, setFaceToken] = useState(null);
+    const { login, completeFaceLogin, user, loading: authLoading } = useAuth();
     const { isDarkMode } = useDarkMode();
     const navigate = useNavigate();
     const token = localStorage.getItem('token');
 
     // Prevent login form from flashing if user hits the back button while authenticated
-    if (authLoading || (token && !user)) {
+    if (!faceToken && (authLoading || (token && !user))) {
         return (
             <div className="flex min-h-screen items-center justify-center bg-sw-surface-muted" role="status" aria-live="polite">
                 <Icon icon={LuLoaderCircle} size="lg" className="animate-spin" />
@@ -40,7 +49,7 @@ const Login = ({ title }) => {
 
     // Redirect already-authenticated users to their dashboard
     // We double check localStorage to avoid React state batching race conditions during logout.
-    if (user && token) {
+    if (user && token && !faceToken) {
         const dashboardPath = {
             student: '/dashboard/student',
             user: '/dashboard/student',
@@ -110,6 +119,12 @@ const Login = ({ title }) => {
             setError('');
 
             const result = await login(formData.email, formData.password);
+
+            // Password was right; this account also needs Face ID
+            if (result.faceRequired) {
+                setFaceToken(result.faceToken);
+                return;
+            }
 
             if (result.success) {
                 const userRole = result.user.role;
@@ -256,6 +271,27 @@ const Login = ({ title }) => {
                     </Link>
                 </div>
             </Card>
+
+            {/* Face ID: second step after the password for accounts the admin has set to face login */}
+            <FaceCameraModal
+                open={!!faceToken}
+                onClose={() => setFaceToken(null)}
+                title="Verify your face"
+                description="Your password is correct. Look at the camera to finish signing in."
+                onCapture={async ({ descriptor }) => {
+                    const outcome = await completeFaceLogin(faceToken, descriptor);
+                    if (outcome.expired) {
+                        setFaceToken(null);
+                        Swal.fire({ icon: 'info', title: 'Please sign in again', text: outcome.message, confirmButtonColor: 'rgb(var(--sw-black))' });
+                    }
+                    return outcome;
+                }}
+                onDone={(outcome) => {
+                    setFaceToken(null);
+                    navigate(DASHBOARD_BY_ROLE[outcome.user?.role] || '/dashboard/student', { replace: true });
+                }}
+                successText="Face verified! Signing you in…"
+            />
 
             {/* Forgot Password Modal */}
             <Modal open={showForgotPassword} onClose={() => setShowForgotPassword(false)} size="sm">

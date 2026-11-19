@@ -121,3 +121,10 @@ Redesign/_baseline/
 Redesign/_final/
 Redesign/_tools/node_modules/
 Redesign/_compare/
+
+# Env files and templates stay local only
+.env*
+env.example
+env.*.example
+**/env.example
+**/env.*.example
