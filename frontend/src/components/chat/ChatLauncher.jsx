@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { io } from 'socket.io-client';
 import Swal from 'sweetalert2';
 import { ChatBubbleLeftRightIcon, XMarkIcon, PencilSquareIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
@@ -226,8 +227,10 @@ const ChatLauncher = ({ user }) => {
                 )}
             </button>
 
-            {open && (
-                <div className="fixed inset-0 z-[60] flex justify-end bg-black/40" onClick={(e) => e.target === e.currentTarget && setOpen(false)}>
+            {/* Portalled to <body>: inside the top bar (z-20 + backdrop-blur) the drawer was trapped under the sidebar and page.
+                z-[10090] sits above every dashboard layer and modal, just under SweetAlert (10100) so block dialogs and toasts still show on top. */}
+            {open && createPortal(
+                <div className="fixed inset-0 z-[10090] flex justify-end bg-black/40" onClick={(e) => e.target === e.currentTarget && setOpen(false)}>
                     <aside className="flex h-[100dvh] w-full max-w-md flex-col bg-white shadow-xl dark:bg-[#122048]" role="dialog" aria-label="Messages">
                         {thread ? (
                             <ChatThread
@@ -265,7 +268,8 @@ const ChatLauncher = ({ user }) => {
                             />
                         )}
                     </aside>
-                </div>
+                </div>,
+                document.body
             )}
         </>
     );
