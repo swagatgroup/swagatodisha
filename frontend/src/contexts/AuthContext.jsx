@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
 import api, { setExplicitLogout } from '../utils/api';
 import { handleAPIError } from '../utils/apiErrorHandler';
+import { disableChatPush } from '../utils/chatPush';
 
 const AuthContext = createContext();
 
@@ -300,6 +301,8 @@ export const AuthProvider = ({ children }) => {
         try {
             console.log('💥 AuthContext logout() called');
             setExplicitLogout(true);
+            // Stop chat push on this device before the token is cleared
+            disableChatPush(localStorage.getItem('token'));
 
             // Abort all in-flight requests so late responses can't re-set user
             if (abortControllerRef.current) {

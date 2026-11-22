@@ -60,6 +60,7 @@ const initSocket = (server) => {
         const me = socket.user;
         socket.join(`user:${me.id}`);
         if (chat.markOnline(me.id)) socket.broadcast.emit('user_online', { userId: me.id });
+        chat.touchLastSeen(me.id);
         socket.emit('online_users', chat.onlineIds());
 
         const reply = (ack, body) => { if (typeof ack === 'function') ack(body); };
@@ -92,7 +93,11 @@ const initSocket = (server) => {
         });
 
         socket.on('disconnect', () => {
-            if (chat.markOffline(me.id)) io.emit('user_offline', { userId: me.id });
+            if (chat.markOffline(me.id)) {
+                const lastSeen = new Date();
+                chat.touchLastSeen(me.id, lastSeen);
+                io.emit('user_offline', { userId: me.id, lastSeen });
+            }
         });
     });
 

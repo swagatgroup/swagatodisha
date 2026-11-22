@@ -5,10 +5,16 @@ const StudentApplication = require('../models/StudentApplication');
 const Conversation = require('../models/Conversation');
 const Message = require('../models/Message');
 const ChatBlock = require('../models/ChatBlock');
+const LastSeen = require('../models/LastSeen');
+const chatPush = require('./chatPush');
 
 const STUDENT_VISIBLE_MS = 24 * 60 * 60 * 1000;
 const FLOOD_LIMIT = 15;          // messages
 const FLOOD_WINDOW_MS = 60 * 1000; // per minute
+const EDIT_WINDOW_MS = 15 * 60 * 1000;      // messages can be edited for 15 minutes
+const UNSEND_WINDOW_MS = 24 * 60 * 60 * 1000; // and unsent for 24 hours
+const GROUP_MAX_MEMBERS = 100;
+const GROUP_CREATOR_ROLES = ['super_admin', 'staff', 'agent'];
 
 let io = null;
 const setIO = (instance) => { io = instance; };
@@ -29,6 +35,23 @@ const markOffline = (id) => {
 };
 const isOnline = (id) => online.has(String(id));
 const onlineIds = () => Array.from(online.keys());
+
+// Last seen is saved on connect and on disconnect; best-effort
+const touchLastSeen = (id, at = new Date()) =>
+    LastSeen.updateOne({ _id: id }, { $set: { at } }, { upsert: true }).catch(() => {});
+
+const lastSeenMap = async (ids) => {
+    const valid = [...new Set(ids.map(String))].filter((id) => mongoose.Types.ObjectId.isValid(id));
+    if (!valid.length) return new Map();
+    const rows = await LastSeen.find({ _id: { $in: valid } }).lean();
+    return new Map(rows.map((r) => [String(r._id), r.at]));
+};
+
+// Adds lastSeen to a list of contacts
+const withLastSeen = async (contacts) => {
+    const seen = await lastSeenMap(contacts.map((c) => c.id));
+    return contacts.map((c) => ({ ...c, lastSeen: seen.get(c.id) || null }));
+};
 
 // ─── Identity ──────────────────────────────────────────────────────────────
 const normaliseRole = (role) => (role === 'user' ? 'student' : role);
@@ -72,13 +95,14 @@ const findPerson = async (id) => {
 const lookupPeople = async (ids) => {
     const unique = [...new Set(ids.map(String))].filter((id) => mongoose.Types.ObjectId.isValid(id));
     if (!unique.length) return new Map();
-    const [users, admins] = await Promise.all([
+    const [users, admins, seen] = await Promise.all([
         User.find({ _id: { $in: unique } }).select(PERSON_FIELDS).lean(),
-        Admin.find({ _id: { $in: unique } }).select(PERSON_FIELDS).lean()
+        Admin.find({ _id: { $in: unique } }).select(PERSON_FIELDS).lean(),
+        lastSeenMap(unique)
     ]);
     const map = new Map();
-    users.forEach((u) => map.set(String(u._id), toContact(u, 'User')));
-    admins.forEach((a) => map.set(String(a._id), toContact(a, 'Admin')));
+    users.forEach((u) => map.set(String(u._id), { ...toContact(u, 'User'), lastSeen: seen.get(String(u._id)) || null }));
+    admins.forEach((a) => map.set(String(a._id), { ...toContact(a, 'Admin'), lastSeen: seen.get(String(a._id)) || null }));
     return map;
 };
 
@@ -189,7 +213,7 @@ const blockMessage = async (senderId, recipientIds) => {
     const block = await ChatBlock.findOne({ blocked: senderId }).lean();
     if (!block) return null;
     if (block.scope === 'all') return 'Your chat access has been suspended by the admin.';
-    if (recipientIds.includes(String(block.blockedBy))) return "You can't message this person.";
+    if (recipientIds.includes(String(block.blockedBy))) return "You can't message this person or group.";
     return null;
 };
 
@@ -225,31 +249,49 @@ const findOrCreateConversation = async (me, other) => {
 
 const studentCutoff = () => new Date(Date.now() - STUDENT_VISIBLE_MS);
 
-const serialiseMessage = (m) => ({
-    id: String(m._id),
-    conversationId: String(m.conversationId),
-    sender: String(m.sender),
-    senderRole: m.senderRole,
-    senderName: m.senderName,
-    text: m.text,
-    mediaUrl: m.mediaUrl,
-    mediaType: m.mediaType,
-    fileName: m.fileName,
-    readBy: (m.readBy || []).map(String),
-    createdAt: m.createdAt
-});
+const serialiseMessage = (m) => {
+    const deleted = !!m.deletedAt;
+    return {
+        id: String(m._id),
+        conversationId: String(m.conversationId),
+        sender: String(m.sender),
+        senderRole: m.senderRole,
+        senderName: m.senderName,
+        text: deleted ? '' : m.text,
+        mediaUrl: deleted ? '' : m.mediaUrl,
+        mediaType: deleted ? 'none' : m.mediaType,
+        fileName: deleted ? '' : m.fileName,
+        readBy: (m.readBy || []).map(String),
+        createdAt: m.createdAt,
+        system: !!m.system,
+        editedAt: deleted ? null : m.editedAt || null,
+        deleted
+    };
+};
 
 // Conversation as seen by one viewer
 const serialiseConversation = (c, viewer, people) => {
-    const others = c.participants.filter((p) => String(p.user) !== viewer.id);
-    const other = others[0] || c.participants[0];
-    const person = people.get(String(other.user)) || { id: String(other.user), name: 'Unknown', role: other.role, model: other.model };
+    let person;
+    if (c.isGroup) {
+        // Groups use the same shape so the list and thread code stay shared
+        person = { id: String(c._id), name: c.name || 'Group', role: 'group', model: 'Group', isGroup: true };
+    } else {
+        const others = c.participants.filter((p) => String(p.user) !== viewer.id);
+        const other = others[0] || c.participants[0];
+        person = people.get(String(other.user)) || { id: String(other.user), name: 'Unknown', role: other.role, model: other.model };
+    }
     const last = c.lastMessage && typeof c.lastMessage === 'object' && c.lastMessage._id ? c.lastMessage : null;
     const hiddenForStudent = viewer.role === 'student' && c.lastMessageAt < studentCutoff();
     const unread = c.unreadCounts instanceof Map ? c.unreadCounts.get(viewer.id) : c.unreadCounts?.[viewer.id];
     return {
         id: String(c._id),
-        other: { ...person, online: isOnline(person.id) },
+        other: { ...person, online: !c.isGroup && isOnline(person.id) },
+        isGroup: !!c.isGroup,
+        group: c.isGroup ? {
+            name: c.name || 'Group',
+            createdBy: c.createdBy ? String(c.createdBy) : null,
+            admins: (c.admins || []).map(String)
+        } : null,
         participants: c.participants.map((p) => people.get(String(p.user)) || { id: String(p.user), role: p.role, name: 'Unknown' }),
         isParticipant: isParticipant(c, viewer.id),
         hasStudent: c.hasStudent,
@@ -339,8 +381,15 @@ const sendMessage = async (me, payload = {}) => {
         if (io) io.to(`user:${id}`).emit('new_message_notification', {
             conversationId: out.conversationId,
             senderName: me.name,
+            groupName: conversation.isGroup ? conversation.name || 'Group' : null,
             preview: text ? text.slice(0, 80) : mediaLabel
         });
+    });
+    // Phones and closed browsers (does not delay the reply)
+    chatPush.notifyMessage(recipientIds, {
+        conversationId: out.conversationId,
+        title: conversation.isGroup ? `${me.name} · ${conversation.name || 'Group'}` : me.name,
+        body: text ? text.slice(0, 120) : mediaLabel
     });
     return { message: out, conversationId: String(conversation._id) };
 };
@@ -357,6 +406,177 @@ const markRead = async (me, conversationId) => {
         Conversation.updateOne({ _id: conversationId }, { $set: { [`unreadCounts.${me.id}`]: 0 } })
     ]);
     emitToParticipants(conversation, 'messages_read', { conversationId: String(conversationId), readerId: me.id }, me.id);
+};
+
+// ─── Edit and unsend ───────────────────────────────────────────────────────
+// Only the sender, only their own normal messages, inside the time window.
+const loadOwnMessage = async (me, messageId, windowMs, action) => {
+    if (!mongoose.Types.ObjectId.isValid(messageId)) throw new ChatError('Message not found', 404);
+    const message = await Message.findById(messageId);
+    if (!message || String(message.sender) !== me.id) throw new ChatError('Message not found', 404);
+    if (message.system) throw new ChatError(`This message can't be ${action}`);
+    if (message.deletedAt) throw new ChatError('This message was already deleted');
+    if (Date.now() - new Date(message.createdAt).getTime() > windowMs) {
+        throw new ChatError(`This message is too old to be ${action}`);
+    }
+    const conversation = await Conversation.findById(message.conversationId).select('participants').lean();
+    if (!conversation || !isParticipant(conversation, me.id)) throw new ChatError('Message not found', 404);
+    const blocked = await blockMessage(me.id, conversation.participants.map((p) => String(p.user)).filter((id) => id !== me.id));
+    if (blocked) throw new ChatError(blocked, 403);
+    return { message, conversation };
+};
+
+const editMessage = async (me, messageId, rawText) => {
+    const text = String(rawText || '').trim().slice(0, 4000);
+    const { message, conversation } = await loadOwnMessage(me, messageId, EDIT_WINDOW_MS, 'edited');
+    if (!text && message.mediaType === 'none') throw new ChatError('Message is empty');
+    if (text !== message.text) {
+        message.text = text;
+        message.editedAt = new Date();
+        await message.save();
+    }
+    const out = serialiseMessage(message);
+    emitToParticipants(conversation, 'message_updated', out);
+    return out;
+};
+
+const unsendMessage = async (me, messageId) => {
+    const { message, conversation } = await loadOwnMessage(me, messageId, UNSEND_WINDOW_MS, 'unsent');
+    message.deletedAt = new Date();
+    await message.save();
+    const out = serialiseMessage(message);
+    emitToParticipants(conversation, 'message_updated', out);
+    return out;
+};
+
+// ─── Groups ────────────────────────────────────────────────────────────────
+const cleanGroupName = (name) => String(name || '').replace(/\s+/g, ' ').trim().slice(0, 60);
+
+// The people in `ids` that `me` is allowed to add to a group
+const resolveMembers = async (me, ids) => {
+    const wanted = [...new Set((Array.isArray(ids) ? ids : []).map(String))].filter((id) => id !== me.id);
+    if (!wanted.length) return [];
+    if (me.role === 'super_admin') {
+        const people = await lookupPeople(wanted);
+        return wanted.map((id) => people.get(id)).filter(Boolean);
+    }
+    const contacts = await getContacts(me, { limit: 100000 });
+    const byId = new Map(contacts.map((c) => [c.id, c]));
+    return wanted.map((id) => byId.get(id)).filter(Boolean);
+};
+
+const isGroupAdmin = (conversation, me) =>
+    (conversation.admins || []).some((id) => String(id) === me.id) || (me.role === 'super_admin' && isParticipant(conversation, me.id));
+
+const loadGroup = async (me, conversationId) => {
+    if (!mongoose.Types.ObjectId.isValid(conversationId)) throw new ChatError('Group not found', 404);
+    const conversation = await Conversation.findById(conversationId);
+    if (!conversation || !conversation.isGroup || !isParticipant(conversation, me.id)) throw new ChatError('Group not found', 404);
+    return conversation;
+};
+
+// Centred event line in the group ("Asha added Ravi"). Does not count as unread.
+const systemMessage = async (conversation, me, text) => {
+    const message = await Message.create({
+        conversationId: conversation._id,
+        sender: me.id,
+        senderModel: me.model,
+        senderRole: me.role,
+        senderName: me.name,
+        text: text.slice(0, 4000),
+        system: true,
+        readBy: conversation.participants.map((p) => p.user)
+    });
+    await Conversation.updateOne({ _id: conversation._id }, { $set: { lastMessage: message._id, lastMessageAt: message.createdAt } });
+    const out = serialiseMessage(message);
+    emitToParticipants(conversation, 'receive_message', out);
+    return out;
+};
+
+const announceGroup = (conversation, extra = {}) => {
+    emitToParticipants(conversation, 'group_updated', { conversationId: String(conversation._id), ...extra });
+};
+
+const createGroup = async (me, { name, memberIds } = {}) => {
+    if (!GROUP_CREATOR_ROLES.includes(me.role)) throw new ChatError("You can't create groups.", 403);
+    const block = await ChatBlock.findOne({ blocked: me.id, scope: 'all' }).lean();
+    if (block) throw new ChatError('Your chat access has been suspended by the admin.', 403);
+    const groupName = cleanGroupName(name);
+    if (!groupName) throw new ChatError('Give the group a name');
+    const members = await resolveMembers(me, memberIds);
+    if (!members.length) throw new ChatError('Add at least one person to the group');
+    if (members.length + 1 > GROUP_MAX_MEMBERS) throw new ChatError(`A group can have up to ${GROUP_MAX_MEMBERS} people`);
+
+    const participants = [{ user: me.id, model: me.model, role: me.role }, ...members.map((m) => ({ user: m.id, model: m.model, role: m.role }))];
+    const conversation = await Conversation.create({
+        pairKey: `group:${new mongoose.Types.ObjectId()}`,
+        isGroup: true,
+        name: groupName,
+        createdBy: me.id,
+        admins: [me.id],
+        participants,
+        hasStudent: participants.some((p) => p.role === 'student')
+    });
+    await systemMessage(conversation, me, `${me.name} created the group "${groupName}"`);
+    announceGroup(conversation);
+    return String(conversation._id);
+};
+
+const renameGroup = async (me, conversationId, name) => {
+    const conversation = await loadGroup(me, conversationId);
+    if (!isGroupAdmin(conversation, me)) throw new ChatError('Only group admins can rename the group', 403);
+    const groupName = cleanGroupName(name);
+    if (!groupName) throw new ChatError('Give the group a name');
+    if (groupName === conversation.name) return;
+    conversation.name = groupName;
+    await conversation.save();
+    await systemMessage(conversation, me, `${me.name} renamed the group to "${groupName}"`);
+    announceGroup(conversation);
+};
+
+const addGroupMembers = async (me, conversationId, memberIds) => {
+    const conversation = await loadGroup(me, conversationId);
+    if (!isGroupAdmin(conversation, me)) throw new ChatError('Only group admins can add people', 403);
+    const members = (await resolveMembers(me, memberIds)).filter((m) => !isParticipant(conversation, m.id));
+    if (!members.length) throw new ChatError('No one new to add');
+    if (conversation.participants.length + members.length > GROUP_MAX_MEMBERS) {
+        throw new ChatError(`A group can have up to ${GROUP_MAX_MEMBERS} people`);
+    }
+    members.forEach((m) => conversation.participants.push({ user: m.id, model: m.model, role: m.role }));
+    if (members.some((m) => m.role === 'student')) conversation.hasStudent = true;
+    await conversation.save();
+    await systemMessage(conversation, me, `${me.name} added ${members.map((m) => m.name).join(', ')}`);
+    announceGroup(conversation);
+};
+
+// Removing yourself = leaving the group
+const removeGroupMember = async (me, conversationId, userId) => {
+    const conversation = await loadGroup(me, conversationId);
+    const leaving = String(userId) === me.id;
+    if (!leaving && !isGroupAdmin(conversation, me)) throw new ChatError('Only group admins can remove people', 403);
+    const member = conversation.participants.find((p) => String(p.user) === String(userId));
+    if (!member) throw new ChatError('This person is not in the group', 404);
+
+    const people = await lookupPeople([userId]);
+    const name = people.get(String(userId))?.name || 'Someone';
+    const before = { participants: conversation.participants.map((p) => ({ user: p.user })) };
+
+    conversation.participants = conversation.participants.filter((p) => String(p.user) !== String(userId));
+    conversation.admins = (conversation.admins || []).filter((id) => String(id) !== String(userId));
+    // Keep at least one admin while people remain
+    if (!conversation.admins.length && conversation.participants.length) conversation.admins = [conversation.participants[0].user];
+    conversation.hasStudent = conversation.participants.some((p) => p.role === 'student');
+    if (conversation.unreadCounts && conversation.unreadCounts.has(String(userId))) {
+        conversation.unreadCounts.delete(String(userId));
+        conversation.markModified('unreadCounts');
+    }
+    await conversation.save();
+
+    if (conversation.participants.length) {
+        await systemMessage(conversation, me, leaving ? `${name} left` : `${me.name} removed ${name}`);
+    }
+    // Tell everyone who was in the group, including the person removed
+    announceGroup(before, { conversationId: String(conversation._id), removed: [String(userId)] });
 };
 
 module.exports = {
@@ -377,5 +597,14 @@ module.exports = {
     serialiseMessage,
     sendMessage,
     markRead,
-    emitToParticipants
+    emitToParticipants,
+    touchLastSeen,
+    withLastSeen,
+    lookupPeople,
+    editMessage,
+    unsendMessage,
+    createGroup,
+    renameGroup,
+    addGroupMembers,
+    removeGroupMember
 };

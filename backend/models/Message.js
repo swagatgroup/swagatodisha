@@ -12,7 +12,13 @@ const messageSchema = new mongoose.Schema({
     mediaUrl: { type: String, default: '' },
     mediaType: { type: String, enum: ['none', 'image', 'file'], default: 'none' },
     fileName: { type: String, default: '' },
-    readBy: [{ type: mongoose.Schema.Types.ObjectId }]
+    readBy: [{ type: mongoose.Schema.Types.ObjectId }],
+    // Group events ("X added Y") shown centred in the thread
+    system: { type: Boolean, default: false },
+    editedAt: { type: Date, default: null },
+    // Unsent messages keep their content in the database but are shown to
+    // everyone as "This message was deleted"
+    deletedAt: { type: Date, default: null }
 }, { timestamps: { createdAt: true, updatedAt: false } });
 
 messageSchema.index({ conversationId: 1, createdAt: -1 });

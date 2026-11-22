@@ -10,8 +10,13 @@ const participantSchema = new mongoose.Schema({
 
 const conversationSchema = new mongoose.Schema({
     participants: { type: [participantSchema], required: true },
-    // Sorted "id:id" string so a pair of people only ever has one conversation
+    // Sorted "id:id" string so a pair of people only ever has one conversation.
+    // Groups use "group:<random id>".
     pairKey: { type: String, required: true, unique: true },
+    isGroup: { type: Boolean, default: false },
+    name: { type: String, default: '', maxlength: 60 },
+    createdBy: { type: mongoose.Schema.Types.ObjectId, default: null },
+    admins: [{ type: mongoose.Schema.Types.ObjectId }],
     hasStudent: { type: Boolean, default: false },
     lastMessage: { type: mongoose.Schema.Types.ObjectId, ref: 'Message', default: null },
     lastMessageAt: { type: Date, default: Date.now },

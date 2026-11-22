@@ -466,3 +466,16 @@ Staff dashboard, new "Attendance" tab:
 Super admin dashboard, new "Attendance & Face ID" tab:
 - Sections "Attendance" and "Face ID & login"; daily summary "{date}: {n} present · {n} half-day · {n} absent or not checked in, out of {n} staff"; "No record", "(manual)", "Edit"; manual edit dialog with status, check-in, check-out and "Note, e.g. on leave, field visit".
 - "Staff and agents register their own Face ID from the profile menu. Once registered you can make face login required: they then sign in with their password and then their face."; "Reset Face ID for {name}?" / "Their stored face data is deleted and face login is switched off until they register again."
+
+## Copy added on 2026-11-22 (chat: groups, edit, unsend, stories, last seen, alerts)
+
+All new; nothing existing was reworded except the block line noted below. Shown only inside the dashboard chat.
+
+- Tabs: "Stories", "New group" (super admin, staff and agents only).
+- Blocked line, changed: "You can't message this person." → "You can't message this person or group." (server message). In a group thread the footer reads "You can't message this group."; super admin viewing a group: "You are viewing this group. Only its members can reply."
+- Messages: chevron "Message options" with "Edit" / "Unsend"; "Editing: {text}"; "Edited"; "This message was deleted" / "You deleted this message"; dialog "Unsend this message?" / "It will be removed for everyone in this chat." / "Unsend". Errors: "This message is too old to be edited", "This message is too old to be unsent", "This message was already deleted".
+- Last seen: "last seen today at {time}", "last seen yesterday at {time}", "last seen {date} at {time}".
+- New group: placeholder "Group name, e.g. Bhubaneswar admissions team"; "Pick the people to add" / "{n} selected"; button "Create group" / "Creating…". Errors: "Give the group a name", "Add at least one person to the group", "You can't create groups.", "A group can have up to 100 people".
+- Group info: "Group info", "Group · {n} people", "Add people", "Group admin", "Remove", "Leave group"; dialogs "Leave "{group}"?" / "You won't get messages from this group any more." and "Remove {name}?" / "{name} will no longer see or send messages in this group.". Group event lines: "{name} created the group "{group}"", "{name} added {names}", "{name} removed {name}", "{name} left", "{name} renamed the group to "{group}"".
+- Stories: "My story", "Share an update. It disappears after 24 hours.", "{n} updates · tap your photo to see who viewed", "Recent updates", "Viewed updates", "No updates from your contacts right now.", "Text story" / "Photo story", "Type a status", "Add a caption (optional)", "Choose a photo", "Choose a different photo", "Post" / "Posting…", "Your contacts on Swagat chat can see this for 24 hours.", "{n} views", "Viewed by {n}", "No views yet.", "Delete this story?", "You have too many stories up. Delete one first.".
+- Alerts: banner "Get an alert on this device when a new message arrives, even when Swagat is closed." with "Turn on" (changed the same day from "Get an alert when a new message arrives, even in another tab." when push notifications were added); push notification title "{sender}" or "{sender} · {group}" with the message preview, fallback "New message"; pop-up shows "{sender}" or "{sender} · {group}" with the message preview.

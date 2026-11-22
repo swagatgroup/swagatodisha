@@ -2,20 +2,59 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { io } from 'socket.io-client';
 import Swal from 'sweetalert2';
-import { ChatBubbleLeftRightIcon, XMarkIcon, PencilSquareIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import { ChatBubbleLeftRightIcon, XMarkIcon, PencilSquareIcon, MagnifyingGlassIcon, BellAlertIcon } from '@heroicons/react/24/outline';
 import api from '../../utils/api';
 import { API_BASE_URL } from '../../config/environment';
 import ChatThread, { Avatar, ROLE_LABEL, formatTime } from './ChatThread';
+import { GroupCreator, GroupInfo } from './GroupPanels';
+import StoriesView from './Stories';
+import { enableChatPush, syncChatPush } from '../../utils/chatPush';
 
 const SOCKET_URL = API_BASE_URL || undefined; // dev: same origin through the Vite proxy
+const GROUP_CREATOR_ROLES = ['super_admin', 'staff', 'agent'];
 
-const previewOf = (m) => (m ? (m.text || (m.mediaType === 'image' ? '📷 Photo' : '📎 File')) : '');
+const previewOf = (m, meId, isGroup = false) => {
+    if (!m) return '';
+    if (m.deleted) return '🚫 This message was deleted';
+    if (m.system) return m.text;
+    const body = m.text || (m.mediaType === 'image' ? '📷 Photo' : '📎 File');
+    if (!isGroup) return body;
+    return `${m.sender === meId ? 'You' : (m.senderName || '').split(' ')[0]}: ${body}`;
+};
+
+// ─── New-message alerts ────────────────────────────────────────────────────
+let audioCtx = null;
+const playPing = () => {
+    try {
+        const Ctx = window.AudioContext || window.webkitAudioContext;
+        if (!Ctx) return;
+        audioCtx = audioCtx || new Ctx();
+        if (audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = 880;
+        gain.gain.setValueAtTime(0.0001, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.15, audioCtx.currentTime + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.3);
+        osc.connect(gain).connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.32);
+    } catch { /* sound is optional */ }
+    try { navigator.vibrate?.(80); } catch { /* optional */ }
+};
+
+const notificationsSupported = () => typeof window !== 'undefined' && 'Notification' in window;
 
 // Chat button for the dashboard top bar plus the chat drawer. Loaded only inside dashboards.
 const ChatLauncher = ({ user }) => {
     // The server says who we are: for students the stored user.id is the Student profile id, not the account id
     const [serverMe, setServerMe] = useState(null);
-    const me = useMemo(() => serverMe || { id: String(user.id || user._id), role: user.role === 'user' ? 'student' : user.role }, [serverMe, user]);
+    const myName = user?.fullName || user?.name || (user?.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : '');
+    const me = useMemo(() => ({
+        ...(serverMe || { id: String(user.id || user._id), role: user.role === 'user' ? 'student' : user.role }),
+        name: myName,
+    }), [serverMe, user, myName]);
     const isAdmin = me.role === 'super_admin';
 
     const [open, setOpen] = useState(false);
@@ -29,20 +68,28 @@ const ChatLauncher = ({ user }) => {
     const [loadingMessages, setLoadingMessages] = useState(false);
     const [typing, setTyping] = useState({}); // conversationId -> name
     const [connected, setConnected] = useState(false);
+    const [lastSeen, setLastSeen] = useState({}); // userId -> ISO, live updates
+    const [infoOpen, setInfoOpen] = useState(false); // group info panel
+    const [toast, setToast] = useState(null); // { conversationId, title, preview }
 
     const socketRef = useRef(null);
     const threadRef = useRef(null);
     const openRef = useRef(false);
+    const conversationsRef = useRef([]);
+    const notifyRef = useRef(() => {});
     threadRef.current = thread;
     openRef.current = open;
+    conversationsRef.current = conversations;
 
     const loadConversations = useCallback(async () => {
         try {
             const res = await api.get('/api/chat/conversations', { silent: true });
-            setConversations(res.data.data || []);
+            const list = res.data.data || [];
+            setConversations(list);
             setChatStatus(res.data.chatStatus || null);
             if (res.data.me) setServerMe((prev) => (prev && prev.id === res.data.me.id ? prev : res.data.me));
-        } catch { /* shown as an empty list */ }
+            return list;
+        } catch { return null; /* shown as an empty list */ }
     }, []);
 
     // List and unread badge load even while the live connection is still starting
@@ -59,8 +106,33 @@ const ChatLauncher = ({ user }) => {
         socket.on('disconnect', () => setConnected(false));
         socket.on('online_users', (ids) => setOnline(new Set(ids)));
         socket.on('user_online', ({ userId }) => setOnline((s) => new Set(s).add(userId)));
-        socket.on('user_offline', ({ userId }) => setOnline((s) => { const n = new Set(s); n.delete(userId); return n; }));
+        socket.on('user_offline', ({ userId, lastSeen: at }) => {
+            setOnline((s) => { const n = new Set(s); n.delete(userId); return n; });
+            if (at) setLastSeen((ls) => ({ ...ls, [userId]: at }));
+        });
         socket.on('chat_status', (status) => setChatStatus(status));
+        socket.on('new_message_notification', (n) => notifyRef.current(n));
+
+        // Edited or unsent message
+        socket.on('message_updated', (m) => {
+            setMessages((all) => (all[m.conversationId]
+                ? { ...all, [m.conversationId]: all[m.conversationId].map((x) => (x.id === m.id ? { ...x, ...m } : x)) }
+                : all));
+            setConversations((list) => list.map((c) => (c.id === m.conversationId && c.lastMessage?.id === m.id ? { ...c, lastMessage: m } : c)));
+        });
+
+        // Group created, renamed, or people added/removed
+        socket.on('group_updated', ({ conversationId, removed = [] }) => {
+            if (removed.includes(me.id)) {
+                setConversations((list) => list.filter((c) => c.id !== conversationId));
+                const current = threadRef.current;
+                if (current?.conversationId === conversationId && !current.readOnly) {
+                    setThread(null);
+                    setInfoOpen(false);
+                }
+            }
+            loadConversations();
+        });
 
         socket.on('receive_message', (m) => {
             setMessages((all) => {
@@ -75,7 +147,8 @@ const ChatLauncher = ({ user }) => {
                 const idx = list.findIndex((c) => c.id === m.conversationId);
                 if (idx === -1) { loadConversations(); return list; }
                 const c = list[idx];
-                const updated = { ...c, lastMessage: m, lastMessageAt: m.createdAt, unread: viewing || m.sender === me.id ? 0 : (c.unread || 0) + 1 };
+                const unread = viewing || m.sender === me.id ? 0 : (c.unread || 0) + (m.system ? 0 : 1);
+                const updated = { ...c, lastMessage: m, lastMessageAt: m.createdAt, unread };
                 return [updated, ...list.slice(0, idx), ...list.slice(idx + 1)];
             });
             setTyping((t) => { if (!t[m.conversationId]) return t; const n = { ...t }; delete n[m.conversationId]; return n; });
@@ -112,7 +185,8 @@ const ChatLauncher = ({ user }) => {
     }, []);
 
     const openConversation = async (c, readOnly = false) => {
-        setThread({ conversationId: c.id, other: c.other, participants: c.participants, readOnly: readOnly || !c.isParticipant });
+        setInfoOpen(false);
+        setThread({ conversationId: c.id, other: c.other, participants: c.participants, readOnly: readOnly || !c.isParticipant, isGroup: !!c.isGroup, group: c.group || null });
         setConversations((list) => list.map((x) => (x.id === c.id ? { ...x, unread: 0 } : x)));
         setLoadingMessages(true);
         try { await fetchMessages(c.id); } catch { /* empty thread */ }
@@ -120,9 +194,113 @@ const ChatLauncher = ({ user }) => {
     };
 
     const openContact = (contact) => {
-        const existing = conversations.find((c) => c.other.id === contact.id);
+        const existing = conversations.find((c) => !c.isGroup && c.other.id === contact.id);
         if (existing) { openConversation(existing); return; }
-        setThread({ conversationId: null, other: contact, participants: [], readOnly: false });
+        setInfoOpen(false);
+        setThread({ conversationId: null, other: contact, participants: [], readOnly: false, isGroup: false, group: null });
+    };
+
+    // Open a chat by id (from a notification or a newly created group)
+    const openById = async (conversationId) => {
+        setOpen(true);
+        setToast(null);
+        let c = conversationsRef.current.find((x) => x.id === conversationId);
+        if (!c) c = (await loadConversations() || []).find((x) => x.id === conversationId);
+        if (c) openConversation(c);
+    };
+
+    // Keep an open group's name and members current
+    useEffect(() => {
+        if (!thread?.isGroup || !thread.conversationId) return;
+        const c = conversations.find((x) => x.id === thread.conversationId);
+        if (c) setThread((t) => (t && t.conversationId === c.id ? { ...t, other: c.other, participants: c.participants, group: c.group } : t));
+    }, [conversations, thread?.isGroup, thread?.conversationId]);
+
+    // ─── Edit / unsend ─────────────────────────────────────────────────────
+    const applyUpdated = (m) => setMessages((all) => (all[m.conversationId]
+        ? { ...all, [m.conversationId]: all[m.conversationId].map((x) => (x.id === m.id ? { ...x, ...m } : x)) }
+        : all));
+
+    const errorToast = (title) => Swal.fire({ toast: true, position: 'top-end', icon: 'error', title, showConfirmButton: false, timer: 3500 });
+
+    const editMessage = async (messageId, text) => {
+        try {
+            const res = await api.patch(`/api/chat/messages/${messageId}`, { text }, { silent: true });
+            applyUpdated(res.data.data);
+        } catch (e) { errorToast(e.response?.data?.message || 'Message not edited'); }
+    };
+
+    const unsendMessage = async (messageId) => {
+        const confirm = await Swal.fire({
+            titleText: 'Unsend this message?',
+            text: 'It will be removed for everyone in this chat.',
+            showCancelButton: true,
+            confirmButtonText: 'Unsend',
+            confirmButtonColor: '#dc2626',
+        });
+        if (!confirm.isConfirmed) return;
+        try {
+            const res = await api.delete(`/api/chat/messages/${messageId}`, { silent: true });
+            applyUpdated(res.data.data);
+            setConversations((list) => list.map((c) => (c.lastMessage?.id === messageId ? { ...c, lastMessage: res.data.data } : c)));
+        } catch (e) { errorToast(e.response?.data?.message || 'Message not unsent'); }
+    };
+
+    // ─── Notifications ─────────────────────────────────────────────────────
+    const [notifyPermission, setNotifyPermission] = useState(() => (notificationsSupported() ? Notification.permission : 'unsupported'));
+    const [pushOn, setPushOn] = useState(false); // this device gets push even with the browser closed
+    const toastTimer = useRef(null);
+    useEffect(() => () => clearTimeout(toastTimer.current), []);
+
+    const openByIdRef = useRef(null);
+    openByIdRef.current = openById;
+    useEffect(() => {
+        // Re-link push to whoever is signed in (permission was given before)
+        syncChatPush().then(setPushOn);
+
+        // Opened from a push notification: /dashboard/<role>?chat=<id>
+        const params = new URLSearchParams(window.location.search);
+        const fromPush = params.get('chat');
+        if (fromPush && /^[a-f0-9]{24}$/i.test(fromPush)) {
+            params.delete('chat');
+            const rest = params.toString();
+            window.history.replaceState(window.history.state, '', `${window.location.pathname}${rest ? `?${rest}` : ''}${window.location.hash}`);
+            openByIdRef.current(fromPush);
+        }
+
+        // Notification clicked while the dashboard was already open
+        const container = navigator.serviceWorker;
+        if (!container) return undefined;
+        const onMessage = (e) => {
+            if (e.data?.type === 'open-chat' && e.data.conversationId) openByIdRef.current(e.data.conversationId);
+        };
+        container.addEventListener('message', onMessage);
+        container.startMessages?.();
+        return () => container.removeEventListener('message', onMessage);
+    }, []);
+
+    notifyRef.current = ({ conversationId, senderName, groupName, preview }) => {
+        const visible = document.visibilityState === 'visible';
+        if (visible && openRef.current && threadRef.current?.conversationId === conversationId) return; // already reading it
+        const title = groupName ? `${senderName} · ${groupName}` : senderName;
+        if (visible || !pushOn) playPing(); // when hidden, the push notification makes its own sound
+        if (!visible && notifyPermission === 'granted' && !pushOn) {
+            try {
+                const n = new Notification(title, { body: preview, tag: conversationId, icon: '/Swagat_Favicon.png' });
+                n.onclick = () => { window.focus(); openById(conversationId); n.close(); };
+                return;
+            } catch { /* some mobile browsers only allow notifications from a service worker */ }
+        }
+        setToast({ conversationId, title, preview });
+        clearTimeout(toastTimer.current);
+        toastTimer.current = setTimeout(() => setToast(null), 6000);
+    };
+
+    const askNotifications = () => {
+        if (!notificationsSupported()) return;
+        enableChatPush()
+            .then(({ permission, push }) => { setNotifyPermission(permission); setPushOn(push); })
+            .catch(() => {});
     };
 
     const send = (payload) => {
@@ -232,7 +410,16 @@ const ChatLauncher = ({ user }) => {
             {open && createPortal(
                 <div className="fixed inset-0 z-[10090] flex justify-end bg-black/40" onClick={(e) => e.target === e.currentTarget && setOpen(false)}>
                     <aside className="flex h-[100dvh] w-full max-w-md flex-col bg-white shadow-xl dark:bg-[#122048]" role="dialog" aria-label="Messages">
-                        {thread ? (
+                        {thread && infoOpen && thread.isGroup ? (
+                            <GroupInfo
+                                me={me}
+                                thread={thread}
+                                online={online}
+                                lastSeen={lastSeen}
+                                onBack={() => setInfoOpen(false)}
+                                onLeft={() => { setInfoOpen(false); setThread(null); loadConversations(); }}
+                            />
+                        ) : thread ? (
                             <ChatThread
                                 me={me}
                                 thread={thread}
@@ -242,10 +429,14 @@ const ChatLauncher = ({ user }) => {
                                 typingName={thread.conversationId ? typing[thread.conversationId] : null}
                                 online={online}
                                 chatStatus={chatStatus}
-                                onBack={() => { setThread(null); loadConversations(); }}
+                                onBack={() => { setThread(null); setInfoOpen(false); loadConversations(); }}
                                 onSend={send}
                                 onTyping={onTyping}
                                 onBlock={blockPerson}
+                                lastSeen={thread.isGroup ? null : lastSeen[thread.other.id] || thread.other.lastSeen || null}
+                                onEdit={editMessage}
+                                onUnsend={unsendMessage}
+                                onOpenInfo={() => setInfoOpen(true)}
                                 onLoadOlder={() => {
                                     const first = (messages[thread.conversationId] || [])[0];
                                     if (first) fetchMessages(thread.conversationId, first.createdAt).catch(() => {});
@@ -265,9 +456,31 @@ const ChatLauncher = ({ user }) => {
                                 onClose={() => setOpen(false)}
                                 onOpenConversation={openConversation}
                                 onOpenContact={openContact}
+                                onGroupCreated={(id) => { setView('chats'); openById(id); }}
+                                notifyPermission={notifyPermission}
+                                onEnableNotifications={askNotifications}
                             />
                         )}
                     </aside>
+                </div>,
+                document.body
+            )}
+
+            {/* New-message pop-up while the chat is closed or another chat is open */}
+            {toast && createPortal(
+                <div className="fixed right-3 top-3 z-[10095] w-[calc(100%-1.5rem)] max-w-sm" role="status" aria-live="polite">
+                    <div className="flex items-start gap-3 rounded-xl border border-gray-200 bg-white p-3 shadow-lg dark:border-gray-700 dark:bg-[#122048]">
+                        <button type="button" onClick={() => openById(toast.conversationId)} className="flex min-w-0 flex-1 items-start gap-3 text-left">
+                            <Avatar name={toast.title} size="h-9 w-9" />
+                            <span className="min-w-0">
+                                <span className="block truncate text-sm font-semibold text-gray-900 dark:text-white">{toast.title}</span>
+                                <span className="block truncate text-xs text-gray-600 dark:text-gray-300">{toast.preview}</span>
+                            </span>
+                        </button>
+                        <button type="button" onClick={() => setToast(null)} className="rounded-full p-1 text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10" aria-label="Dismiss">
+                            <XMarkIcon className="h-4 w-4" />
+                        </button>
+                    </div>
                 </div>,
                 document.body
             )}
@@ -276,8 +489,14 @@ const ChatLauncher = ({ user }) => {
 };
 
 // ─── List screens ──────────────────────────────────────────────────────────
-const ChatHome = ({ me, isAdmin, view, setView, conversations, online, typing, connected, chatStatus, onClose, onOpenConversation, onOpenContact }) => {
-    const tabs = [['chats', 'Chats'], ['new', 'New chat'], ...(isAdmin ? [['students', 'Student chats'], ['blocks', 'Blocked']] : [])];
+const ChatHome = ({ me, isAdmin, view, setView, conversations, online, typing, connected, chatStatus, onClose, onOpenConversation, onOpenContact, onGroupCreated, notifyPermission, onEnableNotifications }) => {
+    const canCreateGroup = GROUP_CREATOR_ROLES.includes(me.role);
+    const tabs = [
+        ['chats', 'Chats'], ['stories', 'Stories'], ['new', 'New chat'],
+        ...(canCreateGroup ? [['group', 'New group']] : []),
+        ...(isAdmin ? [['students', 'Student chats'], ['blocks', 'Blocked']] : []),
+    ];
+    const [hideNotifyTip, setHideNotifyTip] = useState(false);
     return (
         <div className="flex h-full flex-col">
             <div className="flex items-center justify-between border-b border-gray-200 px-4 py-3 dark:border-gray-700">
@@ -300,12 +519,22 @@ const ChatHome = ({ me, isAdmin, view, setView, conversations, online, typing, c
             {chatStatus?.scope === 'all' && (
                 <p className="bg-red-50 px-4 py-2 text-xs text-red-700 dark:bg-red-900/20 dark:text-red-300">Your chat access has been suspended by the admin.</p>
             )}
+            {view === 'chats' && notifyPermission === 'default' && !hideNotifyTip && (
+                <div className="flex items-center gap-2 bg-blue-50 px-4 py-2 text-xs text-blue-900 dark:bg-blue-900/20 dark:text-blue-100">
+                    <BellAlertIcon className="h-4 w-4 shrink-0" />
+                    <p className="flex-1">Get an alert on this device when a new message arrives, even when Swagat is closed.</p>
+                    <button type="button" onClick={onEnableNotifications} className="rounded-full bg-[#0E1A3D] px-3 py-1 font-semibold text-white">Turn on</button>
+                    <button type="button" onClick={() => setHideNotifyTip(true)} className="rounded-full p-1 hover:bg-blue-100 dark:hover:bg-white/10" aria-label="Not now"><XMarkIcon className="h-3.5 w-3.5" /></button>
+                </div>
+            )}
             {me.role === 'student' && view === 'chats' && (
                 <p className="bg-amber-50 px-4 py-1.5 text-[11px] text-amber-800 dark:bg-amber-900/20 dark:text-amber-200">Messages disappear from your chat after 24 hours.</p>
             )}
             <div className="flex-1 overflow-y-auto">
-                {view === 'chats' && <ConversationList list={conversations} online={online} typing={typing} onOpen={(c) => onOpenConversation(c)} empty={<EmptyChats onNew={() => setView('new')} />} />}
+                {view === 'chats' && <ConversationList list={conversations} meId={me.id} online={online} typing={typing} onOpen={(c) => onOpenConversation(c)} empty={<EmptyChats onNew={() => setView('new')} />} />}
+                {view === 'stories' && <StoriesView me={me} />}
                 {view === 'new' && <ContactPicker onPick={onOpenContact} />}
+                {view === 'group' && canCreateGroup && <GroupCreator onCreated={onGroupCreated} />}
                 {view === 'students' && <StudentChats onOpen={(c) => onOpenConversation(c, true)} online={online} />}
                 {view === 'blocks' && <BlockedList />}
             </div>
@@ -323,24 +552,25 @@ const EmptyChats = ({ onNew }) => (
     </div>
 );
 
-const ConversationList = ({ list, online, typing = {}, onOpen, empty, showBoth = false }) => {
+const ConversationList = ({ list, meId, online, typing = {}, onOpen, empty, showBoth = false }) => {
     if (!list.length) return empty || <p className="px-6 py-12 text-center text-sm text-gray-500">No conversations yet.</p>;
     return (
         <ul className="divide-y divide-gray-100 dark:divide-gray-700">
             {list.map((c) => (
                 <li key={c.id}>
                     <button type="button" onClick={() => onOpen(c)} className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-white/5">
-                        <Avatar name={c.other.name} online={!showBoth && online.has(c.other.id)} />
+                        <Avatar name={c.other.name} online={!showBoth && !c.isGroup && online.has(c.other.id)} group={c.isGroup} />
                         <div className="min-w-0 flex-1">
                             <div className="flex items-baseline justify-between gap-2">
                                 <p className="truncate text-sm font-semibold text-gray-900 dark:text-white">
-                                    {showBoth ? c.participants.map((p) => p.name).join(' ↔ ') : c.other.name}
+                                    {showBoth && !c.isGroup ? c.participants.map((p) => p.name).join(' ↔ ') : c.other.name}
                                 </p>
                                 {c.lastMessageAt && <span className="shrink-0 text-[11px] text-gray-400">{formatTime(c.lastMessageAt)}</span>}
                             </div>
                             <div className="flex items-center justify-between gap-2">
                                 <p className="truncate text-xs text-gray-500 dark:text-gray-300">
-                                    {typing[c.id] ? <span className="text-green-600">typing…</span> : previewOf(c.lastMessage) || (showBoth ? '' : ROLE_LABEL[c.other.role])}
+                                    {typing[c.id] ? <span className="text-green-600">{c.isGroup ? `${typing[c.id].split(' ')[0]} is typing…` : 'typing…'}</span>
+                                        : previewOf(c.lastMessage, meId, c.isGroup) || (showBoth ? '' : c.isGroup ? `${c.participants.length} people` : ROLE_LABEL[c.other.role])}
                                 </p>
                                 {c.unread > 0 && <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-green-600 px-1.5 text-[11px] font-bold text-white">{c.unread}</span>}
                             </div>

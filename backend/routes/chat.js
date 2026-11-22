@@ -9,7 +9,9 @@ const { protect, authorize } = require('../middleware/auth');
 const Conversation = require('../models/Conversation');
 const Message = require('../models/Message');
 const ChatBlock = require('../models/ChatBlock');
+const Story = require('../models/Story');
 const chat = require('../utils/chatService');
+const chatPush = require('../utils/chatPush');
 
 const router = express.Router();
 router.use(protect);
@@ -24,7 +26,7 @@ const fail = (res, err) => {
 router.get('/contacts', async (req, res) => {
     try {
         const contacts = await chat.getContacts(me(req), { q: String(req.query.q || '').slice(0, 60) });
-        res.json({ success: true, data: contacts });
+        res.json({ success: true, data: await chat.withLastSeen(contacts) });
     } catch (err) { fail(res, err); }
 });
 
@@ -83,6 +85,223 @@ router.post('/send', async (req, res) => {
     try {
         const result = await chat.sendMessage(me(req), req.body || {});
         res.json({ success: true, ...result });
+    } catch (err) { fail(res, err); }
+});
+
+// ─── Push notifications ────────────────────────────────────────────────────
+
+// @route GET /api/chat/push/key  Public VAPID key, or enabled:false when not set up
+router.get('/push/key', (req, res) => {
+    res.json({ success: true, enabled: chatPush.isEnabled(), publicKey: chatPush.publicKey() });
+});
+
+// @route POST /api/chat/push/subscribe  { subscription }
+router.post('/push/subscribe', async (req, res) => {
+    try {
+        if (!chatPush.isEnabled()) return res.status(503).json({ success: false, message: 'Notifications are not set up yet' });
+        await chatPush.subscribe(me(req), (req.body || {}).subscription, req.get('user-agent'));
+        res.json({ success: true });
+    } catch (err) { fail(res, err); }
+});
+
+// @route POST /api/chat/push/unsubscribe  { endpoint }
+router.post('/push/unsubscribe', async (req, res) => {
+    try {
+        await chatPush.unsubscribe(me(req), (req.body || {}).endpoint);
+        res.json({ success: true });
+    } catch (err) { fail(res, err); }
+});
+
+// @route PATCH /api/chat/messages/:messageId  { text }  Edit own message (15 minutes)
+router.patch('/messages/:messageId', async (req, res) => {
+    try {
+        const data = await chat.editMessage(me(req), req.params.messageId, (req.body || {}).text);
+        res.json({ success: true, data });
+    } catch (err) { fail(res, err); }
+});
+
+// @route DELETE /api/chat/messages/:messageId  Unsend own message (24 hours)
+router.delete('/messages/:messageId', async (req, res) => {
+    try {
+        const data = await chat.unsendMessage(me(req), req.params.messageId);
+        res.json({ success: true, data });
+    } catch (err) { fail(res, err); }
+});
+
+// ─── Groups ────────────────────────────────────────────────────────────────
+
+// @route POST /api/chat/groups  { name, memberIds }  (admin, staff, agents)
+router.post('/groups', async (req, res) => {
+    try {
+        const conversationId = await chat.createGroup(me(req), req.body || {});
+        res.status(201).json({ success: true, conversationId });
+    } catch (err) { fail(res, err); }
+});
+
+// @route PATCH /api/chat/groups/:id  { name }
+router.patch('/groups/:id', async (req, res) => {
+    try {
+        await chat.renameGroup(me(req), req.params.id, (req.body || {}).name);
+        res.json({ success: true });
+    } catch (err) { fail(res, err); }
+});
+
+// @route POST /api/chat/groups/:id/members  { memberIds }
+router.post('/groups/:id/members', async (req, res) => {
+    try {
+        await chat.addGroupMembers(me(req), req.params.id, (req.body || {}).memberIds);
+        res.json({ success: true });
+    } catch (err) { fail(res, err); }
+});
+
+// @route DELETE /api/chat/groups/:id/members/:userId  (your own id = leave)
+router.delete('/groups/:id/members/:userId', async (req, res) => {
+    try {
+        await chat.removeGroupMember(me(req), req.params.id, req.params.userId);
+        res.json({ success: true });
+    } catch (err) { fail(res, err); }
+});
+
+// ─── Stories (disappear after 24 hours) ─────────────────────────────────────
+const STORY_TTL_MS = 24 * 60 * 60 * 1000;
+const STORY_MAX_ACTIVE = 30;
+const STORY_COLOURS = ['#0E1A3D', '#1D4ED8', '#047857', '#B45309', '#9D174D', '#6D28D9'];
+
+// Whose stories a person may see: everyone they can chat with, plus people
+// they already have a direct chat with. Super admin sees every story.
+const storyAuthorIds = async (viewer) => {
+    if (viewer.role === 'super_admin') return null;
+    const [contacts, direct] = await Promise.all([
+        chat.getContacts(viewer, { limit: 100000 }),
+        Conversation.find({ 'participants.user': viewer.id, isGroup: { $ne: true } }).select('participants.user').lean()
+    ]);
+    const ids = new Set([viewer.id, ...contacts.map((c) => c.id)]);
+    direct.forEach((c) => c.participants.forEach((p) => ids.add(String(p.user))));
+    return [...ids];
+};
+
+const canSeeStory = async (viewer, story) => {
+    if (String(story.author) === viewer.id) return true;
+    const ids = await storyAuthorIds(viewer);
+    return ids === null || ids.includes(String(story.author));
+};
+
+const loadStory = async (id) => {
+    if (!mongoose.Types.ObjectId.isValid(id)) return null;
+    const story = await Story.findById(id);
+    return story && story.expiresAt > new Date() ? story : null;
+};
+
+// @route GET /api/chat/stories  Grouped by person, your own first
+router.get('/stories', async (req, res) => {
+    try {
+        const viewer = me(req);
+        const ids = await storyAuthorIds(viewer);
+        const filter = { expiresAt: { $gt: new Date() } };
+        if (ids) filter.author = { $in: ids };
+        const stories = await Story.find(filter).sort({ createdAt: 1 }).limit(500).lean();
+
+        const byAuthor = new Map();
+        stories.forEach((s) => {
+            const key = String(s.author);
+            if (!byAuthor.has(key)) {
+                byAuthor.set(key, { author: { id: key, name: s.authorName, role: s.authorRole }, stories: [] });
+            }
+            const mine = key === viewer.id;
+            byAuthor.get(key).stories.push({
+                id: String(s._id),
+                text: s.text,
+                bg: s.bg,
+                mediaUrl: s.mediaUrl,
+                mediaType: s.mediaType,
+                createdAt: s.createdAt,
+                expiresAt: s.expiresAt,
+                seen: mine || (s.viewers || []).some((v) => String(v.user) === viewer.id),
+                ...(mine ? { viewCount: (s.viewers || []).length } : {})
+            });
+        });
+        const groups = [...byAuthor.values()].map((g) => ({
+            ...g,
+            allSeen: g.stories.every((s) => s.seen),
+            latestAt: g.stories[g.stories.length - 1].createdAt
+        }));
+        const mine = groups.find((g) => g.author.id === viewer.id) || null;
+        const others = groups.filter((g) => g.author.id !== viewer.id)
+            .sort((a, b) => (a.allSeen - b.allSeen) || (new Date(b.latestAt) - new Date(a.latestAt)));
+        res.json({ success: true, mine, data: others, colours: STORY_COLOURS });
+    } catch (err) { fail(res, err); }
+});
+
+// @route POST /api/chat/stories  { text, bg, mediaUrl, mediaType: 'none' | 'image' }
+router.post('/stories', async (req, res) => {
+    try {
+        const author = me(req);
+        const body = req.body || {};
+        const text = String(body.text || '').trim().slice(0, 700);
+        const mediaType = body.mediaType === 'image' ? 'image' : 'none';
+        const mediaUrl = mediaType === 'image' ? String(body.mediaUrl || '') : '';
+        if (mediaType === 'image' && !/^https:\/\/res\.cloudinary\.com\//.test(mediaUrl)) {
+            return res.status(400).json({ success: false, message: 'Invalid photo' });
+        }
+        if (!text && mediaType === 'none') return res.status(400).json({ success: false, message: 'Write something or add a photo' });
+
+        const suspended = await ChatBlock.findOne({ blocked: author.id, scope: 'all' }).lean();
+        if (suspended) return res.status(403).json({ success: false, message: 'Your chat access has been suspended by the admin.' });
+        const active = await Story.countDocuments({ author: author.id, expiresAt: { $gt: new Date() } });
+        if (active >= STORY_MAX_ACTIVE) return res.status(429).json({ success: false, message: 'You have too many stories up. Delete one first.' });
+
+        const story = await Story.create({
+            author: author.id,
+            authorModel: author.model,
+            authorRole: author.role,
+            authorName: author.name,
+            text,
+            bg: STORY_COLOURS.includes(body.bg) ? body.bg : STORY_COLOURS[0],
+            mediaUrl,
+            mediaType,
+            expiresAt: new Date(Date.now() + STORY_TTL_MS)
+        });
+        res.status(201).json({ success: true, data: { id: String(story._id) } });
+    } catch (err) { fail(res, err); }
+});
+
+// @route POST /api/chat/stories/:id/view
+router.post('/stories/:id/view', async (req, res) => {
+    try {
+        const viewer = me(req);
+        const story = await loadStory(req.params.id);
+        if (!story || !(await canSeeStory(viewer, story))) return res.status(404).json({ success: false, message: 'Story not found' });
+        if (String(story.author) !== viewer.id) {
+            await Story.updateOne(
+                { _id: story._id, 'viewers.user': { $ne: viewer.id } },
+                { $push: { viewers: { user: viewer.id, name: viewer.name, at: new Date() } } }
+            );
+        }
+        res.json({ success: true });
+    } catch (err) { fail(res, err); }
+});
+
+// @route GET /api/chat/stories/:id/viewers  (the author only)
+router.get('/stories/:id/viewers', async (req, res) => {
+    try {
+        const story = await loadStory(req.params.id);
+        if (!story || String(story.author) !== me(req).id) return res.status(404).json({ success: false, message: 'Story not found' });
+        const viewers = [...(story.viewers || [])].sort((a, b) => b.at - a.at)
+            .map((v) => ({ id: String(v.user), name: v.name, at: v.at }));
+        res.json({ success: true, data: viewers });
+    } catch (err) { fail(res, err); }
+});
+
+// @route DELETE /api/chat/stories/:id  (the author or the super admin)
+router.delete('/stories/:id', async (req, res) => {
+    try {
+        const viewer = me(req);
+        const story = await loadStory(req.params.id);
+        if (!story || (String(story.author) !== viewer.id && viewer.role !== 'super_admin')) {
+            return res.status(404).json({ success: false, message: 'Story not found' });
+        }
+        await Story.deleteOne({ _id: story._id });
+        res.json({ success: true });
     } catch (err) { fail(res, err); }
 });
 
