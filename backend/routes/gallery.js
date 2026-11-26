@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { protect, authorize } = require('../middleware/auth');
+const { protect, authorize, requirePower } = require('../middleware/auth');
 const { acceptGalleryImages, processGalleryImages } = require('../middleware/galleryUpload');
 
 // Only staff and super admins manage the website gallery
@@ -35,6 +35,6 @@ router.delete('/:itemId', protect, canManageGallery, deleteGalleryItem);
 
 
 // Super Admin approval route
-router.patch('/:itemId/approve', protect, authorize('super_admin'), approveGalleryItem);
+router.patch('/:itemId/approve', protect, requirePower('website_management'), approveGalleryItem);
 
 module.exports = router;

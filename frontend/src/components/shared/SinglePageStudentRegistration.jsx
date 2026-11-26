@@ -10,6 +10,7 @@ import TermsAndConditions from "../legal/TermsAndConditions";
 import { showSuccessToast, showErrorToast, showLoading, closeLoading } from "../../utils/sweetAlert";
 import { formatDateForInput } from "../../utils/dateUtils";
 import { canEditApplication } from "../../utils/applicationStatuses";
+import { hasPower } from "../../utils/seniorPowers";
 import Swal from 'sweetalert2';
 
 const BLANK_FORM = {
@@ -2597,7 +2598,7 @@ const SinglePageStudentRegistration = ({
     }
 
     // Edit lock (same rule as the backend): once review starts the student can no longer change anything
-    const isLocked = !referralMode && !!application?.status && !canEditApplication(userRole, application.status);
+    const isLocked = !referralMode && !!application?.status && !canEditApplication(userRole, application.status, userRole === 'staff' && hasPower(user, 'edit_any_status'));
 
     return (
         <div className="max-w-4xl mx-auto p-6">

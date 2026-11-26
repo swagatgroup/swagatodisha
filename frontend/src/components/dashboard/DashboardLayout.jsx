@@ -13,6 +13,7 @@ import DarkModeToggle from '../shared/DarkModeToggle';
 import api from '../../utils/api';
 import AllRecentPaymentsModal from './AllRecentPaymentsModal';
 import CourseFilters from './components/CourseFilters';
+import { hasPower, isSeniorStaff } from '../../utils/seniorPowers';
 import { LOGO_COLOR, LOGO_SIZE, LOGO_WHITE } from '../site/siteConfig';
 
 // Chat and Face ID load only when a dashboard is open (kept off the public site)
@@ -84,9 +85,10 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    // Recent payments for the bell (Super Admin); refreshed so new payments appear without a reload
+    // Recent payments for the bell (Super Admin, or senior staff with payment_alerts); refreshed so new payments appear without a reload
+    const showPaymentBell = hasPower(user, 'payment_alerts');
     useEffect(() => {
-        if (user?.role !== 'super_admin') return undefined;
+        if (!showPaymentBell) return undefined;
         const loadRecentPayments = async () => {
             try {
                 const res = await api.get('/api/admin/students/recent-payments?page=1&limit=10', { silent: true });
@@ -98,7 +100,7 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
         loadRecentPayments();
         const interval = setInterval(loadRecentPayments, RECENT_PAYMENTS_REFRESH_MS);
         return () => clearInterval(interval);
-    }, [user?.role]);
+    }, [showPaymentBell]);
 
     const unseenPayments = recentPayments.filter((item) => !seenPaymentIds.includes(paymentKey(item))).length;
 
@@ -156,8 +158,8 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                 <span className="hidden sm:inline">← Main Website</span>
                             </button>
 
-                            {/* Session Switcher for Super Admin */}
-                            {user?.role === 'super_admin' && (
+                            {/* Session Switcher for Super Admin (and senior staff with the sessions power) */}
+                            {hasPower(user, 'sessions') && (
                                 <div className="hidden md:flex items-center space-x-2 mr-4">
                                     <span className="text-sm text-gray-500 dark:text-gray-300 font-medium">Session:</span>
                                     <select
@@ -197,7 +199,7 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                             )}
 
                             {/* Payment Notification Icon */}
-                            {user?.role === 'super_admin' && (
+                            {showPaymentBell && (
                                 <div className="relative" ref={paymentsRef}>
                                     <button
                                         onClick={togglePayments}
@@ -275,7 +277,7 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                                 {user?.fullName || user?.name || (user?.firstName ? `${user.firstName} ${user.lastName || ''}` : '') || 'User'}
                                             </p>
                                             <p className="text-xs text-gray-500 dark:text-gray-300 capitalize mt-0.5 font-medium">
-                                                {user?.role ? user.role.replace('_', ' ') : 'User'}
+                                                {isSeniorStaff(user) ? 'senior staff' : (user?.role ? user.role.replace('_', ' ') : 'User')}
                                             </p>
                                         </div>
                                         {FACE_ID_ROLES.includes(user?.role) && (

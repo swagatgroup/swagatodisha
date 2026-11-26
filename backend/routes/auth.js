@@ -672,6 +672,19 @@ router.post('/admin-reset-password', [
             });
         }
 
+        // Staff can reset student and agent passwords. Admin accounts: only the super admin, or senior
+        // staff with manage_staff for plain staff (never a super admin or another senior staff member).
+        if (userType === 'admin' && req.user.role !== 'super_admin') {
+            const { hasPower } = require('../config/seniorPowers');
+            const plainStaff = user.role === 'staff' && !(user.seniorPowers || []).length;
+            if (!(plainStaff && hasPower(req.user, 'manage_staff'))) {
+                return res.status(403).json({
+                    success: false,
+                    message: 'Only Super Admin can reset this password'
+                });
+            }
+        }
+
         // Update password only if the user was NOT just created
         if (!userJustCreated) {
             user.password = newPassword;
@@ -1073,6 +1086,7 @@ router.get('/me', async (req, res) => {
         // Add appropriate name field based on user type
         if (userType === 'admin') {
             userData.fullName = user.fullName || `${user.firstName} ${user.lastName}`;
+            userData.seniorPowers = user.seniorPowers || [];
         } else {
             userData.fullName = user.fullName;
             userData.phoneNumber = user.phoneNumber || '';

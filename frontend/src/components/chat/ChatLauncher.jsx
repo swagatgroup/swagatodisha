@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { hasPower } from '../../utils/seniorPowers';
 import { createPortal } from 'react-dom';
 import { io } from 'socket.io-client';
 import Swal from 'sweetalert2';
@@ -54,8 +55,10 @@ const ChatLauncher = ({ user }) => {
     const me = useMemo(() => ({
         ...(serverMe || { id: String(user.id || user._id), role: user.role === 'user' ? 'student' : user.role }),
         name: myName,
+        // Super admin, or senior staff with chat_moderation: student chats tab, blocked list, block button
+        canModerate: hasPower(user, 'chat_moderation'),
     }), [serverMe, user, myName]);
-    const isAdmin = me.role === 'super_admin';
+    const isAdmin = me.canModerate;
 
     const [open, setOpen] = useState(false);
     const [view, setView] = useState('chats'); // chats | new | students | blocks

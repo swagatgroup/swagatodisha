@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
-const { protect, authorize } = require('../middleware/auth');
+const { protect, authorize, requirePower } = require('../middleware/auth');
 const {
     getDashboardStats,
     getAllStudents,
@@ -16,6 +16,7 @@ const {
     createStaff,
     updateStaff,
     deleteStaff,
+    updateSeniorPowers,
     resetPassword,
     getWebsiteSettings,
     updateWebsiteSettings,
@@ -46,18 +47,19 @@ router.get('/dashboard/stats', protect, authorize('staff', 'super_admin'), getDa
 // IMPORTANT: Bulk routes must come before parameterized routes to avoid route conflicts
 // The bulk delete route is handled in adminStudentsRoutes at /api/admin/students/bulk
 router.put('/students/:studentId', protect, authorize('staff', 'super_admin'), updateStudent);
-router.delete('/students/:studentId', protect, authorize('super_admin'), deleteStudent);
+router.delete('/students/:studentId', protect, requirePower('delete_applications'), deleteStudent);
 
 // Agent Management
 router.get('/agents', protect, authorize('staff', 'super_admin'), getAllAgents);
-router.post('/agents', protect, authorize('super_admin'), createAgent); // Only super_admin can create
+router.post('/agents', protect, requirePower('create_agents'), createAgent); // Super admin or senior staff with create_agents
 router.put('/agents/:agentId', protect, authorize('staff', 'super_admin'), updateAgent);
 router.delete('/agents/:agentId', protect, authorize('staff', 'super_admin'), deleteAgent); // Staff can now delete
 
 // Staff Management
 router.get('/staff', protect, authorize('staff', 'super_admin'), getAllStaff); // Staff can now view
 router.get('/staff/for-assignment', protect, authorize('staff', 'super_admin'), getStaffForAssignment);
-router.post('/staff', protect, authorize('super_admin'), createStaff); // Only super_admin can create
+router.post('/staff', protect, requirePower('manage_staff'), createStaff); // Super admin or senior staff with manage_staff
+router.put('/staff/:staffId/senior-powers', protect, authorize('super_admin'), updateSeniorPowers); // Only super_admin assigns powers
 router.put('/staff/:staffId', protect, authorize('staff', 'super_admin'), updateStaff); // Staff can now update
 router.delete('/staff/:staffId', protect, authorize('staff', 'super_admin'), deleteStaff); // Staff can now delete
 

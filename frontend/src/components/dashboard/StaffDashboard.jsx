@@ -2,7 +2,7 @@ import { useState, useEffect, lazy, Suspense } from 'react';
 import StatusFilterRow from './components/StatusFilterRow';
 import { APPLICATION_STATUS_OPTIONS, buildStatusChartData, getApplicationStatusLabel } from '../../utils/applicationStatuses';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, CartesianGrid } from 'recharts';
-import { Squares2X2Icon, UsersIcon, UserGroupIcon, UserPlusIcon, ClipboardDocumentCheckIcon, CreditCardIcon, KeyIcon, DocumentTextIcon, ClockIcon } from '@heroicons/react/24/outline';
+import { Squares2X2Icon, UsersIcon, UserGroupIcon, UserIcon, UserPlusIcon, ClipboardDocumentCheckIcon, CreditCardIcon, KeyIcon, DocumentTextIcon, ClockIcon, GlobeAltIcon, FingerPrintIcon } from '@heroicons/react/24/outline';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import { useDarkMode } from '../../contexts/DarkModeContextSimple';
@@ -17,6 +17,9 @@ import ApplicationReview from './tabs/ApplicationReview';
 import PaymentManagement from './tabs/PaymentManagement';
 import ProgressPieChart from './ProgressPieChart';
 import PaymentPieChart from './PaymentPieChart';
+import WebsiteManagement from '../admin/WebsiteManagement';
+import RecentActivity from './tabs/RecentActivity';
+import { hasPower } from '../../utils/seniorPowers';
 import {
     showSuccess,
     showError,
@@ -28,6 +31,7 @@ import {
 import api from '../../utils/api';
 
 const StaffAttendanceTab = lazy(() => import('../attendance/StaffAttendanceTab'));
+const AdminAttendanceTab = lazy(() => import('../attendance/AdminAttendanceTab'));
 
 const EnhancedStaffDashboard = () => {
     const { user } = useAuth();
@@ -96,11 +100,16 @@ const EnhancedStaffDashboard = () => {
         { id: 'students',               name: 'Our Students',           icon: <UsersIcon className="mr-3 h-5 w-5" /> },
         { id: 'direct-students',        name: 'Direct Students',        icon: <UserPlusIcon className="mr-3 h-5 w-5" /> },
         { id: 'agents',                 name: 'Agents',                 icon: <UserGroupIcon className="mr-3 h-5 w-5" /> },
+        // Senior staff tabs: only shown when the super admin gave this staff member the power
+        ...(hasPower(user, 'manage_staff') ? [{ id: 'staff', name: 'Staff', icon: <UserIcon className="mr-3 h-5 w-5" /> }] : []),
         { id: 'new-registration',       name: 'New Registration',       icon: <DocumentTextIcon className="mr-3 h-5 w-5" /> },
         { id: 'application-review',     name: 'Application Review',     icon: <ClipboardDocumentCheckIcon className="mr-3 h-5 w-5" /> },
         { id: 'payment-management',     name: 'Payments',               icon: <CreditCardIcon className="mr-3 h-5 w-5" /> },
         { id: 'student-password-reset', name: 'Student Password Reset', icon: <KeyIcon className="mr-3 h-5 w-5" /> },
         { id: 'attendance',             name: 'Attendance',             icon: <ClockIcon className="mr-3 h-5 w-5" /> },
+        ...(hasPower(user, 'attendance_admin') ? [{ id: 'attendance-admin', name: 'Attendance & Face ID', icon: <FingerPrintIcon className="mr-3 h-5 w-5" /> }] : []),
+        ...(hasPower(user, 'website_management') ? [{ id: 'website-management', name: 'Website Management', icon: <GlobeAltIcon className="mr-3 h-5 w-5" /> }] : []),
+        ...(hasPower(user, 'activity_logs') ? [{ id: 'recent-activity', name: 'Recent Activity', icon: <ClockIcon className="mr-3 h-5 w-5" /> }] : []),
     ];
 
     const fetchStats = async (session) => {
@@ -612,6 +621,35 @@ const EnhancedStaffDashboard = () => {
                         <Suspense fallback={<div className="p-6 text-gray-500">Loading…</div>}><StaffAttendanceTab /></Suspense>
                     </ErrorBoundary>
                 );
+
+            // Senior staff tabs (the backend checks the same powers)
+            case 'staff':
+                if (!hasPower(user, 'manage_staff')) return null;
+                return (
+                    <div className="dark:text-gray-100">
+                        <UserManagement userType="staff" rowHoverClass="dark:hover:bg-gray-700 hover:bg-gray-50" />
+                    </div>
+                );
+
+            case 'attendance-admin':
+                if (!hasPower(user, 'attendance_admin')) return null;
+                return (
+                    <ErrorBoundary>
+                        <Suspense fallback={<div className="p-6 text-gray-500">Loading…</div>}><AdminAttendanceTab /></Suspense>
+                    </ErrorBoundary>
+                );
+
+            case 'website-management':
+                if (!hasPower(user, 'website_management')) return null;
+                return (
+                    <ErrorBoundary>
+                        <WebsiteManagement />
+                    </ErrorBoundary>
+                );
+
+            case 'recent-activity':
+                if (!hasPower(user, 'activity_logs')) return null;
+                return <RecentActivity />;
 
             default:
                 return <div className="text-gray-500 dark:text-gray-400 p-6">Coming Soon...</div>;

@@ -178,6 +178,7 @@ router.post('/login', [
                     lastName: admin.lastName,
                     email: admin.email,
                     role: admin.role,
+                    seniorPowers: admin.seniorPowers || [],
                     employeeId: admin.employeeId,
                     department: admin.department,
                     designation: admin.designation
@@ -231,6 +232,7 @@ router.get('/me', async (req, res) => {
                     fullName: `${admin.firstName} ${admin.lastName}`,
                     email: admin.email,
                     role: admin.role,
+                    seniorPowers: admin.seniorPowers || [],
                     employeeId: admin.employeeId,
                     department: admin.department,
                     designation: admin.designation,

@@ -5,7 +5,8 @@ const mongoose = require('mongoose');
 const StudentApplication = require('../models/StudentApplication');
 const User = require('../models/User');
 const Campus = require('../models/Campus');
-const { protect, authorize } = require('../middleware/auth');
+const { protect, authorize, requirePower } = require('../middleware/auth');
+const { hasPower } = require('../config/seniorPowers');
 const { logDeleteAttempt, logDeleteResult } = require('../utils/auditLogger');
 
 const router = express.Router();
@@ -1072,7 +1073,7 @@ router.get('/rejection-reasons', protect, authorize('staff', 'super_admin'), asy
 // GET  /api/admin/students/session-rollover  - current session + last runs
 // POST /api/admin/students/session-rollover  - run now
 // ========================================================
-router.get('/session-rollover', protect, authorize('super_admin'), async (req, res) => {
+router.get('/session-rollover', protect, requirePower('sessions'), async (req, res) => {
     try {
         const SessionRollover = require('../models/SessionRollover');
         const { getCurrentSession } = require('../utils/sessionRollover');
@@ -1084,7 +1085,7 @@ router.get('/session-rollover', protect, authorize('super_admin'), async (req, r
     }
 });
 
-router.post('/session-rollover', protect, authorize('super_admin'), async (req, res) => {
+router.post('/session-rollover', protect, requirePower('sessions'), async (req, res) => {
     try {
         const { runSessionRollover } = require('../utils/sessionRollover');
         const run = await runSessionRollover({ trigger: 'manual', runBy: req.user._id });
@@ -1161,10 +1162,10 @@ router.put('/:id/financial', protect, authorize('staff', 'super_admin'), async (
                 for (const oldInst of oldInstallments) {
                     if (oldInst._id && !newIds.includes(oldInst._id.toString())) {
                         // This installment was deleted
-                        if (oldInst.status === 'VERIFIED' && req.user.role !== 'super_admin') {
+                        if (oldInst.status === 'VERIFIED' && !hasPower(req.user, 'delete_verified_payments')) {
                             return res.status(403).json({
                                 success: false,
-                                message: 'Only Super Admin can delete an approved payment slip.'
+                                message: 'You do not have permission to delete an approved payment slip.'
                             });
                         }
                     }
@@ -1338,7 +1339,8 @@ router.put('/:id/status', protect, authorize('staff', 'super_admin'), async (req
             });
         }
 
-        const isSuperAdmin = req.user.role === 'super_admin';
+        // Super admin, or senior staff with override_status, may skip workflow steps
+        const isSuperAdmin = hasPower(req.user, 'override_status');
 
         // Workflow transition validation (Super Admin can bypass if needed)
         if (!isSuperAdmin) {
@@ -1461,8 +1463,9 @@ router.put('/:id', protect, authorize('staff', 'super_admin'), async (req, res) 
         }
 
         // Edit lock: staff can edit only before review starts (Draft, Rejected, Submitted); Super Admin can edit any status
-        const isSuperAdmin = req.user.role === 'super_admin';
-        if (!canEditApplication(req.user.role, application.status)) {
+        // Super admin, or senior staff with override_status, may set the status through this route
+        const isSuperAdmin = hasPower(req.user, 'override_status');
+        if (!canEditApplication(req.user.role, application.status, hasPower(req.user, 'edit_any_status'))) {
             return res.status(403).json({
                 success: false,
                 message: editLockedMessage(application.status)
@@ -1652,7 +1655,7 @@ router.put('/:id', protect, authorize('staff', 'super_admin'), async (req, res) 
 // @route   DELETE /api/admin/students/bulk
 // @access  Private - Super Admin only
 // IMPORTANT: This route must come before /:id to avoid route conflicts
-router.delete('/bulk', protect, authorize('super_admin'), async (req, res, next) => {
+router.delete('/bulk', protect, requirePower('delete_applications'), async (req, res, next) => {
     let auditLogId = null;
     try {
         console.log('🗑️ ========== BULK DELETE ROUTE HIT ==========');
@@ -1708,8 +1711,8 @@ router.delete('/bulk', protect, authorize('super_admin'), async (req, res, next)
 
         console.log(`📊 Received ${studentIds.length} student ID(s) to delete`);
 
-        // Only super admin can bulk delete
-        if (req.user.role !== 'super_admin') {
+        // Super admin, or senior staff with the delete_applications power
+        if (!hasPower(req.user, 'delete_applications')) {
             console.warn('⚠️ Unauthorized bulk delete attempt by:', req.user?.email);
             return res.status(403).json({
                 success: false,
@@ -1890,7 +1893,7 @@ router.delete('/bulk', protect, authorize('super_admin'), async (req, res, next)
 // @desc    Delete student application
 // @route   DELETE /api/admin/students/:id
 // @access  Private - Staff/Super Admin only  
-router.delete('/:id', protect, authorize('super_admin'), async (req, res) => {
+router.delete('/:id', protect, requirePower('delete_applications'), async (req, res) => {
     let auditLogId = null;
     try {
         // Log delete attempt

@@ -12,6 +12,8 @@ import {
 import PasswordInput from '../auth/PasswordInput';
 import CreateAgentModal from './CreateAgentModal';
 import CreateStaffModal from './CreateStaffModal';
+import { useAuth } from '../../contexts/AuthContext';
+import { SENIOR_POWERS, hasPower } from '../../utils/seniorPowers';
 
 const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-50', onViewStudents = null }) => {
     const [users, setUsers] = useState([]);
@@ -28,6 +30,16 @@ const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-
     const [saving, setSaving] = useState(false);
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [staffList, setStaffList] = useState([]);
+    const { user: currentUser } = useAuth();
+    const isSuperAdminViewer = currentUser?.role === 'super_admin';
+    // Senior staff (manage_staff) may only manage plain staff; the super admin manages everyone
+    const canManageStaffRow = (row) => isSuperAdminViewer ||
+        (hasPower(currentUser, 'manage_staff') && row.role === 'staff' && !(row.seniorPowers || []).length);
+    const canAdd = (userType === 'agents' && hasPower(currentUser, 'create_agents')) ||
+        (userType === 'staff' && hasPower(currentUser, 'manage_staff'));
+    const canDeleteRow = (row) => userType === 'agents' ? hasPower(currentUser, 'delete_agents')
+        : userType === 'staff' ? canManageStaffRow(row) && row.role !== 'super_admin'
+        : true;
 
     useEffect(() => {
         fetchUsers();
@@ -211,7 +223,8 @@ const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-
                 }
             }),
             ...(userType === 'staff' && {
-                department: user.department
+                department: user.department,
+                seniorPowers: user.seniorPowers || []
             })
         });
         setShowEditModal(true);
@@ -232,8 +245,9 @@ const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-
                 endpoint = `/api/admin/staff/${selectedUser._id || selectedUser.id}`;
             }
 
-            // Prepare data for API call
+            // Prepare data for API call (senior powers are saved through their own endpoint below)
             let payload = { ...editData };
+            delete payload.seniorPowers;
             
             // For agents, ensure proper field names and structure
             if (userType === 'agents') {
@@ -265,6 +279,15 @@ const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-
             }
 
             await api.put(endpoint, payload);
+
+            // Super admin: save the senior staff powers if they changed
+            if (userType === 'staff' && isSuperAdminViewer && selectedUser.role === 'staff') {
+                const before = [...(selectedUser.seniorPowers || [])].sort().join(',');
+                const after = [...(editData.seniorPowers || [])].sort().join(',');
+                if (before !== after) {
+                    await api.put(`/api/admin/staff/${selectedUser._id || selectedUser.id}/senior-powers`, { seniorPowers: editData.seniorPowers || [] });
+                }
+            }
 
             // Update local state
             setUsers(prev => prev.map(user =>
@@ -388,7 +411,7 @@ const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-
                         userType === 'agents' ? 'Agent Management' : 'Staff Management'}
                 </h2>
                 <div className="flex space-x-2">
-                    {(userType === 'agents' || userType === 'staff') && (
+                    {canAdd && (
                         <button
                             onClick={() => setShowCreateModal(true)}
                             className="px-4 py-2 bg-[#0E1A3D] text-white rounded-md hover:bg-[#0A1430] focus:outline-none focus:ring-2 focus:ring-[#0E1A3D]"
@@ -531,6 +554,14 @@ const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-
                                     <>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                                         {user.department || 'N/A'}
+                                        {user.role === 'staff' && (user.seniorPowers || []).length > 0 && (
+                                            <span
+                                                className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300"
+                                                title={SENIOR_POWERS.filter(p => user.seniorPowers.includes(p.key)).map(p => p.label).join(', ')}
+                                            >
+                                                Senior Staff · {user.seniorPowers.length}
+                                            </span>
+                                        )}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                                         {user.assignedAgents?.length || 0}
@@ -548,6 +579,8 @@ const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-
                                                 View Students
                                             </button>
                                         )}
+                                        {(userType !== 'staff' || canManageStaffRow(user)) && (
+                                        <>
                                         <button
                                             onClick={() => handleEdit(user)}
                                             className="text-[#0E1A3D] hover:text-purple-900"
@@ -563,12 +596,16 @@ const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-
                                         >
                                             Reset Password
                                         </button>
+                                        </>
+                                        )}
+                                        {canDeleteRow(user) && (
                                         <button
                                             onClick={() => handleDelete(user.id)}
                                             className="text-red-600 hover:text-red-900"
                                         >
                                             Delete
                                         </button>
+                                        )}
                                     </div>
                                 </td>
                             </motion.tr>
@@ -885,6 +922,46 @@ const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-
                                             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#0E1A3D]"
                                         />
                                     </div>
+                                )}
+
+                                {/* Senior staff powers: only the super admin assigns them, only to staff */}
+                                {userType === 'staff' && isSuperAdminViewer && selectedUser.role === 'staff' && (
+                                    <fieldset className="border border-gray-200 dark:border-gray-700 rounded-md p-4">
+                                        <legend className="px-1 text-sm font-medium text-gray-700 dark:text-gray-300">Senior staff powers</legend>
+                                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
+                                            Tick the extra admin powers this staff member should have. Ticking any makes them Senior Staff; untick all to make them regular staff again.
+                                        </p>
+                                        <div className="flex gap-3 mb-3 text-xs">
+                                            <button type="button" className="text-[#004D98] dark:text-[#60A5FA] hover:underline"
+                                                onClick={() => setEditData(prev => ({ ...prev, seniorPowers: SENIOR_POWERS.map(p => p.key) }))}>Select all</button>
+                                            <button type="button" className="text-[#004D98] dark:text-[#60A5FA] hover:underline"
+                                                onClick={() => setEditData(prev => ({ ...prev, seniorPowers: [] }))}>Clear</button>
+                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                            {SENIOR_POWERS.map((power) => (
+                                                <label key={power.key} className="flex items-start gap-2 text-sm text-gray-800 dark:text-gray-200 cursor-pointer">
+                                                    <input
+                                                        type="checkbox"
+                                                        className="mt-1 h-4 w-4 rounded border-gray-300 text-[#0E1A3D] focus:ring-[#0E1A3D]"
+                                                        checked={(editData.seniorPowers || []).includes(power.key)}
+                                                        onChange={(e) => setEditData(prev => {
+                                                            const current = prev.seniorPowers || [];
+                                                            return {
+                                                                ...prev,
+                                                                seniorPowers: e.target.checked
+                                                                    ? [...current, power.key]
+                                                                    : current.filter(k => k !== power.key)
+                                                            };
+                                                        })}
+                                                    />
+                                                    <span>
+                                                        <span className="font-medium">{power.label}</span>
+                                                        <span className="block text-xs text-gray-500 dark:text-gray-400">{power.description}</span>
+                                                    </span>
+                                                </label>
+                                            ))}
+                                        </div>
+                                    </fieldset>
                                 )}
                             </div>
 

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const AuditLog = require('../models/AuditLog');
-const { protect, authorize } = require('../middleware/auth');
+const { protect, authorize, requirePower } = require('../middleware/auth');
 const mongoose = require('mongoose');
 
 const ACTIVITY_ACTIONS = ['ACTIVITY', 'STATUS_CHANGE'];
@@ -10,7 +10,7 @@ const escapeRegex = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 // @desc    Everything changed on the website, newest first (Recent Activity page)
 // @route   GET /api/audit-logs/activity
 // @access  Private - Super Admin only
-router.get('/activity', protect, authorize('super_admin'), async (req, res) => {
+router.get('/activity', protect, requirePower('activity_logs'), async (req, res) => {
     try {
         const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
         const limit = Math.min(parseInt(req.query.limit, 10) || 30, 100);
@@ -215,7 +215,7 @@ router.get('/ip/:ipAddress', protect, authorize('staff', 'super_admin'), async (
 // @desc    Get all delete attempts (with filters)
 // @route   GET /api/audit-logs
 // @access  Private - Super Admin only
-router.get('/', protect, authorize('super_admin'), async (req, res) => {
+router.get('/', protect, requirePower('activity_logs'), async (req, res) => {
     try {
         const {
             page = 1,
@@ -301,7 +301,7 @@ router.get('/', protect, authorize('super_admin'), async (req, res) => {
 // @desc    Get delete attempt statistics
 // @route   GET /api/audit-logs/statistics
 // @access  Private - Super Admin only
-router.get('/statistics', protect, authorize('super_admin'), async (req, res) => {
+router.get('/statistics', protect, requirePower('activity_logs'), async (req, res) => {
     try {
         const { startDate, endDate } = req.query;
 

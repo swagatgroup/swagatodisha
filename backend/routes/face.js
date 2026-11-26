@@ -1,6 +1,6 @@
 const express = require('express');
 const crypto = require('crypto');
-const { protect, authorize } = require('../middleware/auth');
+const { protect, authorize, requirePower } = require('../middleware/auth');
 const User = require('../models/User');
 const Admin = require('../models/Admin');
 const { isValidDescriptor, loadWithDescriptor, matchFace } = require('../utils/face');
@@ -112,7 +112,7 @@ const row = (d, model) => ({
 });
 
 // @route GET /api/face/users  Staff and agents with their Face ID status
-router.get('/users', authorize('super_admin'), async (req, res) => {
+router.get('/users', requirePower('attendance_admin'), async (req, res) => {
     try {
         const [staff, agents] = await Promise.all([
             Admin.find({ role: 'staff', isActive: { $ne: false } }).select(FIELDS).sort({ firstName: 1 }).lean(),
@@ -126,10 +126,13 @@ router.get('/users', authorize('super_admin'), async (req, res) => {
 });
 
 // @route PATCH /api/face/require/:userId  { required: boolean }
-router.patch('/require/:userId', authorize('super_admin'), async (req, res) => {
+router.patch('/require/:userId', requirePower('attendance_admin'), async (req, res) => {
     try {
         const found = await loadWithDescriptor(req.params.userId);
         if (!found || !['staff', 'agent'].includes(found.doc.role)) return res.status(404).json({ success: false, message: 'Staff or agent not found' });
+        if (req.user.role !== 'super_admin' && String(found.doc._id) === String(req.user._id)) {
+            return res.status(403).json({ success: false, message: 'You cannot change your own Face ID setting' });
+        }
         const required = req.body && req.body.required === true;
         if (required && !found.doc.isFaceRegistered) {
             return res.status(400).json({ success: false, message: 'They need to register their Face ID first' });
@@ -144,10 +147,14 @@ router.patch('/require/:userId', authorize('super_admin'), async (req, res) => {
 });
 
 // @route PATCH /api/face/reset/:userId  Clears Face ID so they can register again
-router.patch('/reset/:userId', authorize('super_admin'), async (req, res) => {
+router.patch('/reset/:userId', requirePower('attendance_admin'), async (req, res) => {
     try {
         const found = await loadWithDescriptor(req.params.userId);
         if (!found) return res.status(404).json({ success: false, message: 'Person not found' });
+        // Senior staff cannot reset the super admin's or their own Face ID
+        if (req.user.role !== 'super_admin' && (found.doc.role === 'super_admin' || String(found.doc._id) === String(req.user._id))) {
+            return res.status(403).json({ success: false, message: 'Only Super Admin can reset this Face ID' });
+        }
         found.doc.faceDescriptor = [];
         found.doc.isFaceRegistered = false;
         found.doc.requireFaceLogin = false;

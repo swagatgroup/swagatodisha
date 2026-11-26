@@ -66,6 +66,7 @@ const buildLoginResponse = async (user, userType) => {
 
     if (userType === 'admin') {
         userData.fullName = user.fullName || `${user.firstName} ${user.lastName}`;
+        userData.seniorPowers = user.seniorPowers || [];
     } else {
         userData.fullName = user.fullName;
         userData.phoneNumber = user.phoneNumber || '';

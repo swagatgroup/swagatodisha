@@ -23,10 +23,11 @@ export const buildStatusChartData = (counts = {}) =>
     }));
 
 // Mirrors backend/utils/applicationEditLock.js: students and agents may edit only before review
-// starts; staff also while Under Review (until approved); super admin may edit at any status.
+// starts; staff also while Under Review (until approved); super admin (and senior staff with the
+// edit_any_status power, passed as canEditAny) may edit at any status.
 export const EDITABLE_STATUSES = ['DRAFT', 'REJECTED', 'SUBMITTED'];
-export const canEditApplication = (role, status) =>
-    role === 'super_admin' || EDITABLE_STATUSES.includes(status) || (role === 'staff' && status === 'UNDER_REVIEW');
+export const canEditApplication = (role, status, canEditAny = false) =>
+    role === 'super_admin' || canEditAny || EDITABLE_STATUSES.includes(status) || (role === 'staff' && status === 'UNDER_REVIEW');
 
 // Only six application statuses are ever shown: Draft, Rejected, Submitted, Under Review, Approved, Complete.
 // Legacy/internal values are shown as the status they belong to.

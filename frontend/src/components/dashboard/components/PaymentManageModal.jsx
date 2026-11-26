@@ -3,6 +3,7 @@ import api from '../../../utils/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { showError, showSuccess } from '../../../utils/sweetAlert';
 import PaymentModalShell from '../../shared/PaymentModalShell';
+import { hasPower } from '../../../utils/seniorPowers';
 
 const EMPTY_FORM = { totalFees: 0, paidAmount: 0, dueAmount: 0, paymentStatus: 'PENDING', installments: [] };
 
@@ -396,7 +397,7 @@ const PaymentManageModal = ({ app, onClose, onSaved }) => {
                                     <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1">
                                         {formData.installments.map((inst, index) => (
                                             <div key={index} className="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg border border-gray-200 dark:border-gray-600 relative">
-                                                {!(inst.status === 'VERIFIED' && user?.role !== 'super_admin') && (
+                                                {!(inst.status === 'VERIFIED' && !hasPower(user, 'delete_verified_payments')) && (
                                                     <button 
                                                         onClick={() => handleRemoveInstallment(index)}
                                                         className="absolute top-2 right-2 text-red-500 hover:text-red-700"

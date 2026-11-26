@@ -161,7 +161,7 @@ const ChatThread = ({
                         <InformationCircleIcon className="h-5 w-5" />
                     </button>
                 )}
-                {me.role === 'super_admin' && !thread.readOnly && !isGroup && thread.other.role !== 'super_admin' && (
+                {me.canModerate && !thread.readOnly && !isGroup && thread.other.role !== 'super_admin' && (
                     <button type="button" onClick={() => onBlock(thread.other)} className="inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20">
                         <NoSymbolIcon className="h-4 w-4" /> Block
                     </button>

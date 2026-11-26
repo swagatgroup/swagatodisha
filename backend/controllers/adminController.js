@@ -10,6 +10,7 @@ const { uploadToCloudinary } = require('../utils/cloudinary');
 const { mockStaff, mockAgents } = require('./mockData');
 const { getSessionDateRange, getCurrentSession } = require('../utils/sessionHelper');
 const { logDeleteAttempt, logDeleteResult } = require('../utils/auditLogger');
+const { hasPower, POWER_KEYS } = require('../config/seniorPowers');
 
 // Dashboard Statistics
 exports.getDashboardStats = async (req, res) => {
@@ -440,11 +441,11 @@ exports.deleteStudent = async (req, res) => {
     try {
         const { studentId } = req.params;
 
-        // Only super admin can delete
-        if (req.user.role !== 'super_admin') {
+        // Super admin, or senior staff with the delete_applications power
+        if (!hasPower(req.user, 'delete_applications')) {
             return res.status(403).json({
                 success: false,
-                message: 'Only Super Admin can delete student records'
+                message: 'You do not have permission to delete student records'
             });
         }
 
@@ -766,11 +767,11 @@ exports.deleteAgent = async (req, res) => {
     try {
         const { agentId } = req.params;
 
-        // Only super admin can delete
-        if (req.user.role !== 'super_admin') {
+        // Super admin, or senior staff with the delete_agents power
+        if (!hasPower(req.user, 'delete_agents')) {
             return res.status(403).json({
                 success: false,
-                message: 'Only Super Admin can delete agent records'
+                message: 'You do not have permission to delete agent records'
             });
         }
 
@@ -1302,7 +1303,8 @@ exports.createStaff = async (req, res) => {
             email,
             password,
             phone,
-            role,
+            // Only the super admin may create another super admin
+            role: req.user.role === 'super_admin' ? role : 'staff',
             department,
             designation,
             gender: 'male', // Set default gender to avoid validation issues
@@ -1359,6 +1361,23 @@ exports.updateStaff = async (req, res) => {
 
         // Remove password from update data
         delete updateData.password;
+        // Powers have their own super-admin-only endpoint (PUT /staff/:staffId/senior-powers)
+        delete updateData.seniorPowers;
+
+        if (req.user.role !== 'super_admin') {
+            // Staff may not change roles, and only senior staff with manage_staff may edit other staff,
+            // never a super admin or another senior staff member
+            delete updateData.role;
+            const target = await Admin.findById(staffId).select('role seniorPowers');
+            if (!target) {
+                return res.status(404).json({ success: false, message: 'Staff not found' });
+            }
+            const isSelf = String(target._id) === String(req.user._id);
+            const canManage = hasPower(req.user, 'manage_staff') && target.role === 'staff' && !(target.seniorPowers || []).length;
+            if (!isSelf && !canManage) {
+                return res.status(403).json({ success: false, message: 'You do not have permission to edit this staff member' });
+            }
+        }
 
         const staff = await Admin.findByIdAndUpdate(
             staffId,
@@ -1392,11 +1411,11 @@ exports.deleteStaff = async (req, res) => {
     try {
         const { staffId } = req.params;
 
-        // Only super admin can delete
-        if (req.user.role !== 'super_admin') {
+        // Super admin, or senior staff with the manage_staff power
+        if (!hasPower(req.user, 'manage_staff')) {
             return res.status(403).json({
                 success: false,
-                message: 'Only Super Admin can delete staff records'
+                message: 'You do not have permission to delete staff records'
             });
         }
 
@@ -1416,6 +1435,14 @@ exports.deleteStaff = async (req, res) => {
             });
         }
 
+        // Senior staff cannot remove other senior staff or themselves
+        if (req.user.role !== 'super_admin' && ((staff.seniorPowers || []).length || String(staff._id) === String(req.user._id))) {
+            return res.status(403).json({
+                success: false,
+                message: 'Only Super Admin can delete senior staff'
+            });
+        }
+
         await Admin.findByIdAndDelete(staffId);
 
         res.json({
@@ -1429,6 +1456,41 @@ exports.deleteStaff = async (req, res) => {
             message: 'Server error while deleting staff',
             error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
         });
+    }
+};
+
+// Senior staff: the super admin picks which extra powers a staff member gets (empty list = plain staff)
+exports.updateSeniorPowers = async (req, res) => {
+    try {
+        const { staffId } = req.params;
+        const requested = Array.isArray(req.body.seniorPowers) ? req.body.seniorPowers : null;
+        if (!requested) {
+            return res.status(400).json({ success: false, message: 'seniorPowers must be a list' });
+        }
+        const invalid = requested.filter((p) => !POWER_KEYS.includes(p));
+        if (invalid.length) {
+            return res.status(400).json({ success: false, message: `Unknown powers: ${invalid.join(', ')}` });
+        }
+
+        const staff = await Admin.findById(staffId);
+        if (!staff) {
+            return res.status(404).json({ success: false, message: 'Staff not found' });
+        }
+        if (staff.role !== 'staff') {
+            return res.status(400).json({ success: false, message: 'Senior powers can only be given to staff' });
+        }
+
+        staff.seniorPowers = [...new Set(requested)];
+        await staff.save({ validateBeforeSave: false });
+
+        res.json({
+            success: true,
+            message: staff.seniorPowers.length ? 'Senior staff powers updated' : 'Senior staff powers removed',
+            data: { id: staff._id, seniorPowers: staff.seniorPowers }
+        });
+    } catch (error) {
+        console.error('Error updating senior powers:', error);
+        res.status(500).json({ success: false, message: 'Server error while updating senior powers' });
     }
 };
 
@@ -1467,6 +1529,14 @@ exports.resetPassword = async (req, res) => {
             ).select('-password');
         } else if (userType === 'staff' || userType === 'super_admin') {
             const Admin = require('../models/Admin');
+            // Only the super admin, or senior staff with manage_staff for plain staff, may reset an admin account
+            if (req.user.role !== 'super_admin') {
+                const target = await Admin.findById(userId).select('role seniorPowers');
+                const plainStaff = target && target.role === 'staff' && !(target.seniorPowers || []).length;
+                if (!(plainStaff && hasPower(req.user, 'manage_staff'))) {
+                    return res.status(403).json({ success: false, message: 'Only Super Admin can reset this password' });
+                }
+            }
             user = await Admin.findByIdAndUpdate(
                 userId,
                 {

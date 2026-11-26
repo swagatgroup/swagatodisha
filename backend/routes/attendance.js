@@ -3,7 +3,7 @@ const multer = require('multer');
 const sharp = require('sharp');
 const mongoose = require('mongoose');
 const CloudinaryService = require('../utils/cloudinary');
-const { protect, authorize } = require('../middleware/auth');
+const { protect, authorize, requirePower } = require('../middleware/auth');
 const Attendance = require('../models/Attendance');
 const Admin = require('../models/Admin');
 const { loadWithDescriptor, matchFace } = require('../utils/face');
@@ -125,7 +125,7 @@ router.get('/my-logs', authorize('staff'), safe(async (req, res) => {
 }));
 
 // @route GET /api/attendance/admin-report?from=YYYY-MM-DD&to=YYYY-MM-DD&userId=
-router.get('/admin-report', authorize('super_admin'), safe(async (req, res) => {
+router.get('/admin-report', requirePower('attendance_admin'), safe(async (req, res) => {
     const today = istDate();
     const from = DATE_RX.test(req.query.from || '') ? req.query.from : today;
     const to = DATE_RX.test(req.query.to || '') ? req.query.to : from;
@@ -150,12 +150,15 @@ router.get('/admin-report', authorize('super_admin'), safe(async (req, res) => {
 }));
 
 // @route POST /api/attendance/manual-override  { userId, date, status, checkInTime?, checkOutTime?, note? }
-router.post('/manual-override', authorize('super_admin'), async (req, res) => {
+router.post('/manual-override', requirePower('attendance_admin'), async (req, res) => {
     try {
         const { userId, date, status, checkInTime, checkOutTime, note = '' } = req.body || {};
         if (!mongoose.Types.ObjectId.isValid(userId)) return res.status(400).json({ success: false, message: 'Choose a staff member' });
         if (!DATE_RX.test(date || '')) return res.status(400).json({ success: false, message: 'Choose a date' });
         if (!['Present', 'Half-Day', 'Absent'].includes(status)) return res.status(400).json({ success: false, message: 'Choose a status' });
+        if (req.user.role !== 'super_admin' && String(userId) === String(req.user._id)) {
+            return res.status(403).json({ success: false, message: 'You cannot change your own attendance' });
+        }
         if (!(await Admin.exists({ _id: userId, role: 'staff' }))) return res.status(404).json({ success: false, message: 'Staff member not found' });
 
         const toDate = (v) => { const d = v ? new Date(v) : null; return d && !Number.isNaN(d.getTime()) ? d : undefined; };

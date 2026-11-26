@@ -3,6 +3,8 @@ import StaffDocumentUploader from './StaffDocumentUploader';
 import DocumentPreviewModal from './DocumentPreviewModal';
 import CourseCategoryDetails from './CourseCategoryDetails';
 import { canEditApplication, normalizeApplicationStatus, getApplicationStatusLabel } from '../../utils/applicationStatuses';
+import { useAuth } from '../../contexts/AuthContext';
+import { hasPower } from '../../utils/seniorPowers';
 
 // One "View Application" used by all four dashboards. Content and layout are identical for every
 // role; roles differ only through `role` and the optional action slots that staff/super admin pass:
@@ -101,11 +103,12 @@ const ApplicationDetailsModal = ({
     const [app, setApp] = useState(student);
     const [previewDoc, setPreviewDoc] = useState(null);
     useEffect(() => { setApp(student); }, [student]);
+    const { user } = useAuth();
 
     if (!app) return null;
 
     const isStaffSide = role === 'staff' || role === 'super_admin';
-    const canEdit = canEditApplication(role, app.status);
+    const canEdit = canEditApplication(role, app.status, role === 'staff' && hasPower(user, 'edit_any_status'));
     // Staff keep the ability to add missing documents during review
     const canChangeDocuments = canEdit || role === 'staff';
     const documents = Array.isArray(app.documents) ? app.documents : [];

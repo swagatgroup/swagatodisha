@@ -215,6 +215,8 @@ const SchoolPageTemplate = ({
                 <meta name="geo.region" content="IN-OD" />
                 <meta name="geo.placename" content={location} />
                 <link rel="canonical" href={seoData.url} />
+                <link rel="alternate" hrefLang="en-IN" href={seoData.url} />
+                <link rel="alternate" hrefLang="x-default" href={seoData.url} />
                 <script type="application/ld+json">{JSON.stringify(structuredData)}</script>
                 <script type="application/ld+json">{JSON.stringify(breadcrumbs)}</script>
             </Helmet>

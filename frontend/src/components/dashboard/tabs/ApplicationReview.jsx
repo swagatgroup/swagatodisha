@@ -27,8 +27,13 @@ import api from '../../../utils/api';
 import { showSuccess, showError, showConfirm } from '../../../utils/sweetAlert';
 import { getDocumentUrl } from '../../../utils/documentUtils';
 import { getApplicationStatusLabel } from '../../../utils/applicationStatuses';
+import { useAuth } from '../../../contexts/AuthContext';
+import { hasPower } from '../../../utils/seniorPowers';
 
 const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
+    const { user } = useAuth();
+    // Super admin, or senior staff with the mark_complete power
+    const canMarkComplete = userRole === 'super_admin' || (userRole === 'staff' && hasPower(user, 'mark_complete'));
     const { selectedSession } = useSession();
     const [applications, setApplications] = useState([]);
     const [selectedApplication, setSelectedApplication] = useState(null);
@@ -1691,8 +1696,8 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                         </button>
                                     )}
 
-                                    {/* STEP 4: COMPLETION_REQUESTED → COMPLETE (Super Admin only) */}
-                                    {selectedApplication.status === 'COMPLETION_REQUESTED' && userRole === 'super_admin' && (
+                                    {/* STEP 4: COMPLETION_REQUESTED → COMPLETE (Super Admin, or senior staff with mark_complete) */}
+                                    {selectedApplication.status === 'COMPLETION_REQUESTED' && canMarkComplete && (
                                         <button
                                             onClick={() => handleWorkflowAction('MARK_COMPLETED')}
                                             disabled={workflowLoading}

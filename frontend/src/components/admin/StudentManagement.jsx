@@ -18,6 +18,7 @@ import AdmissionTypeFilter from '../shared/AdmissionTypeFilter';
 import ApplicationDetailsModal, { mergeUploadedDocument } from '../shared/ApplicationDetailsModal';
 import PaymentManageModal from '../dashboard/components/PaymentManageModal';
 import { APPLICATION_STATUS_OPTIONS, getApplicationStatusLabel } from '../../utils/applicationStatuses';
+import { hasPower } from '../../utils/seniorPowers';
 
 // Helper function to convert and compress image to under 50KB JPG
 const compressImageToUnder50KB = async (photoUrl) => {
@@ -221,7 +222,6 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
     const viewAllRowCache = useRef(new WeakMap()); // View all: unchanged rows reuse their element, so React skips them
     const [colleges, setColleges] = useState([]);
     const [loadingColleges, setLoadingColleges] = useState(false);
-    const isSuperAdmin = user?.role === 'super_admin';
     
     // Filter state variables (matching ApplicationReview filters)
     const [filterStatus, setFilterStatus] = useState(initialFilter !== 'all' ? initialFilter : 'all');
@@ -1958,7 +1958,7 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                             : 'View and manage all verified student applications from agents, staff, and super admins')}
                     </p>
                 </div>
-                {isSuperAdmin && (
+                {hasPower(user, 'sessions') && (
                     <button
                         onClick={handleSessionRollover}
                         className="px-3 py-2 bg-[#0E1A3D] text-white text-sm rounded-md hover:bg-[#0A1430] transition-colors flex items-center space-x-2 shadow-sm"
@@ -2310,7 +2310,7 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                                 <span>Download Photos</span>
                             </button>
 
-                            {isSuperAdmin && (
+                            {hasPower(user, 'migrate_students') && (
                             <button
                                 onClick={() => {
                                     setMigrateStudent(null);
@@ -2327,7 +2327,7 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                             </button>
                             )}
                             
-                            {isSuperAdmin && (
+                            {hasPower(user, 'delete_applications') && (
                                 <button
                                     onClick={handleBulkDelete}
                                     className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors flex items-center space-x-2 shadow-sm"
@@ -2730,7 +2730,10 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                                                                 dateOfBirth: student.personalDetails?.dateOfBirth || '',
                                                                 gender: student.personalDetails?.gender || '',
                                                                 aadharNumber: student.personalDetails?.aadharNumber || student.aadharNumber || '',
-                                                                category: student.personalDetails?.category || ''
+                                                                category: student.personalDetails?.category || '',
+                                                                apaarId: student.personalDetails?.apaarId || '',
+                                                                otrNumber: student.personalDetails?.otrNumber || '',
+                                                                status: student.personalDetails?.status || ''
                                                             },
                                                             contactDetails: {
                                                                 email: student.contactDetails?.email || student.email || '',
@@ -2750,7 +2753,8 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                                                                 selectedCourse: student.courseDetails?.selectedCourse || student.courseDetails?.courseName || '',
                                                                 customCourse: student.courseDetails?.customCourse || '',
                                                                 stream: student.courseDetails?.stream || '',
-                                                                campus: getCampusId(student.courseDetails?.campus) || ''
+                                                                campus: getCampusId(student.courseDetails?.campus) || '',
+                                                                admissionType: student.courseDetails?.admissionType === 'free' ? 'free' : 'paid'
                                                             },
                                                             guardianDetails: {
                                                                 guardianName: student.guardianDetails?.guardianName || '',

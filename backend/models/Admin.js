@@ -40,6 +40,11 @@ const adminSchema = new mongoose.Schema({
         enum: ['super_admin', 'staff'],
         required: true
     },
+    // Extra powers the super admin gave this staff member (config/seniorPowers.js). Non-empty = senior staff.
+    seniorPowers: {
+        type: [{ type: String, enum: require('../config/seniorPowers').POWER_KEYS }],
+        default: []
+    },
     isActive: {
         type: Boolean,
         default: true

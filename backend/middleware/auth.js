@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const { hasPower } = require('../config/seniorPowers');
 
 // Protect routes - require authentication
 const protect = async (req, res, next) => {
@@ -115,6 +116,17 @@ const authorize = (...roles) => {
 
 // Alias for restrictTo to maintain compatibility
 const restrictTo = authorize;
+
+// Super admin, or staff who were given this senior staff power
+const requirePower = (power) => (req, res, next) => {
+    if (!req.user) {
+        return res.status(401).json({ success: false, message: 'User not authenticated' });
+    }
+    if (!hasPower(req.user, power)) {
+        return res.status(403).json({ success: false, message: 'You do not have permission for this action' });
+    }
+    next();
+};
 
 // Specific role checks
 const isStudent = (req, res, next) => {
@@ -272,6 +284,7 @@ module.exports = {
     protect,
     authorize,
     restrictTo,
+    requirePower,
     isStudent,
     isAgent,
     isStaff,

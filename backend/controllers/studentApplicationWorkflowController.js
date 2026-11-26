@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const { canEditApplication, editLockedMessage } = require('../utils/applicationEditLock');
+const { hasPower } = require('../config/seniorPowers');
 const StudentApplication = require('../models/StudentApplication');
 const User = require('../models/User');
 const PDFGenerator = require('../utils/pdfGenerator');
@@ -639,7 +640,7 @@ const saveDraft = async (req, res) => {
         }
 
         // Edit lock: only Super Admin can edit once review has started
-        if (!canEditApplication(req.user.role, appDoc.status)) {
+        if (!canEditApplication(req.user.role, appDoc.status, hasPower(req.user, 'edit_any_status'))) {
             return res.status(403).json({
                 success: false,
                 message: editLockedMessage(appDoc.status),
@@ -2566,9 +2567,9 @@ const advanceWorkflowStep = async (req, res) => {
             });
         }
 
-        // Only super_admin can mark as complete
-        if (action === 'MARK_COMPLETED' && req.user.role !== 'super_admin') {
-            return res.status(403).json({ success: false, message: 'Only Super Admin can mark application as completed' });
+        // Super admin, or senior staff with the mark_complete power, can mark as complete
+        if (action === 'MARK_COMPLETED' && !hasPower(req.user, 'mark_complete')) {
+            return res.status(403).json({ success: false, message: 'You do not have permission to mark an application as completed' });
         }
 
         application.status = transition.to;
