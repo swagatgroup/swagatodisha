@@ -11,28 +11,116 @@ const inputCls = 'rounded-md border border-gray-300 px-3 py-1.5 text-sm dark:bor
 const istIso = (date, hhmm) => (hhmm ? new Date(`${date}T${hhmm}:00+05:30`).toISOString() : undefined);
 const toHHMM = (iso) => (iso ? new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Asia/Kolkata' }).format(new Date(iso)) : '');
 
-// Super admin: daily attendance with selfies, manual corrections, and Face ID management
+// Super admin: monthly summary, daily attendance with selfies, manual corrections, and Face ID management
 const AdminAttendanceTab = () => {
-    const [section, setSection] = useState('attendance');
+    const [section, setSection] = useState('summary');
+    const [logFilter, setLogFilter] = useState(null); // { userId, from, to } when opened from the summary
+    const openLog = (userId, month) => {
+        const last = `${month}-${String(new Date(Date.UTC(+month.slice(0, 4), +month.slice(5, 7), 0)).getUTCDate()).padStart(2, '0')}`;
+        setLogFilter({ userId, from: `${month}-01`, to: last < istToday() ? last : istToday() });
+        setSection('attendance');
+    };
     return (
         <div className="space-y-4">
-            <div className="flex gap-2">
-                {[['attendance', 'Attendance'], ['face', 'Face ID & login']].map(([id, label]) => (
-                    <button key={id} type="button" onClick={() => setSection(id)}
+            <div className="flex flex-wrap gap-2">
+                {[['summary', 'Monthly summary'], ['attendance', 'Daily log'], ['face', 'Face ID & login']].map(([id, label]) => (
+                    <button key={id} type="button" onClick={() => { if (id === 'attendance') setLogFilter(null); setSection(id); }}
                         className={`rounded-full px-4 py-2 text-sm font-semibold ${section === id ? 'bg-[#0E1A3D] text-white' : 'bg-white text-gray-700 hover:bg-gray-100 dark:bg-[#122048] dark:text-gray-200'}`}>
                         {label}
                     </button>
                 ))}
             </div>
-            {section === 'attendance' ? <AttendanceReport /> : <FaceManagement />}
+            {section === 'summary' && <MonthlySummary onOpen={openLog} />}
+            {section === 'attendance' && <AttendanceReport key={JSON.stringify(logFilter)} initial={logFilter} />}
+            {section === 'face' && <FaceManagement />}
         </div>
     );
 };
 
-const AttendanceReport = () => {
-    const [from, setFrom] = useState(istToday);
-    const [to, setTo] = useState(istToday);
-    const [staffId, setStaffId] = useState('');
+const currentMonth = () => istToday().slice(0, 7);
+const ROLE_LABEL = { staff: 'Staff', agent: 'Agent' };
+
+// Days present / half-day / absent / not marked for every staff member and agent in one month
+const MonthlySummary = ({ onOpen }) => {
+    const [month, setMonth] = useState(currentMonth);
+    const [role, setRole] = useState('');
+    const [query, setQuery] = useState('');
+    const [summary, setSummary] = useState(null);
+
+    useEffect(() => {
+        let live = true;
+        setSummary(null);
+        api.get('/api/attendance/monthly-summary', { silent: true, params: { month } })
+            .then((res) => { if (live) setSummary(res.data); })
+            .catch(() => { if (live) setSummary({ data: [], daysSoFar: 0 }); });
+        return () => { live = false; };
+    }, [month]);
+
+    const q = query.trim().toLowerCase();
+    const rows = (summary?.data || []).filter((p) => (!role || p.role === role) && (!q || `${p.name} ${p.email}`.toLowerCase().includes(q)));
+
+    return (
+        <section className={card}>
+            <div className="flex flex-wrap items-end gap-3">
+                <label className="text-xs text-gray-500 dark:text-gray-300">Month<br />
+                    <input type="month" value={month} max={currentMonth()} onChange={(e) => setMonth(e.target.value || currentMonth())} className={inputCls} />
+                </label>
+                <label className="text-xs text-gray-500 dark:text-gray-300">Show<br />
+                    <select value={role} onChange={(e) => setRole(e.target.value)} className={inputCls}>
+                        <option value="">Staff and agents</option>
+                        <option value="staff">Staff only</option>
+                        <option value="agent">Agents only</option>
+                    </select>
+                </label>
+                <label className="text-xs text-gray-500 dark:text-gray-300">Search<br />
+                    <input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Name or email" className={inputCls} />
+                </label>
+            </div>
+
+            {summary && (
+                <p className="mt-4 text-sm text-gray-600 dark:text-gray-300">
+                    {summary.daysSoFar} day{summary.daysSoFar === 1 ? '' : 's'} counted{month === currentMonth() ? ' so far this month' : ''}. Each day runs from midnight to midnight (India time). "Not marked" includes Sundays and holidays.
+                </p>
+            )}
+
+            {!summary ? <p className="py-6 text-center text-sm text-gray-500">Loading…</p> : rows.length === 0 ? (
+                <p className="py-6 text-center text-sm text-gray-500">No staff or agents match.</p>
+            ) : (
+                <div className="mt-4 overflow-x-auto">
+                    <table className="min-w-full text-left text-sm">
+                        <thead className="text-xs uppercase text-gray-500 dark:text-gray-400">
+                            <tr>
+                                <th className="py-2 pr-4">Name</th><th className="py-2 pr-4">Role</th>
+                                <th className="py-2 pr-4">Present</th><th className="py-2 pr-4">Half-day</th>
+                                <th className="py-2 pr-4">Absent</th><th className="py-2 pr-4">Not marked</th>
+                                <th className="py-2 pr-4">Attended</th><th className="py-2" />
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                            {rows.map((p) => (
+                                <tr key={p.id} className="text-gray-800 dark:text-gray-100">
+                                    <td className="py-2 pr-4 font-medium">{p.name}<span className="block text-xs font-normal text-gray-500">{p.employeeId || p.email}</span></td>
+                                    <td className="py-2 pr-4">{ROLE_LABEL[p.role]}</td>
+                                    <td className="py-2 pr-4 font-semibold text-green-700 dark:text-green-400">{p.present}</td>
+                                    <td className="py-2 pr-4 text-amber-700 dark:text-amber-300">{p.halfDay}</td>
+                                    <td className="py-2 pr-4 text-red-700 dark:text-red-400">{p.absent}</td>
+                                    <td className="py-2 pr-4 text-gray-500">{p.notMarked}</td>
+                                    <td className="whitespace-nowrap py-2 pr-4">{p.present + p.halfDay} / {summary.daysSoFar} days</td>
+                                    <td className="py-2"><button type="button" onClick={() => onOpen(p.id, month)} className="text-xs font-semibold text-[#0E1A3D] underline underline-offset-2 dark:text-[#60A5FA]">View days</button></td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
+        </section>
+    );
+};
+
+const AttendanceReport = ({ initial }) => {
+    const [from, setFrom] = useState(initial?.from || istToday());
+    const [to, setTo] = useState(initial?.to || istToday());
+    const [staffId, setStaffId] = useState(initial?.userId || '');
     const [report, setReport] = useState(null);
     const [photo, setPhoto] = useState(null);
 
@@ -45,13 +133,13 @@ const AttendanceReport = () => {
     useEffect(() => { load(); }, [load]);
 
     const staff = report?.staff || [];
-    const nameOf = (id) => staff.find((s) => s.id === String(id))?.name || 'Staff member';
+    const personOf = (id) => staff.find((s) => s.id === String(id)) || { id: String(id), name: 'Former staff or agent' };
     const singleDay = from === to;
 
     // One day: every staff member, with "No record" for anyone who didn't check in
     const rows = singleDay
         ? staff.filter((s) => !staffId || s.id === staffId).map((s) => ({ staff: s, record: (report?.data || []).find((r) => String(r.user) === s.id), date: from }))
-        : (report?.data || []).map((r) => ({ staff: { id: String(r.user), name: nameOf(r.user) }, record: r, date: r.date }));
+        : (report?.data || []).map((r) => ({ staff: personOf(r.user), record: r, date: r.date }));
 
     const edit = async (row) => {
         const r = row.record || {};
@@ -97,10 +185,14 @@ const AttendanceReport = () => {
             <div className="flex flex-wrap items-end gap-3">
                 <label className="text-xs text-gray-500 dark:text-gray-300">From<br /><input type="date" value={from} max={istToday()} onChange={(e) => { setFrom(e.target.value); if (e.target.value > to) setTo(e.target.value); }} className={inputCls} /></label>
                 <label className="text-xs text-gray-500 dark:text-gray-300">To<br /><input type="date" value={to} min={from} max={istToday()} onChange={(e) => setTo(e.target.value)} className={inputCls} /></label>
-                <label className="text-xs text-gray-500 dark:text-gray-300">Staff<br />
+                <label className="text-xs text-gray-500 dark:text-gray-300">Person<br />
                     <select value={staffId} onChange={(e) => setStaffId(e.target.value)} className={inputCls}>
-                        <option value="">All staff</option>
-                        {staff.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+                        <option value="">All staff and agents</option>
+                        {['staff', 'agent'].map((role) => (
+                            <optgroup key={role} label={role === 'staff' ? 'Staff' : 'Agents'}>
+                                {staff.filter((s) => s.role === role).map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+                            </optgroup>
+                        ))}
                     </select>
                 </label>
                 <button type="button" onClick={() => { setFrom(istToday()); setTo(istToday()); }} className="rounded-full border border-gray-300 px-4 py-1.5 text-sm font-semibold text-gray-700 dark:border-gray-600 dark:text-gray-200">Today</button>
@@ -108,7 +200,7 @@ const AttendanceReport = () => {
 
             {singleDay && report && (
                 <p className="mt-4 text-sm text-gray-600 dark:text-gray-300">
-                    {fmtDate(from)}: <b>{present}</b> present · <b>{half}</b> half-day · <b>{rows.length - present - half}</b> absent or not checked in, out of {rows.length} staff
+                    {fmtDate(from)}: <b>{present}</b> present · <b>{half}</b> half-day · <b>{rows.length - present - half}</b> absent or not checked in, out of {rows.length} staff and agents
                 </p>
             )}
 
@@ -119,7 +211,7 @@ const AttendanceReport = () => {
                     <table className="min-w-full text-left text-sm">
                         <thead className="text-xs uppercase text-gray-500 dark:text-gray-400">
                             <tr>
-                                <th className="py-2 pr-4">Staff</th>{!singleDay && <th className="py-2 pr-4">Date</th>}
+                                <th className="py-2 pr-4">Name</th>{!singleDay && <th className="py-2 pr-4">Date</th>}
                                 <th className="py-2 pr-4">In</th><th className="py-2 pr-4">Out</th><th className="py-2 pr-4">Hours</th>
                                 <th className="py-2 pr-4">Status</th><th className="py-2 pr-4">Photos</th><th className="py-2" />
                             </tr>
@@ -129,7 +221,7 @@ const AttendanceReport = () => {
                                 const r = row.record;
                                 return (
                                     <tr key={`${row.staff.id}-${row.date}`} className="text-gray-800 dark:text-gray-100">
-                                        <td className="py-2 pr-4 font-medium">{row.staff.name}{row.staff.employeeId && <span className="block text-xs font-normal text-gray-500">{row.staff.employeeId}</span>}</td>
+                                        <td className="py-2 pr-4 font-medium">{row.staff.name}{(row.staff.employeeId || row.staff.role) && <span className="block text-xs font-normal text-gray-500">{[row.staff.role === 'agent' ? 'Agent' : row.staff.role === 'staff' ? 'Staff' : '', row.staff.employeeId].filter(Boolean).join(' · ')}</span>}</td>
                                         {!singleDay && <td className="whitespace-nowrap py-2 pr-4">{fmtDate(row.date)}</td>}
                                         <td className="py-2 pr-4">{fmtTime(r?.checkInTime)}</td>
                                         <td className="py-2 pr-4">{fmtTime(r?.checkOutTime)}</td>
@@ -143,7 +235,7 @@ const AttendanceReport = () => {
                                             <div className="flex gap-1">
                                                 {[r?.checkInSelfieUrl, r?.checkOutSelfieUrl].filter(Boolean).map((url) => (
                                                     <button key={url} type="button" onClick={() => setPhoto(url)} className="overflow-hidden rounded">
-                                                        <img src={url} alt={`${row.staff.name}, Swagat staff attendance photo`} loading="lazy" className="h-10 w-10 object-cover" />
+                                                        <img src={url} alt={`${row.staff.name}, Swagat Odisha attendance photo`} loading="lazy" className="h-10 w-10 object-cover" />
                                                     </button>
                                                 ))}
                                                 {typeof r?.matchDistance === 'number' && <span className="self-center text-[11px] text-gray-400" title="Face match score (lower is closer)">{r.matchDistance}</span>}

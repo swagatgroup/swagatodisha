@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import {
   Squares2X2Icon,
   UsersIcon,
@@ -6,6 +6,7 @@ import {
   ClipboardDocumentCheckIcon,
   CreditCardIcon,
   MegaphoneIcon,
+  ClockIcon,
 } from '@heroicons/react/24/outline';
 import { motion } from "framer-motion";
 import { useAuth } from "../../contexts/AuthContext";
@@ -22,6 +23,8 @@ import StatusFilterRow from "./components/StatusFilterRow";
 import { buildStatusChartData } from "../../utils/applicationStatuses";
 import { showSuccessToast } from "../../utils/sweetAlert";
 import api from "../../utils/api";
+
+const StaffAttendanceTab = lazy(() => import("../attendance/StaffAttendanceTab"));
 
 const EnhancedAgentDashboard = () => {
   const { user } = useAuth();
@@ -53,7 +56,8 @@ const EnhancedAgentDashboard = () => {
     { id: 'new-registration',   name: 'New Registration',   icon: <UserPlusIcon className="mr-3 h-5 w-5" /> },
     { id: 'application-status', name: 'Application Status', icon: <ClipboardDocumentCheckIcon className="mr-3 h-5 w-5" /> },
     { id: 'payments',           name: 'Payments',           icon: <CreditCardIcon className="mr-3 h-5 w-5" /> },
-    { id: 'referrals',          name: 'Refer & Earn',       icon: <MegaphoneIcon className="mr-3 h-5 w-5" /> }
+    { id: 'referrals',          name: 'Refer & Earn',       icon: <MegaphoneIcon className="mr-3 h-5 w-5" /> },
+    { id: 'attendance',         name: 'Attendance',         icon: <ClockIcon className="mr-3 h-5 w-5" /> }
   ];
 
   const handleStatClick = (filterKey) => {
@@ -314,6 +318,11 @@ const EnhancedAgentDashboard = () => {
       case "marketing":
         return (
           <ReferralDashboard />
+        );
+
+      case "attendance":
+        return (
+          <Suspense fallback={<div className="p-6 text-gray-500">Loading…</div>}><StaffAttendanceTab /></Suspense>
         );
 
       case "drafts":

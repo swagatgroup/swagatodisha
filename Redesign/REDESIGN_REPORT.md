@@ -490,3 +490,13 @@ All new and shown only inside the dashboards; no existing copy was reworded.
 - Staff sidebar tabs shown only with the power: "Staff", "Attendance & Face ID", "Website Management", "Recent Activity" (same names as on the super admin dashboard).
 - Server messages: "You do not have permission for this action" (and per-action variants), "Only Super Admin can reset this password", "Only Super Admin can delete senior staff", "Only Super Admin can reset this Face ID", "You cannot change your own Face ID setting", "You cannot change your own attendance", "Senior staff powers updated" / "Senior staff powers removed".
 - Application PDF: no copy change. Free admissions downloaded from the admin student list now print the existing "Scholarship (Student is studying on scholarship money)" label instead of always printing "Paid".
+
+## Copy added on 2026-11-27 (daily attendance for staff and agents)
+
+All new and shown only inside the dashboards; no existing copy was reworded except where noted.
+
+- Attendance reminder pop-up (staff and agents, on opening the dashboard and every 30 minutes until marked): title "Mark today's attendance"; text "Good to see you! You haven't marked your attendance for {date} yet. It takes a few seconds with Face ID."; when Face ID is missing "First, register your Face ID once. After that you can mark attendance every day."; buttons "Mark attendance now" / "Register Face ID" and "Remind me in 30 minutes"; close label "Remind me later".
+- Agent sidebar tab "Attendance" (same tab and copy staff already have).
+- Admin attendance tab: section buttons "Monthly summary", "Daily log" (was "Attendance"), "Face ID & login". Monthly summary: filters "Month", "Show" ("Staff and agents" / "Staff only" / "Agents only"), "Search" (placeholder "Name or email"); note "{n} days counted so far this month. Each day runs from midnight to midnight (India time). "Not marked" includes Sundays and holidays."; columns "Name", "Role", "Present", "Half-day", "Absent", "Not marked", "Attended" ("{x} / {n} days"); link "View days"; empty state "No staff or agents match.".
+- Daily log: filter "Staff" → "Person", "All staff" → "All staff and agents" (grouped "Staff" / "Agents"); column "Staff" → "Name"; summary line "out of {n} staff" → "out of {n} staff and agents"; unknown person "Staff member" → "Former staff or agent"; photo alt "{name}, Swagat staff attendance photo" → "{name}, Swagat Odisha attendance photo".
+- Server messages: "Choose a staff member" → "Choose a staff member or agent"; "Staff member not found" → "Staff member or agent not found".

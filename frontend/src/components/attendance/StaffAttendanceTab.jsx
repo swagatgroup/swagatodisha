@@ -17,7 +17,7 @@ export const STATUS_STYLE = {
 
 const currentMonth = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Kolkata' }).format(new Date()).slice(0, 7);
 
-// Staff: mark attendance with Face ID, see today's status and the monthly log
+// Staff and agents: mark attendance with Face ID, see today's status and the monthly log
 const StaffAttendanceTab = () => {
     const [today, setToday] = useState(null);
     const [registered, setRegistered] = useState(true);
@@ -43,6 +43,16 @@ const StaffAttendanceTab = () => {
 
     useEffect(() => { loadToday(); }, [loadToday]);
     useEffect(() => { loadLogs(); }, [loadLogs]);
+    // Stay current when attendance is marked from the reminder pop-up, or the tab is reopened on a new day
+    useEffect(() => {
+        const refresh = () => { if (document.visibilityState !== 'hidden') { loadToday(); loadLogs(); } };
+        window.addEventListener('attendance:updated', refresh);
+        document.addEventListener('visibilitychange', refresh);
+        return () => {
+            window.removeEventListener('attendance:updated', refresh);
+            document.removeEventListener('visibilitychange', refresh);
+        };
+    }, [loadToday, loadLogs]);
 
     const capture = async ({ descriptor, blob }) => {
         const form = new FormData();
@@ -150,7 +160,7 @@ const StaffAttendanceTab = () => {
                         title={camera === 'in' ? 'Check in' : 'Check out'}
                         description="Look at the camera to confirm it's you."
                         onCapture={capture}
-                        onDone={() => { setCamera(null); loadToday(); loadLogs(); }}
+                        onDone={() => { setCamera(null); window.dispatchEvent(new Event('attendance:updated')); }}
                         successText={camera === 'in' ? 'Checked in!' : 'Checked out!'}
                     />
                 )}

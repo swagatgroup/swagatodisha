@@ -19,6 +19,7 @@ import { LOGO_COLOR, LOGO_SIZE, LOGO_WHITE } from '../site/siteConfig';
 // Chat and Face ID load only when a dashboard is open (kept off the public site)
 const ChatLauncher = lazy(() => import('../chat/ChatLauncher'));
 const FaceIdSetup = lazy(() => import('../face/FaceIdSetup'));
+const AttendanceReminder = lazy(() => import('../attendance/AttendanceReminder'));
 const FACE_ID_ROLES = ['staff', 'agent', 'super_admin'];
 
 const SEEN_PAYMENTS_KEY = 'sw_seen_payment_ids';
@@ -418,6 +419,11 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                     </main>
                 </div>
             </div>
+            {(user?.role === 'staff' || user?.role === 'agent') && (
+                <Suspense fallback={null}>
+                    <AttendanceReminder user={user} />
+                </Suspense>
+            )}
             {faceIdOpen && (
                 <Suspense fallback={null}>
                     <FaceIdSetup open={faceIdOpen} onClose={() => setFaceIdOpen(false)} />
